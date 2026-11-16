@@ -3,12 +3,13 @@ import { MotorSelector } from '../../components/ui/MotorSelector';
 import { Chevron } from '../../components/ui/Chevron';
 import { UiIcon } from '../../components/ui/UiIcon';
 import { PageHeader } from '../../components/ui/PageHeader';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { StatusNotice } from '../../components/ui/StatusNotice';
 import { TaskSections } from '../../components/ui/TaskSections';
 import { Afr2CommandError } from '../../protocol/afr2Client';
+import { notify } from '../../components/notifications/notify';
 import { useConnection } from '../connection/ConnectionContext';
 import { MecanumDrivePad } from '../../components/robot/MecanumDrivePad';
 import { RangeNumberField } from '../../components/ui/RangeNumberField';
@@ -19,6 +20,10 @@ import {
 import { SequenceEditorPanel } from './sequences/SequenceEditorPanel';
 import { CalibrationPanel } from './CalibrationPanel';
 import { OdometryTestPanel } from './OdometryTestPanel';
+import { MinimumTestsPanel } from './minimumTests/MinimumTestsPanel';
+import { getModelAssetState, ROBOT_MODEL_URL, subscribeModelAssets } from '../../components/three/modelAssetLoading';
+import { prefetchedModel } from '../../components/three/modelPrefetch';
+import { ModelSpinner } from '../../components/three/ModelSpinner';
 import { GotoSimulatorPanel } from './goto/GotoSimulatorPanel';
 import type { GotoCommand } from './goto/gotoSimulation';
 import { ManualDriveOverlay, type ManualDirection } from './manual/ManualDriveOverlay';
@@ -62,6 +67,8 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
   const [driveError,setDriveError]=useState<string|null>(null);
   const [manualOverlayOpen, setManualOverlayOpen] = useState(false);
   const [manualOrigin, setManualOrigin] = useState<ModalOrigin | null>(null);
+  const carModel = useSyncExternalStore(subscribeModelAssets, () => getModelAssetState(ROBOT_MODEL_URL));
+  const touchModelReady = wsState !== 'ready' || carModel.phase === 'ready' || !!prefetchedModel(ROBOT_MODEL_URL);
 
   const mounted = useRef(true);
   const latestStop = useRef(stopRecord.lastIssuedAtMs);latestStop.current=stopRecord.lastIssuedAtMs;
@@ -105,7 +112,8 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
     : megaLinkState !== 'ready' ? 'Falta enlace del ESP con el ATmega.'
     : stopRecord.status === 'sending' ? 'Esperando la confirmación de STOP.'
     : stopRecord.status === 'unconfirmed-offline' ? 'El último STOP sigue sin confirmar. Volvé a enviar STOP con el enlace activo.'
-    : !capabilities.manual_pwm?.implemented ? capabilities.manual_pwm?.reason || 'El ESP todavía no informa PWM manual disponible.'
+    // AFR2-20261111-04: elegir «Manual» en la pill de modo salta estos permisos en el auto.
+    : !capabilities.manual_pwm?.implemented ? `${capabilities.manual_pwm?.reason || 'El ESP todavía no informa PWM manual disponible.'} Elegí «Manual» en el modo (arriba) para manejar igual.`
     : null;
   const canDrive = driveBlockedReason === null;
 
@@ -134,10 +142,15 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
       setActivePadId(null);
       setRequestedMotion(null);
       if (emitZero && hadHold) {
-        void sendPwmCommand(0, 0, 0).catch(e => { if (!(e instanceof Afr2CommandError && (e.code === 'BUSY_IN_FLIGHT' || e.code === 'TIMEOUT'))) void triggerEmergencyStop('safety'); });
+        // AFR2-20261111-05: report a rejected zero; TTL expires the last accepted PWM.
+        void sendPwmCommand(0, 0, 0).catch(e => {
+          const message = e instanceof Error ? e.message : 'No se confirmó la consigna cero.';
+          setDriveError(message);
+          notify.warning({ id: 'afr2-drive-rejected', title: 'Consigna cero sin confirmar', description: message });
+        });
       }
     },
-    [sendPwmCommand, setOperationActivity, triggerEmergencyStop]
+    [sendPwmCommand, setOperationActivity]
   );
 
   const activeHoldStop = useRef(stopActiveHold);activeHoldStop.current=stopActiveHold;
@@ -208,11 +221,18 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
     const send = () => {
       if (generation !== holdGeneration.current || !holdVector.current) return;
       const target = holdVector.current;
-      void sendPwmCommand(target.forwardPct, target.strafePct, target.turnPct).then(() => undefined, e => {
+      void sendPwmCommand(target.forwardPct, target.strafePct, target.turnPct).then(() => {
+        if (generation === holdGeneration.current) setDriveError(null);
+      }, e => {
         if (generation !== holdGeneration.current) return;
         if (e instanceof Afr2CommandError && (e.code === 'BUSY_IN_FLIGHT' || e.code === 'TIMEOUT')) return;
-        stopActiveHold(false); setDriveError(e instanceof Error ? e.message : 'Consigna rechazada.');
-        void triggerEmergencyStop('safety');
+        const message = e instanceof Error ? e.message : 'Consigna rechazada.';
+        // AFR2-20261111-05: controller rejections are advisory in open-loop manual driving.
+        // Keep the held vector and heartbeat; a STOP/session replacement must never be replayed.
+        const retry = e instanceof Afr2CommandError && (e.code === 'CAPABILITY_UNAVAILABLE' || e.code === 'BAD_REQUEST');
+        if (!retry) stopActiveHold(false);
+        setDriveError(message);
+        notify.warning({ id: 'afr2-drive-rejected', title: 'Consigna manual sin confirmar', description: message });
       });
     };
     send();
@@ -280,9 +300,11 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
 
                 <div className="afr2-manual-heading">
                   <h2>Conducción manual</h2>
-                  <Button variant="primary" aria-haspopup="dialog" aria-expanded={manualOverlayOpen} icon={<UiIcon name="touch" />}
+                  {/* AFR2-20261111-08: con el auto conectado, el control táctil se habilita cuando el modelo 3D ya está descargado. */}
+                  <Button variant="primary" aria-haspopup="dialog" aria-expanded={manualOverlayOpen} icon={touchModelReady ? <UiIcon name="touch" /> : undefined}
+                    disabled={!touchModelReady} title={touchModelReady ? undefined : 'Descargando el modelo 3D del auto'}
                     onClick={event => { stopActiveHold(true); setDriveError(null); setManualOrigin({ element: event.currentTarget, keyboard: event.detail === 0 }); setManualOverlayOpen(true); }}>
-                    Control táctil
+                    {touchModelReady ? 'Control táctil' : <ModelSpinner size="sm" label={`Descargando modelo 3D${carModel.totalBytes ? ` · ${Math.min(100, Math.floor(carModel.loadedBytes * 100 / carModel.totalBytes))} %` : '…'}`} />}
                   </Button>
                 </div>
 
@@ -304,6 +326,9 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
                     <RangeNumberField label="Potencia de giro" value={turnPowerPct} min={10} max={100} step={5} unit="% del límite PWM" onChange={setTurnPowerPct} />
                   </div>
                 </div>
+
+                {/* AFR2-20261111-01: ensayos mínimos de la cátedra; la trayectoria es la misma lista que la pantalla GOTO. */}
+                <MinimumTestsPanel gotoCommands={gotoCommands} onGotoCommandsChange={setGotoCommands} maxSpeedMmS={maxSpeed} />
               </div>
             ),
           },

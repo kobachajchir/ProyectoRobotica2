@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import { getModelAssetState, ROBOT_MODEL_URL, subscribeModelAssets } from './modelAssetLoading';
 import './modelAssetProgress.css';
+import { ModelSpinner } from './ModelSpinner';
 
 function bytes(value: number) {
   if (value < 1024) return `${value} B`;
@@ -15,7 +16,7 @@ export function ModelAssetProgress({ url = ROBOT_MODEL_URL, label = 'Modelo 3D',
   const active = state.phase === 'downloading' || state.phase === 'preparing';
   const title = state.phase === 'preparing' ? 'Preparando modelo' : state.phase === 'downloading' ? 'Descargando modelo' : state.phase === 'error' ? 'Error de carga' : label;
   return <div className="afr2-model-asset-progress" aria-busy={active}>
-    <div><strong>{title}</strong><span title={total ? `${total.toLocaleString('es-AR')} bytes del archivo` : undefined}>{total ? bytes(total) : 'Tamaño por determinar'}</span></div>
+    <div><strong>{active && <ModelSpinner label="" size="sm" />}{title}</strong><span title={total ? `${total.toLocaleString('es-AR')} bytes del archivo` : undefined}>{total ? bytes(total) : 'Tamaño por determinar'}</span></div>
     {active && <>
       <progress max={100} value={percent ?? undefined} aria-label={`Descarga de ${label}`} />
       <div><span>{bytes(state.loadedBytes)}{total ? ` de ${bytes(total)} · ${percent}%` : ' recibidos'}</span>

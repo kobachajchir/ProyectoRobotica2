@@ -680,8 +680,8 @@
       "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
       "change_id": "AFR2-20261106-07",
-      "item_count": 8,
-      "items_change": "AFR2-20261108-02: Hall una vuelta (0x030014) removed from Pruebas (calibration only); Prueba Hall (0x030047) is now the second row; flash offsets unchanged",
+      "item_count": 9,
+      "items_change": "AFR2-20261111-02: Pruebas examen (0x03004C) is the first row. AFR2-20261108-02: Hall una vuelta (0x030014) removed from Pruebas (calibration only); Prueba Hall (0x030047) is now the second row; flash offsets unchanged",
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
@@ -3208,6 +3208,273 @@
       "physical_evidence": false,
       "build_evidence": "No build, test, validator or flash for this change",
       "change_id": "AFR2-20261108-07"
+    },
+    {
+      "id": "shared:screen/03004C",
+      "local_code": "0x03004C",
+      "name": "Pruebas examen",
+      "role": "menu",
+      "parent": "shared:screen/030011",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "selection",
+        "firstVisible"
+      ],
+      "actions": [
+        "rotate",
+        "select",
+        "long-release-back"
+      ],
+      "item_count": 4,
+      "variant": "AVR node AFR2_N_EXAM_MENU=75; Desplazamiento 1 m, Giros, Escala de factores, Volver",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261111-06"
+    },
+    {
+      "id": "shared:screen/03004D",
+      "local_code": "0x03004D",
+      "name": "Desplazamiento",
+      "role": "menu",
+      "parent": "shared:screen/03004C",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "selection",
+        "firstVisible"
+      ],
+      "actions": [
+        "rotate",
+        "select-start",
+        "long-release-back"
+      ],
+      "item_count": 5,
+      "variant": "AVR node AFR2_N_EXAM_MOVE=76; Adelante/Atras/Izquierda/Derecha 1 m via AFR2_A_EXAM_START 0..3 (relative GOTO, speed_limit); opens 0x03004F",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261111-02"
+    },
+    {
+      "id": "shared:screen/03004E",
+      "local_code": "0x03004E",
+      "name": "Giros",
+      "role": "menu",
+      "parent": "shared:screen/03004C",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "selection",
+        "firstVisible"
+      ],
+      "actions": [
+        "rotate",
+        "select-start",
+        "long-release-back"
+      ],
+      "item_count": 5,
+      "variant": "AVR node AFR2_N_EXAM_TURN=77; 90 derecha (CW), 90 izquierda, 180 y 360 (CCW) via AFR2_A_EXAM_START 10..13; chained in-place GOTO turns of up to 90 degrees until the accumulated yaw reaches the goal; opens 0x03004F",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261111-02"
+    },
+    {
+      "id": "shared:screen/03004F",
+      "local_code": "0x03004F",
+      "name": "Ejecutando test",
+      "role": "view",
+      "parent": "shared:screen/03004C",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "snapshot.labels[0] title: Ejecutando test / Prueba terminada / Prueba detenida / Interrumpida Fn",
+        "snapshot.labels[1] R while running",
+        "snapshot.lines[0] test and direction",
+        "snapshot.lines[1] X mm from 0 (start frame) or accumulated angle",
+        "snapshot.lines[2] Y mm from 0 or goal angle",
+        "AFR2-20261111-08 route variant (exam_arg 20, robot.route.start): title Recorrido GOTO / Recorrido listo; lines Tramo k/N, X.. Y.. mm, Giro: .. grados (start frame)"
+      ],
+      "actions": [
+        "short-or-long-stop-while-running",
+        "short-or-long-OK-after-end"
+      ],
+      "item_count": 1,
+      "variant": "AVR node AFR2_N_EXAM_RUN=78; 100 ms refresh; stays until OK with the encoder; remote UI input blocked; leaving stops the test",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261111-02"
+    },
+    {
+      "id": "shared:screen/030050",
+      "local_code": "0x030050",
+      "name": "Escala factores",
+      "role": "menu",
+      "parent": "shared:screen/03004C",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "selection",
+        "firstVisible"
+      ],
+      "actions": [
+        "rotate",
+        "select",
+        "long-release-back-with-mandatory-save-choice"
+      ],
+      "item_count": 9,
+      "variant": "AVR node AFR2_N_FACTORS=79; standard menu and numeric editor; six independent odometry factors; save EEPROM explicitly; zero blocks that closed-loop component",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261111-06"
+    },
+    {
+      "id": "shared:screen/030051",
+      "local_code": "0x030051",
+      "name": "Factor adelante",
+      "role": "editor",
+      "parent": "shared:screen/030050",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "draft permille 0..2000; 1000=1.000; display X.XXX",
+        "editing.action 115..120"
+      ],
+      "actions": [
+        "rotate-draft-step-1",
+        "short-apply-to-RAM",
+        "long-release-discard-editor-draft"
+      ],
+      "item_count": 1,
+      "variant": "Numeric editor variant of node 79; short applies only this direction in RAM; parent asks Si/No on leave if configuration is dirty",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261111-06"
+    },
+    {
+      "id": "shared:screen/030052",
+      "local_code": "0x030052",
+      "name": "Factor atras",
+      "role": "editor",
+      "parent": "shared:screen/030050",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "draft permille 0..2000; 1000=1.000; display X.XXX",
+        "editing.action 115..120"
+      ],
+      "actions": [
+        "rotate-draft-step-1",
+        "short-apply-to-RAM",
+        "long-release-discard-editor-draft"
+      ],
+      "item_count": 1,
+      "variant": "Numeric editor variant of node 79; short applies only this direction in RAM; parent asks Si/No on leave if configuration is dirty",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261111-06"
+    },
+    {
+      "id": "shared:screen/030053",
+      "local_code": "0x030053",
+      "name": "Factor izquierda",
+      "role": "editor",
+      "parent": "shared:screen/030050",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "draft permille 0..2000; 1000=1.000; display X.XXX",
+        "editing.action 115..120"
+      ],
+      "actions": [
+        "rotate-draft-step-1",
+        "short-apply-to-RAM",
+        "long-release-discard-editor-draft"
+      ],
+      "item_count": 1,
+      "variant": "Numeric editor variant of node 79; short applies only this direction in RAM; parent asks Si/No on leave if configuration is dirty",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261111-06"
+    },
+    {
+      "id": "shared:screen/030054",
+      "local_code": "0x030054",
+      "name": "Factor derecha",
+      "role": "editor",
+      "parent": "shared:screen/030050",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "draft permille 0..2000; 1000=1.000; display X.XXX",
+        "editing.action 115..120"
+      ],
+      "actions": [
+        "rotate-draft-step-1",
+        "short-apply-to-RAM",
+        "long-release-discard-editor-draft"
+      ],
+      "item_count": 1,
+      "variant": "Numeric editor variant of node 79; short applies only this direction in RAM; parent asks Si/No on leave if configuration is dirty",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261111-06"
+    },
+    {
+      "id": "shared:screen/030055",
+      "local_code": "0x030055",
+      "name": "Factor giro der",
+      "role": "editor",
+      "parent": "shared:screen/030050",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "draft permille 0..2000; 1000=1.000; display X.XXX",
+        "editing.action 115..120"
+      ],
+      "actions": [
+        "rotate-draft-step-1",
+        "short-apply-to-RAM",
+        "long-release-discard-editor-draft"
+      ],
+      "item_count": 1,
+      "variant": "Numeric editor variant of node 79; short applies only this direction in RAM; parent asks Si/No on leave if configuration is dirty",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261111-06"
+    },
+    {
+      "id": "shared:screen/030056",
+      "local_code": "0x030056",
+      "name": "Factor giro izq",
+      "role": "editor",
+      "parent": "shared:screen/030050",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "draft permille 0..2000; 1000=1.000; display X.XXX",
+        "editing.action 115..120"
+      ],
+      "actions": [
+        "rotate-draft-step-1",
+        "short-apply-to-RAM",
+        "long-release-discard-editor-draft"
+      ],
+      "item_count": 1,
+      "variant": "Numeric editor variant of node 79; short applies only this direction in RAM; parent asks Si/No on leave if configuration is dirty",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261111-06"
     }
   ],
   "battery_screens_change": "AFR2-20261029-26; appended nodes 0x030039 and 0x03003a; source only",

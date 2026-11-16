@@ -11,7 +11,7 @@ import { HoldActionButton as HoldButton } from '../../components/ui/HoldActionBu
 import { ROBOT_WHEEL_KEYS } from '../../components/three/robotWheelMotion';
 import { armViewFocus, forwardArm, GRIP_MIN_MM, JOINTS, rad, STANDALONE_MOUNT, TRANSPORT, type ArmAngles, type Point3 } from './armKinematics';
 import { collectCube, cubeReach, driveVector, halt, initialCollector, manualGrasp, manualRelease, measure, moveArmTo, moveBase, nextBinPose, positionCube,
-  PHASE_LABELS, setJoint, setManualWheels, startCollection, startManualScan } from './collectorSimulation';
+  PHASE_LABELS, setJoint, setManualWheels, startCollection, startManualScan, COLLECTOR_MIN_BOXES, COLLECTOR_MAX_BOXES } from './collectorSimulation';
 import { useCollector } from './CollectorContext';
 import { SimulationMatrix } from './SimulationMatrix';
 import { CollectorScene, type SceneTool, type SceneView } from './CollectorScene';
@@ -88,6 +88,7 @@ function PositionsPanel() {
   const { state, update } = useCollector();
   const [seed, setSeed] = useState(state.seed), [count, setCount] = useState(state.requestedCount);
   const [spawnX, setSpawnX] = useState(240), [spawnY, setSpawnY] = useState(100);
+  useEffect(() => setCount(state.requestedCount), [state.requestedCount]); // el slider de la misión cambia la meta
   const busy = state.running || state.scanning || !!state.jointTarget || ROBOT_WHEEL_KEYS.some(k => state.wheels[k] !== 0);
   const cube = state.cubes.find(c => state.selected === `cube:${c.id}`);
   const reach = cube ? cubeReach(state, cube) : null;
@@ -121,18 +122,48 @@ function PositionsPanel() {
     </Disclosure>
     <Disclosure title="Generar cargas aleatorias">
       <NumericControl label="Semilla" value={seed} min={0} max={999999} disabled={busy} onChange={v => setSeed(Math.round(v))} />
-      <NumericControl label="Cantidad" value={count} min={1} max={12} disabled={busy} onChange={v => setCount(Math.round(v))} />
-      <Button disabled={busy} onClick={() => update(s => ({ ...initialCollector(seed, count), references: s.references, workspace: s.workspace }))}>Regenerar cargas y drop</Button>
+      <NumericControl label="Cantidad (meta)" value={count} min={COLLECTOR_MIN_BOXES} max={COLLECTOR_MAX_BOXES} disabled={busy} onChange={v => setCount(Math.round(v))} />
+      <Button disabled={busy} onClick={() => update(s => ({ ...initialCollector(seed, count), references: s.references, workspace: s.workspace, bubble: s.bubble }))}>Regenerar cargas y drop</Button>
       <p className="afr2-collector-hint">C1 aparece cerca del robot; las demás cargas se distribuyen por el suelo. El drop aparece al iniciar la recolección.</p>
     </Disclosure>
   </section>;
+}
+/** AFR2-20261111-01: «Cajas a recolectar» (3 a 10): genera esa cantidad de cajas y es la meta de la misión. */
+function BoxesSlider() {
+  const { state, update } = useCollector();
+  const id = useId();
+  const [pending, setPending] = useState<number | null>(null);
+  const busy = state.running || state.scanning || !!state.jointTarget || ROBOT_WHEEL_KEYS.some(k => state.wheels[k] !== 0);
+  const marks = Array.from({ length: COLLECTOR_MAX_BOXES - COLLECTOR_MIN_BOXES + 1 }, (_, i) => COLLECTOR_MIN_BOXES + i);
+  const apply = (count: number) => update(s => ({ ...initialCollector(s.seed, count), references: s.references, workspace: s.workspace, bubble: s.bubble }));
+  const change = (count: number) => {
+    if (count === state.requestedCount) { setPending(null); return; }
+    if (busy) setPending(count); else apply(count);   // con una misión en curso se pide confirmación Sí/No
+  };
+  return <div className="afr2-collector-boxes">
+    <label htmlFor={id}>Cajas a recolectar <strong>{state.requestedCount}</strong></label>
+    <input id={id} type="range" min={COLLECTOR_MIN_BOXES} max={COLLECTOR_MAX_BOXES} step={1} list={`${id}-marks`} value={pending ?? state.requestedCount}
+      aria-valuetext={`${pending ?? state.requestedCount} cajas`} onChange={event => change(Number(event.target.value))} />
+    <datalist id={`${id}-marks`}>{marks.map(n => <option key={n} value={n} />)}</datalist>
+    <div className="afr2-collector-boxes__ticks" aria-hidden="true">{marks.map(n => <span key={n} data-active={n === (pending ?? state.requestedCount)}>{n}</span>)}</div>
+    {pending !== null && <div className="afr2-collector-boxes__confirm" role="alertdialog" aria-label="Cambiar la cantidad de cajas">
+      <p>Hay una misión en curso. Cambiar a {pending} cajas la detiene y regenera la escena. ¿Confirmás?</p>
+      <div className="afr2-action-row">
+        <Button variant="primary" onClick={() => { apply(pending); setPending(null); }}>Sí</Button>
+        <Button onClick={() => setPending(null)}>No</Button>
+      </div>
+    </div>}
+  </div>;
 }
 function MissionPanel() {
   const { state, update } = useCollector();
   const busy = state.running || state.scanning || !!state.jointTarget || ROBOT_WHEEL_KEYS.some(k => state.wheels[k] !== 0);
   return <section className="afr2-collector-panel afr2-sim-mission-controls"><h2>Recolección de cajas</h2>
+    <BoxesSlider />
+    <div className="afr2-collector-progress"><span>Entregadas / meta</span><strong>{state.stored} / {state.requestedCount}</strong>
+      <progress max={Math.max(1, state.requestedCount)} value={Math.min(state.stored, state.requestedCount)} aria-label="Cajas entregadas sobre la meta" /></div>
     <p className="afr2-collector-hint">El auto avanza midiendo hacia delante y hace barridos entre desplazamientos. Al detectar una caja, se alinea de frente y se acerca midiendo la distancia hasta confirmar el alcance de toma. La recoge, la lleva al drop, suma una caja y vuelve a explorar.</p>
-    <p className="afr2-collector-hint">Drop circular fijo · radio {(state.drop.radius * 1000).toFixed(0)} mm · {state.stored} cajas entregadas. El ciclo continúa hasta recoger todas las cargas de la escena.</p>
+    <p className="afr2-collector-hint">Drop circular fijo · radio {(state.drop.radius * 1000).toFixed(0)} mm. La misión termina con éxito solo al entregar la meta; si no detecta cajas sigue patrullando el mapa y reintenta las apartadas. Pide ayuda únicamente si ninguna caja restante es alcanzable.</p>
     <Button variant="primary" disabled={busy} onClick={() => update(startCollection)}>Iniciar recolección</Button>
     <Button disabled={busy} onClick={() => update(startManualScan)}>Solo barrer</Button>
     <div className="afr2-collector-sensor"><span>{state.reading?.angle === 0 ? 'Distancia frontal' : 'Eco del barrido'}</span><strong>{state.reading?.distance == null ? '—' : `${(state.reading.distance * 1000).toFixed(0)} mm`}</strong></div>
@@ -188,6 +219,7 @@ export function SimulationWorkspace() {
             {!armPanel && <button type="button" className="afr2-sim-tool" title="Arrastrar el auto en la escena" disabled={busy} aria-pressed={tool === 'move'} onClick={() => { setTool(t => t === 'move' ? 'orbit' : 'move'); update(s => ({ ...s, selected: 'robot' })); }}><UiIcon name="move" size={18} /><span>Mover auto</span></button>}
             {!armPanel && !carOnly && <button type="button" className="afr2-sim-tool" title="Clic en el suelo para agregar una caja" disabled={busy} aria-pressed={tool === 'place'} onClick={() => setTool(t => t === 'place' ? 'orbit' : 'place')}><UiIcon name="cube" size={18} /><span>Agregar caja</span></button>}
             {!carOnly && <button type="button" className="afr2-sim-tool" title="Zona que alcanza el brazo" aria-pressed={state.workspace} onClick={() => update(s => ({ ...s, workspace: !s.workspace }))}><UiIcon name="radar" size={18} /><span>Alcance</span></button>}
+            {!carOnly && <button type="button" className="afr2-sim-tool" title="Burbuja de acción del brazo: esfera de malla con centro en su base y radio igual a su alcance máximo" aria-pressed={state.bubble} onClick={() => update(s => ({ ...s, bubble: !s.bubble }))}><UiIcon name="arm" size={18} /><span>Burbuja</span></button>}
             {busy && <button type="button" className="afr2-sim-tool" data-danger="true" onClick={() => update(s => halt(s))}><UiIcon name="stop" size={18} /><span>Detener</span></button>}
             {!carOnly && (points.calculating || state.pointRun) && <button type="button" className="afr2-sim-tool" data-danger="true" onClick={points.cancel}><UiIcon name="close" size={18} /><span>Cancelar recorrido</span></button>}
           </div>
@@ -200,7 +232,7 @@ export function SimulationWorkspace() {
         {!armPanel && <div><span>Posición del auto</span><strong>{(state.pose.x * 1000).toFixed(0)} / {(state.pose.y * 1000).toFixed(0)} <small>mm</small></strong></div>}
         {!armPanel && <div><span>Rumbo</span><strong>{(state.pose.yaw * 180 / Math.PI).toFixed(1)}°</strong></div>}
         {!carOnly && <div><span>Herramienta X / Y / Z</span><strong>{tcp.map(v => (v * 1000).toFixed(0)).join(' / ')} <small>mm</small></strong></div>}
-        {!carOnly && <div><span>{armPanel ? 'Gripper' : 'Entregadas'}</span><strong>{armPanel ? `${state.opening.toFixed(1)} mm` : `${state.stored} cajas`}</strong></div>}
+        {!carOnly && <div><span>{armPanel ? 'Gripper' : 'Entregadas'}</span><strong>{armPanel ? `${state.opening.toFixed(1)} mm` : `${state.stored} / ${state.requestedCount} cajas`}</strong></div>}
       </div>
     </div>
     <aside className="afr2-sim-side-controls" aria-label={armPanel ? 'Controles del brazo' : carOnly ? 'Controles del auto' : 'Controles del conjunto'}>

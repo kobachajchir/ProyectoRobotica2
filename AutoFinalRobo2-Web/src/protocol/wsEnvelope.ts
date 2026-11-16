@@ -56,6 +56,11 @@ export type Afr2CommandName =
   | 'robot.line.calibrate'
   | 'robot.goto.start'
   | 'robot.goto.cancel'
+  // AFR2-20261111-08: recorrido GOTO completo ejecutado en el ATmega.
+  | 'robot.route.begin'
+  | 'robot.route.leg'
+  | 'robot.route.start'
+  | 'robot.route.status'
   | 'robot.screen.get'
   | 'robot.ui.action'
   | 'robot.sequence.begin'

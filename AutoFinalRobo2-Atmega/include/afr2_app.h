@@ -29,10 +29,20 @@ typedef struct {
     uint8_t odom_state;   /* AFR2-20261108-04: 0 ninguna,1 esperando,2 lanzada,3 descartada,4 no se pudo lanzar,5 vencida */
     uint16_t odom_token;  /* identifica la propuesta de la Web (1..32767) */
     uint32_t odom_ask_ms;
+    /* AFR2-20261111-02: examen (ver AFR2_A_EXAM_*). Pose de partida, giro acumulado y objetivo de giro en mrad. */
+    uint8_t exam_arg, exam_phase, exam_segments, exam_fault;
+    int32_t exam_x0, exam_y0, exam_yaw0, exam_last_yaw, exam_turned, exam_target;
+    uint32_t exam_started_ms;
+    /* AFR2-20261111-08: recorrido GOTO local (ver AFR2_EXT_ROUTE_*). Marco de partida, objetivo acumulado y avance. */
+    uint32_t route_token, route_loaded, route_started_ms, route_elapsed;
+    int32_t route_x0, route_y0, route_yaw0, route_tx, route_ty, route_tyaw;
+    uint16_t route_speed;
+    uint8_t route_state, route_count, route_index, route_done, route_fault;
     uint8_t wifi_ask;     /* AFR2-20261108-06: 0 nada, 1 aviso recibido (abrir selector cuando la UI quede libre), 2 selector abierto */
 } Afr2App;
 void Afr2App_Init(Afr2App *a,Afr2Product *p,Afr2Ui *ui,Afr2Oled *oled,Afr2Link *link);
 void Afr2App_Task(Afr2App *a,uint32_t now);
+uint8_t Afr2App_RouteStart(Afr2App *a); /* AFR2-20261111-08 */
 void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s);
 uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *data,uint8_t n,
                        uint8_t *body,uint8_t *length);

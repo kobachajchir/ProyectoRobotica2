@@ -1,0 +1,166 @@
+\chapter{Cinemática y control de la base móvil}
+\label{cap:movilidad}
+
+\section{Referencias, unidades y geometría}
+Se define un marco de cuerpo $B$ con $x$ hacia adelante, $y$ a la izquierda y $z$ hacia arriba. El giro positivo $\psi$ es antihorario visto desde arriba. Las velocidades de cuerpo son
+\begin{equation}
+\vct{V}_B=\begin{bmatrix}v_x&v_y&\omega\end{bmatrix}^{\trans},
+\qquad v_x,v_y\ [\mathrm{m/s}],\quad\omega\ [\mathrm{rad/s}].
+\end{equation}
+El orden lógico de ruedas es delantera izquierda (FL), delantera derecha (FR), trasera izquierda (RL) y trasera derecha (RR). Se usa radio nominal $r=0{,}040\unit m$ y suma de semidistancias $L=l_x+l_y=0{,}170\unit m$. El contacto efectivo de rodillos puede diferir de esa geometría nominal.
+
+Para una rueda situada en $(x_i,y_i)$, la velocidad del punto de montaje inducida por un movimiento rígido es
+\begin{equation}
+\vct{v}_i=\begin{bmatrix}v_x-\omega y_i\\v_y+\omega x_i\end{bmatrix}.
+\end{equation}
+La proyección según los rodillos a 45 grados produce las combinaciones de avance, lateral y giro. La disposición física de rodillos debe corresponder a la matriz utilizada. El modelo sigue el formalismo de robots móviles omnidireccionales~\cite{omni}.
+
+\section{Cinemática inversa Mecanum}
+Sea $\vct{u}=[u_{\mathrm{FL}},u_{\mathrm{FR}},u_{\mathrm{RL}},u_{\mathrm{RR}}]^{\trans}$ el vector de velocidades periféricas de rueda. El mezclador geométrico es
+\begin{equation}
+\vct{u}=\mat{A}\mat{S}\vct{V}_B,
+\qquad
+\mat{A}=\begin{bmatrix}
+1&-1&-L\\1&1&L\\1&1&-L\\1&-1&L
+\end{bmatrix}.
+\label{eq:mecanum}
+\end{equation}
+La matriz $\mat S$ adapta los sentidos del contrato lógico a los de movimiento. Para la configuración descrita:
+\begin{equation}
+\mat{S}=\diag(-1,-1,-1)=-\mat{I}_3.
+\end{equation}
+Estos signos no sustituyen las calibraciones eléctricas individuales del motor y del encoder. Primero se normalizan las cuentas y las salidas por rueda; luego se usan las matrices de cuerpo.
+
+La velocidad angular accionada se obtiene como
+\begin{equation}
+\vct{\omega}_w=\frac{1}{r}\mat A\mat S\vct V_B.
+\end{equation}
+La distinción es esencial: $u_i$ es velocidad periférica, $\omega_{w,i}$ es velocidad angular y PWM es una acción eléctrica. No son magnitudes intercambiables.
+
+\subsection{Ejemplo de avance}
+Para $\vct V_B=[0{,}100\;0\;0]^{\trans}$, en unidades SI, se obtiene
+\begin{equation}
+\vct u=\begin{bmatrix}-0{,}100\\-0{,}100\\-0{,}100\\-0{,}100\end{bmatrix}\unit{m/s},
+\qquad
+\vct\omega_w=\begin{bmatrix}-2{,}5\\-2{,}5\\-2{,}5\\-2{,}5\end{bmatrix}\unit{rad/s}.
+\end{equation}
+La magnitud equivale a aproximadamente $23{,}87\unit{rpm}$. El signo negativo resulta de la base lógica elegida; la polaridad efectiva se aplica en el controlador de cada rueda.
+
+\subsection{Límites y saturación}
+Para un límite periférico común $u_{\max}$, un escalado uniforme conserva la dirección solicitada:
+\begin{equation}
+\gamma=\max\left(1,\max_i\frac{|u_i|}{u_{\max}}\right),
+\qquad \vct u_{\mathrm{apl}}=\frac{\vct u}{\gamma}.
+\end{equation}
+Recortar las ruedas independientemente puede cambiar las proporciones de avance, lateral y giro. El parámetro nominal de 150 mm/s del software es una consigna límite de configuración, sin equivaler a una velocidad máxima física caracterizada.
+
+\section{Cinemática directa y redundancia}
+La reconstrucción ideal se obtiene por pseudoinversa. Como $L\ne0$:
+\begin{equation}
+\mat A^{\trans}\mat A=\diag(4,4,4L^2),
+\qquad \mat A^+=(\mat A^{\trans}\mat A)^{-1}\mat A^{\trans}.
+\end{equation}
+Por tanto,
+\begin{equation}
+\mat A^+=\frac14\begin{bmatrix}
+1&1&1&1\\-1&1&1&-1\\-1/L&1/L&-1/L&1/L
+\end{bmatrix},
+\qquad \vct V_B=\mat S^{-1}\mat A^+\vct u.
+\label{eq:directam}
+\end{equation}
+En esta configuración $\mat S^{-1}=\mat S$. Cuatro observaciones de rueda determinan tres velocidades de cuerpo bajo el modelo ideal. El residuo
+\begin{equation}
+\vct\varepsilon=\vct u-\mat A\mat S\widehat{\vct V}_B
+\end{equation}
+permite observar incompatibilidades entre medidas y modelo. Un deslizamiento coherente de varias ruedas puede no producir un residuo grande, de modo que no reemplaza una referencia externa.
+
+\section{Encoders y conversión de cuentas}
+La configuración nominal utiliza $N_i=370$ cuentas por vuelta de rueda y captura x1: flanco ascendente del canal A y lectura de B para el sentido. Ese valor no se multiplica nuevamente por cuatro.
+
+Para un incremento normalizado $\Delta n_i$ y período $\Delta t$:
+\begin{align}
+\Delta\phi_i&=\frac{2\pi\Delta n_i}{N_i},\\
+\Delta s_i&=r_i\Delta\phi_i=\frac{\pi D_i\Delta n_i}{N_i},\\
+\widehat u_i&=\frac{\Delta s_i}{\Delta t}.
+\end{align}
+Con $D=80\unit{mm}$, la cuantización lineal nominal es
+\begin{equation}
+q_s=\frac{\pi D}{N}=\frac{80\pi}{370}\simeq0{,}679\unit{mm/cuenta}.
+\end{equation}
+La cuantización no representa la exactitud del desplazamiento: diámetro efectivo, deformación, carga, piso y patinamiento pueden dominar el error. Una ausencia de cuentas puede indicar reposo, falta de conexión o fallo de adquisición; se necesita estado de validez para interpretarla.
+
+\section{Odometría y escalas direccionales}
+La inversa Mecanum también se aplica a incrementos de recorrido:
+\begin{equation}
+\Delta\vct\xi_B=\begin{bmatrix}\Delta x_B\\\Delta y_B\\\Delta\psi\end{bmatrix}
+=\mat S^{-1}\mat A^+\begin{bmatrix}\Delta s_{\mathrm{FL}}\\\Delta s_{\mathrm{FR}}\\\Delta s_{\mathrm{RL}}\\\Delta s_{\mathrm{RR}}\end{bmatrix}.
+\end{equation}
+Se aplican factores empíricos por componente y por sentido antes de transformar al mundo:
+\begin{equation}
+\Delta\vct\xi_{B,c}=
+\underbrace{\begin{bmatrix}k_x&0&0\\0&k_y&0\\0&0&k_\psi\end{bmatrix}}_{\mat K_d}
+\Delta\vct\xi_B.
+\end{equation}
+El signo de cada incremento elige avance o retroceso, izquierda o derecha, y CW o CCW. Los valores de fábrica considerados son 1,000 para avance y retroceso, 0,775 para laterales y 1,028 para giros. Una configuración guardada puede contener otros valores. Estas escalas corrigen odometría; no multiplican PWM ni la meta de misión.
+
+\subsection{Interpretación de la calibración}
+Si una misión se detiene al alcanzar una meta odométrica $d_{\mathrm{obj}}$ y se recorre una distancia real $d_{\mathrm{real}}$, el ajuste es
+\begin{equation}
+k_{\mathrm{nuevo}}=k_{\mathrm{actual}}
+\frac{d_{\mathrm{real}}}{d_{\mathrm{obj}}}.
+\label{eq:ajustek}
+\end{equation}
+Si al contar 1000 mm laterales se recorren 775 mm reales, el factor pasa de 1 a 0,775. Para el mismo incremento de cuentas se publica menos desplazamiento y la misión requiere más cuentas para completar la meta. Si la parada la define una distancia física externa, se compara la distancia real con la odometría obtenida sobre ese mismo tramo; no se intercambian ambos protocolos.
+
+Los factores tienen resolución de una milésima, rango 0 a 2, y cero bloquea la componente correspondiente en control cerrado. Modificar la escala exige reiniciar el marco de pose para no mezclar una trayectoria con dos calibraciones.
+
+\subsection{Integración en el mundo}
+La relación diferencial es
+\begin{equation}
+\begin{bmatrix}\dot x\\\dot y\\\dot\psi\end{bmatrix}=
+\begin{bmatrix}\cos\psi&-\sin\psi&0\\\sin\psi&\cos\psi&0\\0&0&1\end{bmatrix}
+\begin{bmatrix}v_x\\v_y\\\omega\end{bmatrix}.
+\end{equation}
+La integración de punto medio usa los incrementos corregidos y el rumbo medio
+\begin{align}
+\psi_m&=\psi_k+\frac{\Delta\psi_c}{2},\\
+x_{k+1}&=x_k+\Delta x_{B,c}\cos\psi_m-\Delta y_{B,c}\sin\psi_m,\\
+y_{k+1}&=y_k+\Delta x_{B,c}\sin\psi_m+\Delta y_{B,c}\cos\psi_m,\\
+\psi_{k+1}&=\wrap(\psi_k+\Delta\psi_c).
+\end{align}
+La pose es relativa al origen de inicialización. Sin referencia externa acumula deriva y no constituye localización absoluta.
+
+\section{Regulación de velocidad por rueda}
+El control compara consigna y velocidad Hall con acumuladores independientes. La implementación usa ganancias comunes en formato Q8 y recortes numéricos:
+\begin{align}
+e_i[k]&=\sat_{2000}\!\left(u_{\mathrm{ref},i}[k]-\widehat u_i[k]\right),\\
+E_i[k]&=\sat_{32767}\!\left(E_i[k-1]+e_i[k]\right),\\
+p_i^*[k]&=\sat_{p_{\max}}\!\left(
+\frac{K_pe_i[k]+K_iE_i[k]+K_d\bigl(e_i[k]-e_i[k-1]\bigr)}{256}\right).
+\end{align}
+Las velocidades de esta implementación se expresan en mm/s. Los valores iniciales son $K_p=128$, $K_i=8$ y $K_d=0$. El acumulador suma por ciclo sin multiplicación explícita por tiempo; sus ganancias dependen del período de servicio. Antes de escribir al puente H se aplica una rampa a la salida.
+
+El recorte del acumulador evita desbordamiento, pero no equivale a un antiwindup completo ligado a saturación. La compensación de zona muerta y el ajuste de ganancias requieren medidas. PWM manual y prueba de rueda evitan este lazo, por lo que no tienen las mismas condiciones que una misión cerrada.
+
+\section{Navegación a una pose planar}
+Para una meta $(x_d,y_d,\psi_d)$ se calculan errores de mundo y se rotan al cuerpo:
+\begin{equation}
+\begin{bmatrix}e_{x,B}\\e_{y,B}\end{bmatrix}
+=\begin{bmatrix}\cos\psi&\sin\psi\\-\sin\psi&\cos\psi\end{bmatrix}
+\begin{bmatrix}x_d-x\\y_d-y\end{bmatrix},
+\qquad e_\psi=\wrap(\psi_d-\psi).
+\end{equation}
+La ley nominal previa a límites es
+\begin{equation}
+v_x=K_{xy}e_{x,B},\qquad v_y=K_{xy}e_{y,B},\qquad
+\omega=K_\psi e_\psi.
+\end{equation}
+Se utiliza $K_{xy}\simeq1\unit{s^{-1}}$ y ganancia de rumbo de $3\unit{s^{-1}}$ durante traslación, frente a $1\unit{s^{-1}}$ en giro puro. La implementación agrega límites, mínimos para superar zona muerta y normalización de mezcla. El giro puro anula las consignas de traslación.
+
+La configuración de llegada de la fuente 1.28.1 usa
+\begin{equation}
+|e_x|\le4\unit{mm},\qquad |e_y|\le4\unit{mm},\qquad
+|e_\psi|\le10\unit{mrad}\simeq0{,}57^{\circ}.
+\end{equation}
+Estas bandas son decisiones de software, no una precisión física demostrada. Los resultados experimentales del capítulo~\ref{cap:resultados} corresponden a 1.28.0, con bandas de 10 mm y 25 mrad.
+\FloatBarrier

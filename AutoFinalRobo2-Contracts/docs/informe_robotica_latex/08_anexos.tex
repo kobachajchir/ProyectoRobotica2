@@ -1,0 +1,79 @@
+\chapter{Símbolos y parámetros de consulta}
+\begin{longtable}{@{}P{31mm}P{82mm}P{28mm}@{}}
+\caption{Nomenclatura del informe.}\\
+\toprule\textbf{Símbolo} & \textbf{Significado} & \textbf{Unidad}\\\midrule\endfirsthead
+\toprule\textbf{Símbolo} & \textbf{Significado} & \textbf{Unidad}\\\midrule\endhead
+$\vct q$ & Ángulos geométricos del manipulador. & rad\\
+$x,y,\psi$ & Pose planar de la base. & m, m, rad\\
+$v_x,v_y,\omega$ & Velocidades expresadas en el cuerpo. & m/s, rad/s\\
+$u_i,\omega_{w,i}$ & Velocidad periférica y angular de rueda. & m/s, rad/s\\
+$r,D,L$ & Radio, diámetro y suma de semidistancias de base. & m\\
+$N_i,\Delta n_i$ & Cuentas por vuelta e incremento de cuentas. & cuenta/vuelta; cuenta\\
+$h,L_1,L_2,d$ & Longitudes equivalentes de la cadena del brazo. & m\\
+$\mat T_{AB}$ & Transformación que lleva coordenadas de B a A. & Mixta\\
+$\mat R_{AB},\vct t_{AB}$ & Rotación y traslación entre marcos. & Adimensional; m\\
+$W,B,M,E$ & Mundo, base, montura y herramienta. & Marcos\\
+$\mat J$ & Jacobiano geométrico, orden lineal--angular. & Según filas\\
+$\vct F,\vct M$ & Fuerza y momento externos. & N, N\textperiodcentered{}m\\
+$\vct\tau$ & Pares generalizados. & N\textperiodcentered{}m\\
+$m_i,\vct r_G$ & Masa de un cuerpo y centro de masa global. & kg, m\\
+$\mat I_G,\mat M$ & Tensor de inercia central y matriz de inercia articular. & Según coordenadas\\
+$K,U,\mathcal L$ & Energía cinética, potencial y lagrangiano. & J\\
+$\mat\Sigma$ & Matriz de covarianza. & Producto de unidades\\
+$k_x,k_y,k_\psi$ & Factores direccionales de odometría. & Adimensional\\
+$i_r,\eta$ & Relación de reducción y eficiencia. & Adimensional\\
+$g,r_p$ & Apertura de pinza y radio primitivo del piñón. & m\\
+$g_0$ & Aceleración gravitatoria de referencia. & m/s$^2$\\
+$R_m,L_m,K_e,K_t$ & Parámetros eléctricos y electromecánicos del motor. & Según definición\\
+\bottomrule
+\end{longtable}
+
+\section*{Parámetros nominales usados}
+\addcontentsline{toc}{section}{Parámetros nominales usados}
+\begin{table}[!htbp]\centering
+\begin{tabularx}{\linewidth}{@{}YP{50mm}@{}}\toprule
+\textbf{Parámetro} & \textbf{Valor}\\\midrule
+Diámetro y radio de rueda & $D=0{,}080\unit m$; $r=0{,}040\unit m$\\
+Suma de semidistancias & $L=0{,}170\unit m$\\
+Cuentas por vuelta, captura x1 & $N_i=370$\\
+Altura equivalente de hombro & $h=0{,}209\unit m$\\
+Eslabón proximal & $L_1=0{,}070\unit m$\\
+Distancia equivalente a muñeca & $L_2=0{,}115\unit m$\\
+Offset distal de herramienta & $d=0{,}1435\unit m$\\
+Factores avance / lateral / giro & $1{,}000$ / $0{,}775$ / $1{,}028$\\
+Período nominal de control & $10\unit{ms}$\\
+Ganancias digitales iniciales & $K_p=128$, $K_i=8$, $K_d=0$; Q8\\\bottomrule
+\end{tabularx}
+\end{table}
+Los valores de fábrica no sustituyen los guardados en el equipo. Las longitudes son nominales y las propiedades dinámicas y de contacto requieren caracterización.
+
+\section*{Conversiones}
+\addcontentsline{toc}{section}{Conversiones}
+\begin{align}
+1\unit{mm}&=10^{-3}\unit m, & 1^{\circ}&=\frac{\pi}{180}\unit{rad},\\
+1\unit{rpm}&=\frac{2\pi}{60}\unit{rad/s}, &1\unit{kgf\,cm}&=0{,}0980665\unit{N\,m}.
+\end{align}
+
+\clearpage
+\section*{Filminas de presentación del proyecto}
+\addcontentsline{toc}{section}{Filminas de presentación del proyecto}
+La presentación del proyecto se conserva en el repositorio \texttt{ProyectoRobotica2}, dentro de la carpeta \texttt{presentacion}. El archivo de las filminas es \texttt{AutoFinalRobo2\_Presentacion.pptx}.
+
+\medskip
+\noindent\href{https://github.com/kobachajchir/ProyectoRobotica2/blob/codex/monorepo-cad/presentacion/AutoFinalRobo2_Presentacion.pptx}{\textbf{Abrir las filminas en el repositorio de GitHub}}.
+
+\medskip
+\noindent\href{run:../../../../presentacion/AutoFinalRobo2_Presentacion.pptx}{\textbf{Abrir la copia local de las filminas}} desde este informe guardado en su carpeta de salida dentro del proyecto.
+
+\medskip
+Las filminas acompañan la exposición oral y reúnen arquitectura, modelos, conexionado, control, cinemática, odometría, esfuerzos e interfaces. La carpeta también contiene las fichas temáticas de apoyo y el guion de la exposición.
+
+\clearpage
+\begin{thebibliography}{9}
+\addcontentsline{toc}{chapter}{Bibliografía}
+\bibitem{lynch} Lynch, K. M. y Park, F. C. \emph{Modern Robotics: Mechanics, Planning, and Control}. Cambridge University Press, 2017. Material oficial de los autores: \url{https://hades.mech.northwestern.edu/index.php/Modern_Robotics}.
+\bibitem{omni} Lynch, K. M. y Park, F. C. \emph{Omnidirectional Wheeled Mobile Robots}, sección 13.2 del material complementario de Modern Robotics. \url{https://modernrobotics.northwestern.edu/nu-gm-book-resource/13-2-omnidirectional-wheeled-mobile-robots-part-1-of-2/}.
+\bibitem{mobile} Lynch, K. M. y Park, F. C. \emph{Mobile Manipulation}, sección 13.5 del material complementario de Modern Robotics. \url{https://modernrobotics.northwestern.edu/nu-gm-book-resource/13-5-mobile-manipulation/}.
+\bibitem{servo} FEETECH. \emph{STS3250 Product Specification}. Ficha de la variante de servo utilizada para la selección nominal. \url{https://www.feetechrc.com/Data/feetechrc/upload/file/20240120/6384135881578380868917773.pdf}.
+\end{thebibliography}
+\endinput

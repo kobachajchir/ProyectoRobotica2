@@ -21,6 +21,8 @@ void Afr2Product_Defaults(Afr2Config *c) {
     c->line_kind=1;c->line_invert=31;c->radar_trace=1;
     c->wheel_mm=AFR2_FIXED_WHEEL_MM;c->radius_sum_mm=AFR2_FIXED_RADIUS_SUM_MM;c->geometry_ready=1;
     c->long_press_ms=800;c->servo_inverted=0; /* nominal dimensions, CPR still required */
+    /* AFR2-20261111-08: giro medido +2,5 grados cada 90 (92,5 reales cuando la odometria cree 90): factor 1028 en los dos sentidos. */
+    for(uint8_t i=0;i<6;i++)c->odom_scale[i]=(i==2 || i==3)?AFR2_LATERAL_ODOM_PERMILLE:(i>=4)?AFR2_TURN_ODOM_PERMILLE:1000u;
     c->wifi_retry_s=AFR2_WIFI_RETRY_DEFAULT_S; /* AFR2-20261108-06 */
     c->speed_limit=150;c->test_ms=500;c->kp=128;c->ki=8;c->kd=0;c->line_kp=100;c->line_speed=80;
     for(uint8_t i=0;i<5;i++)c->line_threshold[i]=512;
@@ -44,6 +46,7 @@ uint8_t Afr2Product_ConfigValid(const Afr2Config *c) {
        c->test_ms<100 || c->test_ms>2000 || c->kp>2048 || c->ki>1024 || c->kd>2048 ||
        c->line_speed>c->speed_limit || c->line_kp>1000)return 0;
     if(c->geometry_ready && !c->radius_sum_mm)return 0;
+    for(uint8_t i=0;i<6;i++)if(c->odom_scale[i]>2000u)return 0;
     for(uint8_t i=0;i<5;i++)if(c->line_threshold[i]>1023)return 0;
     for(uint8_t i=0;i<4;i++)if(c->counts_per_rev[i]>1000000UL)return 0;
     return 1;
@@ -75,7 +78,7 @@ uint8_t Afr2Product_HaltMotion(void *ctx) {
     if(p->sequence.state>=1 && p->sequence.state<=3)p->sequence.state=5;
     memset(p->pwm,0,sizeof(p->pwm));memset(p->target,0,sizeof(p->target));
     memset(p->integral,0,sizeof(p->integral));memset(p->last_error,0,sizeof(p->last_error));
-    p->stopped=1;p->mode=p->fault?AFR2_FAULT:AFR2_IDLE;p->origin=AFR2_SOURCE_NONE;p->local_timeout_ms=0;p->web_seen=0;
+    p->stopped=1;p->mode=p->fault?AFR2_FAULT:p->manual_selected?AFR2_MANUAL:AFR2_IDLE; /* AFR2-20261111-04 */p->origin=AFR2_SOURCE_NONE;p->local_timeout_ms=0;p->web_seen=0;
     /* AFR2-20261106-34: una detencion de enlace/ESP con el auto ya detenido no es movimiento que abortar.
      * Antes borraba la medicion de pulsos por vuelta (la rueda se gira a mano) y la pantalla quedaba en 0. */
     if(p->hall_measuring && !was_stopped){p->hall_measuring=0;p->hall_bad=1;p->hall_delta=0;}
@@ -99,10 +102,16 @@ static uint8_t calibrated(const Afr2Product *p) {
     for(uint8_t i=0;i<4;i++)if(!p->config.counts_per_rev[i])return 0;
     return 1;
 }
+/* AFR2-20261111-06: zero deliberately disables that closed-loop component. Open-loop PWM is unaffected. */
+static uint8_t scale_allowed(const Afr2Product *p,int32_t x,int32_t y,int32_t yaw) {
+    return (!x || p->config.odom_scale[x>0?0:1]) && (!y || p->config.odom_scale[y>0?2:3]) &&
+        (!yaw || p->config.odom_scale[yaw<0?4:5]);
+}
 uint8_t Afr2Product_Drive(Afr2Product *p,int16_t vx,int16_t vy,int16_t wz,uint16_t ttl) {
     if(Afr2Head_State()->running)return AFR2_BUSY;
     if(p->fault || p->hall_measuring)return AFR2_DENIED;
     if(!p->config.motor_ready || !calibrated(p))return AFR2_UNAVAILABLE;
+    if(!scale_allowed(p,vx,vy,wz))return AFR2_UNAVAILABLE;
     /* AFR2-20261106-13: current motion modes do not require HC-SR04. */
     if(ttl<200 || ttl>1000 || abs32(vx)>p->config.speed_limit || abs32(vy)>p->config.speed_limit || abs32(wz)>3140)return AFR2_BAD;
     /* AFR2-20261030-13: logical chassis axes -> existing wheel/Hall basis. */
@@ -117,6 +126,7 @@ uint8_t Afr2Product_Drive(Afr2Product *p,int16_t vx,int16_t vy,int16_t wz,uint16
 /* AFR2-20261109-03: explicit motor permission and interlocks; no automatic fault clear,
  * task cancellation or configuration changes on a PWM request. Hall/HC calibration is not required. */
 uint8_t Afr2Product_PwmStatus(const Afr2Product *p) {
+    if(p->manual_selected)return AFR2_OK; /* AFR2-20261111-04: en Manual se saltan los permisos (ver DrivePwm) */
     if(p->fault || p->hall_measuring)return AFR2_DENIED;
     if(!p->config.motor_ready)return AFR2_UNAVAILABLE;
     if(p->prefs_state==1 || Afr2Head_State()->running ||
@@ -127,6 +137,12 @@ uint8_t Afr2Product_PwmStatus(const Afr2Product *p) {
 uint8_t Afr2Product_DrivePwm(Afr2Product *p,int16_t forward,int16_t strafe,int16_t turn,uint16_t ttl) {
     if(ttl<200 || ttl>1000 || abs32(forward)>100 || abs32(strafe)>100 || abs32(turn)>100)return AFR2_BAD;
     uint8_t permission=Afr2Product_PwmStatus(p);if(permission)return permission;
+    /* AFR2-20261111-04: en Manual, lo que estorbe se anula: radar, secuencia o medicion Hall se detienen, el fallo se limpia y
+     * los motores se habilitan. STOP, el TTL de la consigna y el corte de 1,5 s sin pulso Web siguen vigentes. */
+    if(p->manual_selected){
+        if(Afr2Head_State()->running || p->hall_measuring || p->fault || (p->sequence.state>=1 && p->sequence.state<=3))Afr2Product_Stop(p);
+        p->fault=0;p->hall_measuring=0;p->config.motor_ready=1;
+    }
     /* Same reference as closed-loop drive; never invert again in Web/ESP. */
     forward*=AFR2_FORWARD_WHEEL_SIGN;strafe*=AFR2_LATERAL_WHEEL_SIGN;turn*=AFR2_YAW_WHEEL_SIGN;
     int16_t v[4]={forward-strafe-turn,forward+strafe+turn,forward+strafe-turn,forward-strafe+turn},peak=100;
@@ -148,7 +164,7 @@ uint8_t Afr2Product_Wheel(Afr2Product *p,uint8_t wheel,int16_t pwm,uint16_t dura
     Afr2Motor_Stop();memset(p->pwm,0,sizeof(p->pwm));memset(p->integral,0,sizeof(p->integral));memset(p->last_error,0,sizeof(p->last_error));
     if(p->goto_state==1)p->goto_state=3;
     memset(p->target,0,sizeof(p->target));p->target[wheel]=pwm;
-    p->mode=AFR2_WHEEL_TEST;p->stopped=0;p->command_ms=p->now;p->test_started_ms=duration;return AFR2_OK;
+    p->manual_selected=0;p->mode=AFR2_WHEEL_TEST;p->stopped=0;p->command_ms=p->now;p->test_started_ms=duration;return AFR2_OK;
 }
 uint8_t Afr2Product_StartLine(Afr2Product *p) {
     if(Afr2Head_State()->running)return AFR2_BUSY;
@@ -156,7 +172,7 @@ uint8_t Afr2Product_StartLine(Afr2Product *p) {
     if(!p->config.motor_ready || !p->sensors.line_valid_raw || !calibrated(p))return AFR2_UNAVAILABLE;
     if(p->goto_state==1)p->goto_state=3;
     Afr2Head_SetIr(1);p->sensors.line_valid=1;   /* AFR2-20261108-13: following a line turns its sensors on */
-    p->mode=AFR2_LINE;p->stopped=0;p->command_ms=p->now;return AFR2_OK;
+    p->manual_selected=0;p->mode=AFR2_LINE;p->stopped=0;p->command_ms=p->now;return AFR2_OK;
 }
 uint8_t Afr2Product_StartGoto(Afr2Product *p,int32_t x,int32_t y) {
     return Afr2Product_StartGotoFull(p,x,y,0,p->config.speed_limit);
@@ -167,6 +183,7 @@ uint8_t Afr2Product_StartGotoFull(Afr2Product *p,int32_t x,int32_t y,int16_t the
        speed<10 || speed>p->config.speed_limit)return AFR2_BAD;
     if(p->fault || p->hall_measuring)return AFR2_DENIED;
     if(!p->config.motor_ready || !calibrated(p) || !p->pose_valid)return AFR2_UNAVAILABLE;
+    if(!scale_allowed(p,x,y,theta))return AFR2_UNAVAILABLE;
     /* X/Y are relative to robot heading when the mission starts. */
     float angle=(float)p->yaw_mrad/1000.0f;
     p->mission_x=p->x_mm+(int32_t)(x*cosf(angle)-y*sinf(angle));
@@ -175,7 +192,7 @@ uint8_t Afr2Product_StartGotoFull(Afr2Product *p,int32_t x,int32_t y,int16_t the
     if(p->mission_yaw>3142)p->mission_yaw-=6283;
     if(p->mission_yaw<-3142)p->mission_yaw+=6283;
     p->mission_speed=speed;
-    p->target_x=x;p->target_y=y;p->mission_started_ms=p->now;p->mode=AFR2_GOTO;
+    p->manual_selected=0;p->target_x=x;p->target_y=y;p->mission_started_ms=p->now;p->mode=AFR2_GOTO;
     p->goto_state=1;p->stopped=0;return AFR2_OK;
 }
 void Afr2Product_HallBegin(Afr2Product *p) {
@@ -245,7 +262,8 @@ static void odometry(Afr2Product *p,uint32_t dt) {
         int32_t delta=(int32_t)((uint32_t)p->sensors.counts[i]-(uint32_t)p->previous_counts[i]);
         if(delta)p->hall_change_ms[i]=p->now;
         p->previous_counts[i]=p->sensors.counts[i];
-        if(abs32(delta)>100000){p->pose_valid=0;p->fault=2;return;}
+        /* AFR2-20261111-05: en PWM manual un salto de cuenta por ruido solo invalida la pose; no es una falla que corte. */
+        if(abs32(delta)>100000){p->pose_valid=0;if(p->mode!=AFR2_PWM_MANUAL)p->fault=2;else p->odom_ready=0;return;}
         /* Exterior CW is forward on right wheels, reverse on left.
          * Existing kinematic basis uses negative wheel speed for forward. */
         delta=normalized_delta(p,i,delta);track_sign(p,i,delta);
@@ -255,6 +273,11 @@ static void odometry(Afr2Product *p,uint32_t dt) {
     float dx=(d[0]+d[1]+d[2]+d[3])*0.25f*AFR2_FORWARD_WHEEL_SIGN;
     float dy=(-d[0]+d[1]+d[2]-d[3])*0.25f*AFR2_LATERAL_WHEEL_SIGN;
     float angle=(-d[0]+d[1]-d[2]+d[3])*0.25f/(float)p->config.radius_sum_mm*AFR2_YAW_WHEEL_SIGN;
+    /* AFR2-20261111-06: select by measured chassis component BEFORE rotating into world coordinates.
+     * Wheel speed/CPR/PID and open-loop PWM keep their original units. Each direction has its own factor. */
+    dx*=p->config.odom_scale[dx>=0?0:1]/1000.0f;
+    dy*=p->config.odom_scale[dy>=0?2:3]/1000.0f;
+    angle*=p->config.odom_scale[angle<0?4:5]/1000.0f;
     float heading=p->odom_yaw+angle*0.5f;
     p->odom_x+=dx*cosf(heading)-dy*sinf(heading);p->odom_y+=dx*sinf(heading)+dy*cosf(heading);p->odom_yaw+=angle;
     while(p->odom_yaw>3.14159265f)p->odom_yaw-=6.2831853f;
@@ -278,7 +301,9 @@ void Afr2Product_Task(Afr2Product *p,uint32_t now) {
     }
     if(p->origin==AFR2_SOURCE_LOCAL && !p->stopped && (uint32_t)(now-p->local_started_ms)>p->local_timeout_ms)Afr2Product_Stop(p);
     if(p->origin==AFR2_SOURCE_WEB && !p->stopped && (!p->web_seen || (uint32_t)(now-p->web_ms)>=1500u))Afr2Product_Stop(p);
-    if((p->mode==AFR2_MANUAL || p->mode==AFR2_PWM_MANUAL || p->mode==AFR2_WHEEL_TEST) &&
+    /* AFR2-20261111-04: solo vence una consigna en marcha. Antes tambien detenia el auto ya quieto: elegir Manual lo devolvia
+     * a Reposo en el mismo ciclo y la pill nunca quedaba en Manual. */
+    if(!p->stopped && (p->mode==AFR2_MANUAL || p->mode==AFR2_PWM_MANUAL || p->mode==AFR2_WHEEL_TEST) &&
        (uint32_t)(now-p->command_ms)>=p->test_started_ms)Afr2Product_Stop(p);
     if(!p->stopped && !p->config.motor_ready)Afr2Product_HaltMotion(p);
     if(p->fault){Afr2Product_Stop(p);return;}
@@ -288,6 +313,16 @@ void Afr2Product_Task(Afr2Product *p,uint32_t now) {
     /* A newly accepted command may follow a long stopped/fault interval, but
      * has not energized a wheel yet. Only an overdue update with applied PWM
      * is a motion deadline fault; keep the 100 ms stop while outputs are active. */
+    /* AFR2-20261111-05: la conduccion manual (tactil o botones de Conducir) es PWM en lazo abierto: solo manda la consigna. Con
+     * vibracion del suelo el ruido en los Hall demora el lazo y antes cada demora cortaba y daba F1. En PWM manual una demora se
+     * registra y se sigue; las salidas las siguen cortando STOP, el TTL de 400 ms de cada consigna y el corte de 1,5 s sin pulso Web. */
+    /* AFR2-20261111-08: los ensayos/recorridos GOTO locales tampoco se cortan por una demora del lazo: la odometria integra con dt
+     * real y el GOTO sigue. F3 (sin pulsos) y F4 (signo cruzado) siguen cortando. */
+    if(dt>100u && !p->stopped && (p->mode==AFR2_PWM_MANUAL || Afr2Product_LocalMission(p))){
+        p->fault_control_gap_ms=dt>UINT16_MAX?UINT16_MAX:(uint16_t)dt;p->fault_timing=p->loop_timing;
+        if(p->fault_late_count<UINT16_MAX)++p->fault_late_count;
+        AFR2_DBG("LATE manual gap=%u loop=%u render=%u (sin corte)",p->fault_control_gap_ms,p->fault_timing.total_ms,p->fault_timing.render_ms);
+    } else
     if(dt>100u && !p->stopped && (p->pwm[0] || p->pwm[1] || p->pwm[2] || p->pwm[3])) {
         p->fault_control_gap_ms=dt>UINT16_MAX?UINT16_MAX:(uint16_t)dt;
         p->fault_timing=p->loop_timing;
@@ -324,14 +359,15 @@ void Afr2Product_Task(Afr2Product *p,uint32_t now) {
         if(eyaw>3142)eyaw-=6283;
         if(eyaw<-3142)eyaw+=6283;
         uint8_t pure_turn=!p->target_x && !p->target_y;
-        if(((abs32(ex)<=10 && abs32(ey)<=10) || pure_turn) && abs32(eyaw)<=25){p->goto_state=2;Afr2Product_Stop(p);p->notice=1;return;}
+        uint8_t at_xy=abs32(ex)<=AFR2_GOTO_POS_TOL_MM && abs32(ey)<=AFR2_GOTO_POS_TOL_MM;
+        if((at_xy || pure_turn) && abs32(eyaw)<=AFR2_GOTO_YAW_TOL_MRAD){p->goto_state=2;Afr2Product_Stop(p);p->notice=1;return;}
         float angle=(float)p->yaw_mrad/1000.0f;
         int16_t vx=clamp((int32_t)(ex*cosf(angle)+ey*sinf(angle)),p->mission_speed);
         int16_t vy=clamp((int32_t)(-ex*sinf(angle)+ey*cosf(angle)),p->mission_speed);
         uint32_t angular_limit=(uint32_t)p->mission_speed*1000u/p->config.radius_sum_mm;
         if(angular_limit>3140u)angular_limit=3140u;
-        int16_t wz=clamp(eyaw,(int16_t)angular_limit);
-        if((abs32(ex)<=10 && abs32(ey)<=10) || (!p->target_x && !p->target_y))vx=vy=0; /* pure turn: never translate */
+        int16_t wz=clamp(pure_turn?eyaw:eyaw*AFR2_GOTO_YAW_KP_TRANSLATE,(int16_t)angular_limit);
+        if(at_xy || pure_turn)vx=vy=0; /* pure turn: never translate */
         /* AFR2-20261107-39: the P law commands ~error mm/s; near the goal that falls under the motors'
          * dead band and the car stalls until the 60 s timeout. Keep a minimum while outside tolerance. */
         {
@@ -339,7 +375,7 @@ void Afr2Product_Task(Afr2Product *p,uint32_t now) {
             int32_t linear=abs32(vx)+abs32(vy);
             if(linear && linear<minimum){vx=(int16_t)((int32_t)vx*minimum/linear);vy=(int16_t)((int32_t)vy*minimum/linear);}
             int32_t wmin=minimum*1000/(int32_t)p->config.radius_sum_mm;
-            if(!linear && abs32(eyaw)>25 && abs32(wz)<wmin)wz=(int16_t)(eyaw>0?wmin:-wmin);
+            if(!linear && abs32(eyaw)>AFR2_GOTO_YAW_TOL_MRAD && abs32(wz)<wmin)wz=(int16_t)(eyaw>0?wmin:-wmin);
         }
         int32_t peak=abs32(vx)+abs32(vy)+(int32_t)abs32(wz)*p->config.radius_sum_mm/1000;
         if(peak>p->mission_speed){vx=(int32_t)vx*p->mission_speed/peak;vy=(int32_t)vy*p->mission_speed/peak;wz=(int32_t)wz*p->mission_speed/peak;}

@@ -54,8 +54,10 @@ function SimulationFloor({ size, center, ground, grid, axes }: {
 }
 
 /** One accessible zoom control for standalone simulators, sequences and GOTO. */
-export function SimulationZoom({ percent, onChange }: {
-  percent: number; onChange: (percent: number) => void;
+/** AFR2-20261111-08: hasta 250 % (antes 100 %). */
+export const SIMULATION_ZOOM_MAX = 250;
+export function SimulationZoom({ percent, onChange, max = SIMULATION_ZOOM_MAX }: {
+  percent: number; onChange: (percent: number) => void; max?: number;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
@@ -66,7 +68,7 @@ export function SimulationZoom({ percent, onChange }: {
     if (!active.current) return;
     active.current = false;
     const value = Number(draft.trim().replace(',', '.'));
-    const valid = draft.trim() !== '' && Number.isFinite(value) && value >= 0 && value <= 100;
+    const valid = draft.trim() !== '' && Number.isFinite(value) && value >= 0 && value <= max;
     onChange(!cancel && valid ? value : previous.current);
     setEditing(false);
   };
@@ -74,12 +76,12 @@ export function SimulationZoom({ percent, onChange }: {
     <div className="afr2-simulation-info" aria-label="Escala y cuadrícula">1 unidad = 1 m · Cuadrícula de 0,05 m</div>
     <div className="afr2-simulation-zoom" role="group" aria-label="Zoom de la simulación">
       <button type="button" aria-label="Alejar" disabled={percent <= 0} onClick={() => onChange(Math.max(0, percent - 10))}><UiIcon name="minus" size={20} /></button>
-      {editing ? <input autoFocus type="text" inputMode="decimal" aria-label="Porcentaje de zoom, de 0 a 100" value={draft}
+      {editing ? <input autoFocus type="text" inputMode="decimal" aria-label={`Porcentaje de zoom, de 0 a ${max}`} value={draft}
         onFocus={event => event.currentTarget.select()} onChange={event => setDraft(event.target.value)}
         onBlur={() => finish()} onKeyDown={event => {
           if (event.key === 'Enter' || event.key === 'Escape') { event.preventDefault(); finish(event.key === 'Escape'); }
         }} /> : <button type="button" aria-label={`Zoom ${percent} %. Editar porcentaje`} onClick={begin}>{percent}%</button>}
-      <button type="button" aria-label="Acercar" disabled={percent >= 100} onClick={() => onChange(Math.min(100, percent + 10))}><UiIcon name="plus" size={20} /></button>
+      <button type="button" aria-label="Acercar" disabled={percent >= max} onClick={() => onChange(Math.min(max, percent + 10))}><UiIcon name="plus" size={20} /></button>
     </div>
   </div>;
 }

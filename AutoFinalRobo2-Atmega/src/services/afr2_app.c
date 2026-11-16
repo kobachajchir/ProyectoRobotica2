@@ -13,6 +13,7 @@
 static void wipe(void *data,uint16_t n){volatile uint8_t *p=data;while(n--)*p++=0;}
 static uint8_t config_dirty(const Afr2Config *a,const Afr2Config *b){
     if(a->line_kind!=b->line_kind || a->line_invert!=b->line_invert || a->line_calibrated!=b->line_calibrated || a->motor_signs!=b->motor_signs || a->motor_ready!=b->motor_ready || a->hall_wired!=b->hall_wired || a->hall_signs!=b->hall_signs || a->hall_cw_mask!=b->hall_cw_mask || a->geometry_ready!=b->geometry_ready || a->encoder_steps!=b->encoder_steps || a->encoder_invert!=b->encoder_invert || a->contrast!=b->contrast || a->rotation!=b->rotation || a->pwm_limit!=b->pwm_limit || a->ramp_step!=b->ramp_step || a->radar_range!=b->radar_range || a->radar_trace!=b->radar_trace || a->long_press_ms!=b->long_press_ms || a->wifi_retry_s!=b->wifi_retry_s || a->servo_inverted!=b->servo_inverted || a->wheel_mm!=b->wheel_mm || a->radius_sum_mm!=b->radius_sum_mm || a->speed_limit!=b->speed_limit || a->test_ms!=b->test_ms || a->kp!=b->kp || a->ki!=b->ki || a->kd!=b->kd || a->line_kp!=b->line_kp || a->line_speed!=b->line_speed)return 1;
+    for(uint8_t i=0;i<6;i++)if(a->odom_scale[i]!=b->odom_scale[i])return 1;
     for(uint8_t i=0;i<5;i++)if(a->line_threshold[i]!=b->line_threshold[i])return 1;
     for(uint8_t i=0;i<4;i++)if(a->counts_per_rev[i]!=b->counts_per_rev[i])return 1;
     return 0;
@@ -30,9 +31,65 @@ static uint8_t odom_start(Afr2App *a) {
     if(rc)return rc;
     rc=Afr2Product_StartGoto(p,x,y);if(!rc)p->local_timeout_ms=60000;return rc;
 }
+/* AFR2-20261111-02: un tramo del examen por GOTO relativo (mismo permiso y origen local que la prueba de odometria). */
+static uint8_t exam_go(Afr2App *a,int32_t x,int32_t y,int16_t theta) {
+    Afr2Product *p=a->product;
+    if(Afr2Head_State()->running)return AFR2_BUSY;
+    if(p->origin==AFR2_SOURCE_WEB)Afr2Product_HaltMotion(p);
+    p->origin=AFR2_SOURCE_LOCAL;p->local_timeout_ms=5000;p->local_started_ms=p->now;
+    uint8_t rc=Afr2Product_StartGotoFull(p,x,y,theta,p->config.speed_limit);
+    if(!rc)p->local_timeout_ms=60000;
+    return rc;
+}
+/* AFR2-20261111-08: recorrido GOTO local. Cada tramo apunta al objetivo ACUMULADO en el marco de partida, asi los errores de un
+ * tramo (tolerancia del GOTO) no se suman a los siguientes: tambien vale para giros de 90 encadenados (180, 360). */
+static int32_t wrap_mrad(int32_t v){while(v>3142)v-=6283;while(v<-3142)v+=6283;return v;}
+static void route_pose(const Afr2App *a,float *x,float *y,int32_t *yaw){
+    const Afr2Product *p=a->product;float c=cosf((float)a->route_yaw0/1000.0f),s=sinf((float)a->route_yaw0/1000.0f);
+    float dx=(float)(p->x_mm-a->route_x0),dy=(float)(p->y_mm-a->route_y0);
+    *x=dx*c+dy*s;*y=-dx*s+dy*c;*yaw=wrap_mrad(p->yaw_mrad-a->route_yaw0);
+}
+/* Starts leg route_index (accumulating its target). Legs already reached within tolerance are skipped. 0 = started or finished. */
+static uint8_t route_go(Afr2App *a){
+    Afr2Product *p=a->product;
+    while(a->route_index<a->route_count){
+        a->route_tx+=p->sequence.route[a->route_index].x;a->route_ty+=p->sequence.route[a->route_index].y;a->route_tyaw+=p->sequence.route[a->route_index].theta;
+        float rx,ry;int32_t ryaw;route_pose(a,&rx,&ry,&ryaw);
+        float ex=(float)a->route_tx-rx,ey=(float)a->route_ty-ry,c=cosf((float)ryaw/1000.0f),s=sinf((float)ryaw/1000.0f);
+        int32_t lx=(int32_t)(ex*c+ey*s),ly=(int32_t)(-ex*s+ey*c),th=wrap_mrad(a->route_tyaw-ryaw);
+        if(th>3140)th=3140;
+        if(th<-3140)th=-3140;
+        if(lx>-11 && lx<11 && ly>-11 && ly<11 && th>-26 && th<26){++a->route_done;++a->route_index;continue;}
+        if(lx>-11 && lx<11 && ly>-11 && ly<11){lx=ly=0;} /* pure turn */
+        if(Afr2Head_State()->running)return AFR2_BUSY;
+        if(p->origin==AFR2_SOURCE_WEB)Afr2Product_HaltMotion(p);
+        p->origin=AFR2_SOURCE_LOCAL;p->local_timeout_ms=5000;p->local_started_ms=p->now;
+        uint8_t rc=Afr2Product_StartGotoFull(p,lx,ly,(int16_t)th,a->route_speed);
+        if(!rc){p->origin=AFR2_SOURCE_LOCAL;p->local_started_ms=p->now;p->local_timeout_ms=62000u;}
+        return rc;
+    }
+    a->route_state=4;return AFR2_OK;
+}
+uint8_t Afr2App_RouteStart(Afr2App *a){
+    Afr2Product *p=a->product;
+    a->route_x0=p->x_mm;a->route_y0=p->y_mm;a->route_yaw0=p->yaw_mrad;a->route_tx=a->route_ty=a->route_tyaw=0;
+    a->route_index=a->route_done=a->route_fault=0;a->route_started_ms=p->now;a->route_elapsed=0;
+    a->route_state=3;
+    uint8_t rc=route_go(a);
+    if(rc){a->route_state=1;return rc;}
+    /* OLED: same view as the exam, showing the leg in course; it stays until OK. Only if the UI is free. */
+    Afr2Ui *u=a->ui;uint8_t node=u->node;
+    a->exam_arg=20;a->exam_phase=a->route_state==3?1:2;a->exam_x0=a->route_x0;a->exam_y0=a->route_y0;a->exam_yaw0=a->exam_last_yaw=a->route_yaw0;a->exam_turned=0;a->exam_fault=0;
+    if(!u->keyboard && !u->edit && !u->touch_active && node!=AFR2_N_SAVE_CONFIRM && node!=AFR2_N_HALL_PICK && node!=AFR2_N_HALL_COUNT &&
+       node!=AFR2_N_ENCODER_TEST && node!=AFR2_N_ODOM_RUN && node!=AFR2_N_ODOM_ASK && node!=AFR2_N_EXAM_RUN)Afr2Ui_Open(u,AFR2_N_EXAM_RUN);
+    return AFR2_OK;
+}
+#define EXAM_SEGMENT_MRAD 1571 /* 90 grados: el GOTO acepta hasta 3140 mrad, 180 y 360 se encadenan */
+static int16_t exam_segment(int32_t rest){return (int16_t)(rest>EXAM_SEGMENT_MRAD?EXAM_SEGMENT_MRAD:rest<-EXAM_SEGMENT_MRAD?-EXAM_SEGMENT_MRAD:rest);}
 static int32_t value(void *ctx,uint8_t action) {
     Afr2App *a=ctx;Afr2Product *p=a->product;Afr2Config *c=&p->config;
     const Afr2SensorHead *h=Afr2Head_State();
+    if(action>=AFR2_A_SCALE_FORWARD && action<=AFR2_A_SCALE_CCW)return c->odom_scale[action-AFR2_A_SCALE_FORWARD];
     switch(action) {
     case AFR2_A_WIFI_FALLBACK:return p->wifi.policy_valid?p->wifi.ask_fallback:2;
     case AFR2_A_WIFI_AP_TOGGLE:return p->wifi.ap_active;
@@ -52,6 +109,7 @@ static int32_t value(void *ctx,uint8_t action) {
     case AFR2_A_WHEEL_TOGGLE:return p->mode==AFR2_WHEEL_TEST && !p->stopped;
     case AFR2_A_GOTO_TOGGLE:case AFR2_A_ODOM_TOGGLE:return p->mode==AFR2_GOTO && !p->stopped;
     case AFR2_A_ODOM_PROPOSE:case AFR2_A_ODOM_STATE:return ((int32_t)a->odom_token<<8)|a->odom_state;
+    case AFR2_A_EXAM_STATE:return a->exam_phase;
     case AFR2_A_ODOM_DIR:return a->odom_dir;
     case AFR2_A_ODOM_CM:return a->odom_cm;
     case AFR2_A_RADAR_RANGE:return c->radar_range;
@@ -112,7 +170,7 @@ static uint8_t numeric_range(uint8_t action,int32_t v) {
 }
 uint8_t Afr2App_RemoteUiAllowed(uint8_t action) {
     switch(action) {
-    case AFR2_A_WIFI_FALLBACK:case AFR2_A_WIFI_AP_TOGGLE:case AFR2_A_WIFI_DISCONNECT:case AFR2_A_WIFI_CHANGE_MODE:case AFR2_A_WIFI_SET_MODE:case AFR2_A_ESP_TEST:case AFR2_A_WHEEL_TOGGLE:case AFR2_A_GOTO_TOGGLE:case AFR2_A_ODOM_TOGGLE:case AFR2_A_ODOM_PROPOSE:case AFR2_A_ODOM_ANSWER:case AFR2_A_POWER:case AFR2_A_QUICK_MODE:case AFR2_A_RADAR_TOGGLE:case AFR2_A_US_TOGGLE:case AFR2_A_IR_TOGGLE:case AFR2_A_SERVO_TOGGLE:case AFR2_A_MOTOR_TOGGLE:case AFR2_A_LINE_TOGGLE:
+    case AFR2_A_WIFI_FALLBACK:case AFR2_A_WIFI_AP_TOGGLE:case AFR2_A_WIFI_DISCONNECT:case AFR2_A_WIFI_CHANGE_MODE:case AFR2_A_WIFI_SET_MODE:case AFR2_A_ESP_TEST:case AFR2_A_WHEEL_TOGGLE:case AFR2_A_GOTO_TOGGLE:case AFR2_A_ODOM_TOGGLE:case AFR2_A_ODOM_PROPOSE:case AFR2_A_ODOM_ANSWER:case AFR2_A_EXAM_START:case AFR2_A_EXAM_STOP:case AFR2_A_EXAM_CLEAR:case AFR2_A_POWER:case AFR2_A_QUICK_MODE:case AFR2_A_RADAR_TOGGLE:case AFR2_A_US_TOGGLE:case AFR2_A_IR_TOGGLE:case AFR2_A_SERVO_TOGGLE:case AFR2_A_MOTOR_TOGGLE:case AFR2_A_LINE_TOGGLE:
     case AFR2_A_SERVO_EDIT_BEGIN:case AFR2_A_SERVO_EDIT_END:case AFR2_A_RADAR_DISCARD:
     case AFR2_A_MOVE:case AFR2_A_LINE_START:
     case AFR2_A_GOTO_START:case AFR2_A_WHEEL_START:case AFR2_A_SERVO_APPLY:case AFR2_A_SERVO_OFF:
@@ -134,8 +192,13 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
     uint8_t setting=action==AFR2_A_SPEED || action==AFR2_A_LINE_SPEED || action==AFR2_A_LINE_KP ||
         (action>=AFR2_A_TEST_MS && action<=AFR2_A_TEST_MS) ||
         (action>=AFR2_A_LINE_KIND && action<=AFR2_A_ENC_INVERT) ||
-        action==AFR2_A_LONG_MS || action==AFR2_A_WIFI_RETRY_S || action==AFR2_A_CONTRAST || action==AFR2_A_ROTATION || action==AFR2_A_RADAR_RANGE || action==AFR2_A_RADAR_TRACE;
+        (action>=AFR2_A_SCALE_FORWARD && action<=AFR2_A_SCALE_CCW) || action==AFR2_A_LONG_MS || action==AFR2_A_WIFI_RETRY_S || action==AFR2_A_CONTRAST || action==AFR2_A_ROTATION || action==AFR2_A_RADAR_RANGE || action==AFR2_A_RADAR_TRACE;
     if(setting && ((!p->stopped && !(action==AFR2_A_MOTOR_READY && !v)) || p->prefs_state==1 || p->hall_measuring))return AFR2_BUSY;
+    if(action>=AFR2_A_SCALE_FORWARD && action<=AFR2_A_SCALE_CCW){
+        if(v<0 || v>2000)return AFR2_BAD;
+        c->odom_scale[action-AFR2_A_SCALE_FORWARD]=(uint16_t)v;
+        p->odom_ready=0;p->pose_valid=0;return AFR2_OK;
+    }
     const Afr2SensorHead *h=Afr2Head_State();
     if(action==AFR2_A_SERVO_INVERT){
         if(v<0 || v>1 || !p->stopped || h->enabled || h->target_us || h->running || p->prefs_state==1)return AFR2_BUSY;
@@ -170,6 +233,31 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
         {uint8_t rc=local_command(p);if(rc)return rc;return Afr2Product_Wheel(p,p->selected_wheel,a->test_pwm,c->test_ms);}
     case AFR2_A_ODOM_DIR:if(v<0 || v>7)return AFR2_BAD;if(!p->stopped)return AFR2_BUSY;a->odom_dir=v;return AFR2_OK;
     case AFR2_A_ODOM_CM:if(v<5 || v>100 || v%5)return AFR2_BAD;if(!p->stopped)return AFR2_BUSY;a->odom_cm=v;return AFR2_OK;
+    case AFR2_A_EXAM_START: {
+        /* AFR2-20261111-02: 1 m en una direccion o giro sobre el centro; la pantalla 0x03004F muestra el avance. */
+        if(!((v>=0 && v<=3) || (v>=10 && v<=13)))return AFR2_BAD;
+        if(a->exam_phase==1)return AFR2_BUSY;
+        {uint8_t rc=available(a,AFR2_A_EXAM_START,v);if(rc)return rc;}
+        a->exam_arg=(uint8_t)v;a->exam_x0=p->x_mm;a->exam_y0=p->y_mm;a->exam_yaw0=a->exam_last_yaw=p->yaw_mrad;
+        a->exam_turned=0;a->exam_segments=0;a->exam_fault=0;a->exam_started_ms=p->now;
+        uint8_t rc;
+        if(v<10){
+            a->exam_target=0;
+            rc=exam_go(a,v==0?1000:v==1?-1000:0,v==2?1000:v==3?-1000:0,0);
+        } else {
+            /* Derecha = horario = negativo. 180 y 360 giran a la izquierda (antihorario). */
+            a->exam_target=v==10?-EXAM_SEGMENT_MRAD:v==11?EXAM_SEGMENT_MRAD:v==12?3142:6283;
+            rc=exam_go(a,0,0,exam_segment(a->exam_target));a->exam_segments=1;
+        }
+        if(!rc)a->exam_phase=1;
+        return rc;
+    }
+    case AFR2_A_EXAM_STOP:
+        if(a->exam_phase==1){Afr2Product_Stop(p);a->exam_phase=3;}
+        return AFR2_OK;
+    case AFR2_A_EXAM_CLEAR:
+        if(a->exam_phase==1)Afr2Product_Stop(p);
+        a->exam_phase=0;return AFR2_OK;
     case AFR2_A_ODOM_TOGGLE:
         /* AFR2-20261108-03: prueba de distancia por GOTO relativo (ver odom_start). */
         if(p->mode==AFR2_GOTO && !p->stopped)return Afr2Product_Stop(p)?AFR2_OK:AFR2_FAILED;
@@ -229,9 +317,10 @@ static uint8_t invoke(void *ctx,uint8_t action,int32_t v,const void *data) {
         Afr2Head_Resume();return AFR2_OK;
     case AFR2_A_QUICK_MODE:
         if(v!=AFR2_IDLE && v!=AFR2_MANUAL)return AFR2_BAD;
-        if(p->fault)return AFR2_DENIED;
-        if(v==AFR2_IDLE)return Afr2Product_Stop(p) && p->mode==AFR2_IDLE?AFR2_OK:AFR2_FAILED;
-        if(!p->stopped || p->hall_measuring || p->prefs_state==1 || p->origin==AFR2_SOURCE_WEB || (p->sequence.state>=1 && p->sequence.state<=3))return AFR2_BUSY;
+        /* AFR2-20261111-04: mismo criterio que la pill de la Web: Manual queda elegido y salta los controles. */
+        if(v==AFR2_IDLE){p->manual_selected=0;return Afr2Product_Stop(p) && p->mode==AFR2_IDLE?AFR2_OK:AFR2_FAILED;}
+        if(!p->stopped || Afr2Head_State()->running || p->hall_measuring || (p->sequence.state>=1 && p->sequence.state<=3))Afr2Product_Stop(p);
+        p->manual_selected=1;p->fault=0;p->hall_measuring=0;p->config.motor_ready=1;
         p->mode=AFR2_MANUAL;return AFR2_OK;
     case AFR2_A_STOP:return Afr2Product_Stop(p)?AFR2_OK:AFR2_FAILED;
     case AFR2_A_BATTERY_MEASURE:Afr2Battery_Measure(&p->sensors);return AFR2_OK;
@@ -394,6 +483,7 @@ static void keyboard_seed(void *ctx,Afr2UiCredentials *out) {
 }
 static uint8_t available(void *ctx,uint8_t action,int32_t arg) {
     Afr2App *a=ctx;Afr2Product *p=a->product;
+    if(action>=AFR2_A_SCALE_FORWARD && action<=AFR2_A_SCALE_CCW && (!p->stopped || p->prefs_state==1 || p->hall_measuring))return AFR2_BUSY;
     if(action==AFR2_A_CLEAR_FAULT){
         if(!p->stopped || p->hall_measuring || (p->sequence.state>=1 && p->sequence.state<=3))return AFR2_BUSY;
         for(uint8_t i=0;i<4;i++)if(p->pwm[i])return AFR2_BUSY;
@@ -416,6 +506,13 @@ static uint8_t available(void *ctx,uint8_t action,int32_t arg) {
         if(!p->config.motor_ready)return AFR2_UNAVAILABLE;
         if(action!=AFR2_A_WHEEL_START && action!=AFR2_A_MOVE && !p->pose_valid)return AFR2_UNAVAILABLE;
         if(action==AFR2_A_LINE_START && !p->sensors.line_valid_raw)return AFR2_UNAVAILABLE;
+    }
+    if(action==AFR2_A_EXAM_START){
+        if(!p->config.motor_ready || p->fault || !p->pose_valid)return AFR2_UNAVAILABLE;
+        if(!p->stopped || a->exam_phase==1)return AFR2_BUSY;
+        if(!((arg>=0 && arg<=3) || (arg>=10 && arg<=13)))return AFR2_BAD;
+        uint8_t scale=arg<=3?(uint8_t)arg:arg==10?4:5;
+        if(!p->config.odom_scale[scale])return AFR2_UNAVAILABLE;
     }
     if((action==AFR2_A_WHEEL_TOGGLE && p->mode!=AFR2_WHEEL_TEST) || ((action==AFR2_A_GOTO_TOGGLE || action==AFR2_A_ODOM_TOGGLE) && p->mode!=AFR2_GOTO) || (action==AFR2_A_LINE_TOGGLE && p->mode!=AFR2_LINE)){
         if(!p->config.motor_ready || p->fault)return AFR2_UNAVAILABLE;
@@ -450,9 +547,11 @@ static const char *reason(void *ctx,uint8_t action) {
     if(action==AFR2_A_QUICK_MODE)return PSTR("Detener / ver fallo");
     if(action==AFR2_A_SERVO_INVERT)return PSTR("Desactivar servo");
     if(action==AFR2_A_REBOOT_MEGA || action==AFR2_A_REBOOT_ESP)return PSTR("Detener / ver ESP");
+    if(action>=AFR2_A_SCALE_FORWARD && action<=AFR2_A_SCALE_CCW)return PSTR("Detener / ver Hall");
+    if(action==AFR2_A_EXAM_START){for(uint8_t i=0;i<6;i++)if(!p->config.odom_scale[i])return PSTR("Ver factor en cero");}
     if(p->prefs_state==1)return PSTR("Guardando EEPROM");
     if(p->fault)return PSTR("Fallo: ver estado");
-    if(action==AFR2_A_MOVE || action==AFR2_A_WHEEL_START || action==AFR2_A_LINE_START || action==AFR2_A_LINE_TOGGLE || action==AFR2_A_GOTO_START){
+    if(action==AFR2_A_MOVE || action==AFR2_A_WHEEL_START || action==AFR2_A_LINE_START || action==AFR2_A_LINE_TOGGLE || action==AFR2_A_GOTO_START || action==AFR2_A_EXAM_START){
         if(!p->config.motor_ready)return PSTR("Habilitar motores");
         if(Afr2Head_State()->running)return PSTR("Detener radar");
         if(action==AFR2_A_MOVE || action==AFR2_A_WHEEL_START)return PSTR("Ver PWM / estado");
@@ -466,7 +565,7 @@ static const char *reason(void *ctx,uint8_t action) {
         return PSTR("Ver estado Wi-Fi");
     }
     if(action==AFR2_A_HALL_BEGIN || action==AFR2_A_HALL_END || action==AFR2_A_HALL_SAVE ||
-       action==AFR2_A_MOVE || action==AFR2_A_LINE_START || action==AFR2_A_LINE_TOGGLE || action==AFR2_A_GOTO_START) {
+       action==AFR2_A_MOVE || action==AFR2_A_LINE_START || action==AFR2_A_LINE_TOGGLE || action==AFR2_A_GOTO_START || action==AFR2_A_EXAM_START) {
         if(!p->sensors.hall_available)return PSTR("Habilitar Hall");
         if(action==AFR2_A_HALL_END && !p->hall_measuring)return PSTR("Iniciar medicion");
         if(action==AFR2_A_HALL_SAVE && !a->hall_draft_mask)return PSTR("Completar vuelta");
@@ -494,7 +593,8 @@ void Afr2App_Revoke(void *ctx) {
     if(a->odom_state==1){a->odom_state=3;if(a->ui->node==AFR2_N_ODOM_ASK)Afr2Ui_Leave(a->ui,AFR2_N_CALIB);} /* AFR2-20261108-04 */
     /* AFR2-20261108-06: sin enlace con el ESP la pregunta ya no tiene a quien responder. */
     if(a->wifi_ask){a->wifi_ask=0;if(a->ui->node==AFR2_N_WIFI_ASK)Afr2Ui_Leave(a->ui,AFR2_N_WIFI);}
-    Afr2Head_CancelResume();Afr2Product_HaltMotion(p);p->extension_ready=0;p->session=0;p->wifi.available=0;
+    /* AFR2-20261111-08: perder el enlace no corta un ensayo o recorrido local en curso. */
+    Afr2Head_CancelResume();if(!Afr2Product_LocalMission(p))Afr2Product_HaltMotion(p);p->extension_ready=0;p->session=0;p->wifi.available=0;
     p->wifi.pending=0;p->wifi.draft_ready=0;p->wifi.credential_length=0;p->wifi.network_count=0;p->wifi.details_valid=0;a->ui->notice_target=0;
     p->wifi.esp_version[0]=p->wifi.web_version[0]=0;
     wipe(p->wifi.password,sizeof(p->wifi.password));a->snapshot_active=0;
@@ -571,7 +671,7 @@ void Afr2App_Task(Afr2App *a,uint32_t now) {
         }
         else if(a->wifi_ask==1){
             if(!u->notices && !u->touch_active && !u->keyboard && !u->edit && node!=AFR2_N_SAVE_CONFIRM && node!=AFR2_N_HALL_PICK &&
-               node!=AFR2_N_HALL_COUNT && node!=AFR2_N_ENCODER_TEST && node!=AFR2_N_ODOM_RUN && node!=AFR2_N_ODOM_ASK && node!=AFR2_N_SEQUENCE){
+               node!=AFR2_N_HALL_COUNT && node!=AFR2_N_ENCODER_TEST && node!=AFR2_N_ODOM_RUN && node!=AFR2_N_ODOM_ASK && node!=AFR2_N_EXAM_RUN && node!=AFR2_N_SEQUENCE){
                 if(node!=AFR2_N_WIFI_ASK)Afr2Ui_Open(u,AFR2_N_WIFI_ASK);
                 a->wifi_ask=2;
             }
@@ -582,6 +682,42 @@ void Afr2App_Task(Afr2App *a,uint32_t now) {
             if(!u->wifi_ask_answered)(void)wifi_request(p,AFR2_WIFI_WAIT);
             a->wifi_ask=0;
         }
+    }
+    /* AFR2-20261111-02: examen. Acumula el giro real (yaw sin vueltas) y, en los giros, encadena tramos de hasta 90 grados
+     * hasta que lo girado llega al objetivo (tolerancia del GOTO, AFR2_GOTO_YAW_TOL_MRAD; como mucho 8 tramos). La vista queda hasta OK. */
+    /* AFR2-20261111-08: avance del recorrido local; independiente de la Web y del enlace. */
+    if(a->route_state==3){
+        a->route_elapsed=now-a->route_started_ms;
+        if(p->stopped || p->mode!=AFR2_GOTO){
+            if(p->goto_state==2){++a->route_done;++a->route_index;if(route_go(a)){a->route_state=6;a->route_fault=p->fault;}}
+            else {a->route_state=(p->fault || p->goto_state==4)?6:5;a->route_fault=p->fault;}
+            if(a->route_state!=3)AFR2_DBG("ROUTE end state=%u done=%u/%u fault=%u",(unsigned)a->route_state,(unsigned)a->route_done,(unsigned)a->route_count,(unsigned)a->route_fault);
+            p->notice=0;a->ui->redraw=true;
+        }
+    }
+    if(a->exam_arg==20 && a->exam_phase==1){
+        int32_t d=wrap_mrad(p->yaw_mrad-a->exam_last_yaw);a->exam_turned+=d;a->exam_last_yaw=p->yaw_mrad;
+        if(a->exam_phase==1)a->exam_phase=a->route_state==3?1:a->route_state==4?2:a->route_state==5?3:4;
+        a->exam_fault=a->route_fault;
+    }
+    if(a->exam_phase==1 && a->exam_arg<20){
+        int32_t d=p->yaw_mrad-a->exam_last_yaw;
+        while(d>3142)d-=6283;
+        while(d<-3142)d+=6283;
+        a->exam_turned+=d;a->exam_last_yaw=p->yaw_mrad;
+        if(a->ui->node!=AFR2_N_EXAM_RUN){Afr2Product_Stop(p);a->exam_phase=3;}
+        else if(p->stopped || p->mode!=AFR2_GOTO){
+            if(p->goto_state==2 && a->exam_arg>=10){
+                int32_t rest=a->exam_target-a->exam_turned;
+                if((rest>AFR2_GOTO_YAW_TOL_MRAD || rest<-AFR2_GOTO_YAW_TOL_MRAD) && a->exam_segments<8){
+                    if(exam_go(a,0,0,exam_segment(rest)))a->exam_phase=4;else ++a->exam_segments;
+                } else a->exam_phase=2;
+            } else if(p->goto_state==2)a->exam_phase=2;
+            else {a->exam_phase=4;a->exam_fault=p->fault;}
+            if(a->exam_phase!=1)AFR2_DBG("EXAM arg=%u phase=%u turned=%ld x=%ld y=%ld fault=%u",(unsigned)a->exam_arg,(unsigned)a->exam_phase,(long)a->exam_turned,(long)(p->x_mm-a->exam_x0),(long)(p->y_mm-a->exam_y0),(unsigned)a->exam_fault);
+            a->ui->redraw=true;
+        }
+        p->notice=0; /* el resultado lo muestra la pantalla del examen, no el aviso generico de GOTO */
     }
     /* AFR2-20261108-03: la prueba de distancia termina sola: sale de la vista y avisa el resultado. */
     if(a->ui->node==AFR2_N_ODOM_RUN && !a->ui->notices && (p->stopped || p->mode!=AFR2_GOTO)){
@@ -607,7 +743,7 @@ void Afr2App_Task(Afr2App *a,uint32_t now) {
     Afr2Ui_Tick(a->ui,now);
     /* Text scroll updates only its clipped band. Do not schedule a full OLED
      * redraw every40ms; notices/network views have their own100ms redraw. */
-    if(!a->ui->touch_active && !a->ui->notices && a->ui->node!=AFR2_N_NETWORK && a->ui->node!=AFR2_N_AP_INFO && a->ui->node!=AFR2_N_QUICK && (uint32_t)(now-a->render_ms)>=(a->ui->node==AFR2_N_RADAR_VIEW || a->ui->node==AFR2_N_US_VIEW || a->ui->node==AFR2_N_LINE_VIEW || a->ui->node==AFR2_N_IR_VALUES || a->ui->node==AFR2_N_SERVO_ANGLE || a->ui->node==AFR2_N_HALL_LIVE || a->ui->node==AFR2_N_ODOM_RUN?100u:250u)) {
+    if(!a->ui->touch_active && !a->ui->notices && a->ui->node!=AFR2_N_NETWORK && a->ui->node!=AFR2_N_AP_INFO && a->ui->node!=AFR2_N_QUICK && (uint32_t)(now-a->render_ms)>=(a->ui->node==AFR2_N_RADAR_VIEW || a->ui->node==AFR2_N_US_VIEW || a->ui->node==AFR2_N_LINE_VIEW || a->ui->node==AFR2_N_IR_VALUES || a->ui->node==AFR2_N_SERVO_ANGLE || a->ui->node==AFR2_N_HALL_LIVE || a->ui->node==AFR2_N_ODOM_RUN || a->ui->node==AFR2_N_EXAM_RUN?100u:250u)) {
         Afr2MenuNode node;Afr2Menu_Node(a->ui->node,&node);
         if(node.view || a->ui->edit || a->ui->keyboard || (uint32_t)(now-a->render_ms)>=1000u) {
             a->render_ms=now;a->ui->redraw=true;
@@ -716,6 +852,36 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
     case AFR2_N_US_VIEW:
         if(p->sensors.ultrasonic_valid)LINE(0,"Dist:%u mm",p->sensors.distance_mm);else LINE(0,"Distancia: --");
         LINE(1,"Eco error:%u",p->sensors.echo_error);LINE(2,"Edad:%lu ms",(unsigned long)(p->now-p->sensors.ultrasonic_ms));break;
+    case AFR2_N_EXAM_RUN:{
+        /* AFR2-20261111-02: labels[0] titulo, labels[1]="R" mientras ejecuta; lineas: tipo, X/angulo, Y/meta. */
+        uint8_t ph=a->exam_phase;
+        if(ph==4 && a->exam_fault)snprintf_P(s->labels[0],sizeof(s->labels[0]),PSTR("Interrumpida F%u"),(unsigned)a->exam_fault);
+        else strcpy_P(s->labels[0],ph==1?PSTR("Ejecutando test"):ph==2?PSTR("Prueba terminada"):ph==3?PSTR("Prueba detenida"):PSTR("Interrumpida"));
+        if(ph==1){s->labels[1][0]='R';s->labels[1][1]=0;}
+        if(a->exam_arg==20){
+            /* AFR2-20261111-08: recorrido GOTO local: tramo en curso, posicion y giro en el marco de partida. */
+            float rx,ry;int32_t ryaw;route_pose(a,&rx,&ry,&ryaw);
+            if(ph==1)strcpy_P(s->labels[0],PSTR("Recorrido GOTO"));else if(ph==2)strcpy_P(s->labels[0],PSTR("Recorrido listo"));
+            LINE(0,"Tramo %u/%u",(unsigned)(a->route_done+(ph==1?1u:0u)>a->route_count?a->route_count:a->route_done+(ph==1?1u:0u)),(unsigned)a->route_count);
+            LINE(1,"X%ld Y%ld mm",(long)rx,(long)ry);
+            LINE(2,"Giro: %ld grados",(long)((ryaw*180L+(ryaw<0?-1571L:1571L))/3142L));
+        } else if(a->exam_arg<10){
+            static const char dirs[4][10] PROGMEM={"Adelante","Atras","Izquierda","Derecha"};
+            char name[10];strcpy_P(name,dirs[a->exam_arg&3u]);
+            float yaw=(float)a->exam_yaw0/1000.0f,dx=(float)(p->x_mm-a->exam_x0),dy=(float)(p->y_mm-a->exam_y0);
+            LINE(0,"Despl. %s",name);
+            LINE(1,"X: %ld mm",(long)(dx*cosf(yaw)+dy*sinf(yaw)));
+            LINE(2,"Y: %ld mm",(long)(-dx*sinf(yaw)+dy*cosf(yaw)));
+        } else {
+            static const char turns[4][9] PROGMEM={"90 der","90 izq","180","360"};
+            char name[9];strcpy_P(name,turns[(a->exam_arg-10u)&3u]);
+            int32_t turned=a->exam_turned<0?-a->exam_turned:a->exam_turned,target=a->exam_target<0?-a->exam_target:a->exam_target;
+            LINE(0,"Giro %s",name);
+            LINE(1,"Angulo: %ld grados",(long)((turned*180L+1571L)/3142L));
+            LINE(2,"Meta: %ld grados",(long)((target*180L+1571L)/3142L));
+        }
+        break;
+    }
     case AFR2_N_ODOM_ASK:{
         char name[14];Afr2Ui_OdomDirName(name,a->odom_dir);
         LINE(0,"%s",name);LINE(1,"%u cm",a->odom_cm);break;

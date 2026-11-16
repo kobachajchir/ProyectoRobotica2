@@ -7,3 +7,11 @@
 .afr2-model-asset-overlay { position: absolute; inset: .4rem .4rem auto; z-index: 2; pointer-events: none; background: var(--surface-solid); border-radius: .5rem; }
 
 .afr2-collector-viewport { position: relative; }
+
+/* AFR2-20261111-08: spinner animado para esperas del modelo 3D. */
+.afr2-model-spinner { display: inline-flex; align-items: center; gap: .55rem; color: var(--text-muted); }
+.afr2-model-spinner__ring { width: 1.4rem; height: 1.4rem; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: afr2-model-spin var(--duration-spinner, 900ms) linear infinite; }
+.afr2-model-spinner--sm .afr2-model-spinner__ring { width: 1rem; height: 1rem; }
+.afr2-model-asset-progress .afr2-model-spinner { margin-right: .4rem; }
+@keyframes afr2-model-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .afr2-model-spinner__ring { animation-duration: 2400ms; } }

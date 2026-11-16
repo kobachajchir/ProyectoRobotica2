@@ -9,6 +9,7 @@
 #include "afr2_product_wire.h"
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 static uint8_t wire_result(uint8_t result) {
     return result==AFR2_OK?AFR2_RESULT_OK:result==AFR2_BAD?AFR2_RESULT_BAD_REQUEST:
         result==AFR2_FAILED?AFR2_RESULT_INTERNAL:AFR2_RESULT_UNAVAILABLE;
@@ -129,21 +130,78 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         if(!web_command(p,d))return AFR2_RESULT_UNAVAILABLE;
         return wire_result(Afr2Product_Wheel(p,d[4],(int16_t)afr2_get_u16(d+5),afr2_get_u16(d+7)));
     case AFR2_EXT_MODE:
-        if(n!=5)return AFR2_RESULT_BAD_REQUEST;
-        if(!web_command(p,d))return AFR2_RESULT_UNAVAILABLE;
-        if(d[4]==AFR2_IDLE){Afr2Product_Stop(p);break;}
-        if(d[4]==AFR2_MANUAL && p->stopped){p->mode=AFR2_MANUAL;break;}
+        if(n!=5 || afr2_get_u32(d)!=0)return AFR2_RESULT_BAD_REQUEST;
+        /* AFR2-20261111-04: la pill de modo siempre cambia el modo. Manual salta los controles: corta lo que este andando
+         * (tarea local, radar, secuencia, medicion Hall), limpia el fallo y habilita motores; Linea habilita motores y
+         * detiene el radar antes de iniciar el seguimiento. */
+        if(d[4]==AFR2_IDLE){p->manual_selected=0;Afr2Product_Stop(p);break;}
+        if(d[4]==AFR2_MANUAL){
+            if(!p->stopped || Afr2Head_State()->running || p->hall_measuring || (p->sequence.state>=1 && p->sequence.state<=3))Afr2Product_Stop(p);
+            p->manual_selected=1;p->fault=0;p->hall_measuring=0;p->config.motor_ready=1;
+            if(!web_command(p,d))return AFR2_RESULT_UNAVAILABLE;
+            p->mode=AFR2_MANUAL;break;
+        }
         if(d[4]!=AFR2_LINE)return AFR2_RESULT_BAD_REQUEST;
+        if(Afr2Head_State()->running)Afr2Head_Stop();
+        if(!p->stopped && p->origin==AFR2_SOURCE_LOCAL)Afr2Product_Stop(p);
+        p->manual_selected=0;p->config.motor_ready=1;
+        if(!web_command(p,d))return AFR2_RESULT_UNAVAILABLE;
         return wire_result(Afr2Product_StartLine(p));
     case AFR2_EXT_GOTO:
         if(n!=12 && n!=16)return AFR2_RESULT_BAD_REQUEST;
         if(!web_command(p,d))return AFR2_RESULT_UNAVAILABLE;
-        return wire_result(Afr2Product_StartGotoFull(p,(int32_t)afr2_get_u32(d+4),(int32_t)afr2_get_u32(d+8),
-            n==16?(int16_t)afr2_get_u16(d+12):0,n==16?afr2_get_u16(d+14):p->config.speed_limit));
+        {
+            uint8_t rc=Afr2Product_StartGotoFull(p,(int32_t)afr2_get_u32(d+4),(int32_t)afr2_get_u32(d+8),
+                n==16?(int16_t)afr2_get_u16(d+12):0,n==16?afr2_get_u16(d+14):p->config.speed_limit);
+            /* AFR2-20261111-06: un GOTO aceptado de la Web (pruebas minimas, recorrido) sigue solo aunque se corte el WebSocket:
+             * pasa a origen local con el mismo tope que el GOTO (60 s), fuera del corte de 1,5 s sin pulso Web. STOP,
+             * robot.goto.cancel, las fallas y la llegada lo terminan. */
+            if(!rc){p->origin=AFR2_SOURCE_LOCAL;p->local_started_ms=p->now;p->local_timeout_ms=62000u;}
+            return wire_result(rc);
+        }
     case AFR2_EXT_LIMITS:
         if(n)return AFR2_RESULT_BAD_REQUEST;
         afr2_put_u16(out,p->config.speed_limit);out[2]=p->config.pwm_limit;out[3]=10;
         afr2_put_u16(out+4,p->config.wheel_mm);afr2_put_u16(out+6,p->config.radius_sum_mm);*length=8;break;
+    /* AFR2-20261111-08: recorrido GOTO local (ver afr2_product_wire.h). Comparte el buffer de la secuencia. */
+    case AFR2_EXT_ROUTE_BEGIN: {
+        if(n!=11 || afr2_get_u32(d))return AFR2_RESULT_BAD_REQUEST;
+        uint32_t token=afr2_get_u32(d+4);uint8_t count=d[8];uint16_t speed=afr2_get_u16(d+9);
+        if(!token || !count || count>AFR2_ROUTE_MAX || speed<10 || speed>p->config.speed_limit)return AFR2_RESULT_BAD_REQUEST;
+        if(a->route_state==3 || !p->stopped || p->hall_measuring || (p->sequence.state>=1 && p->sequence.state<=3))return AFR2_RESULT_UNAVAILABLE;
+        p->sequence.state=0;p->sequence.loaded=0;p->sequence.count=0;
+        a->route_token=token;a->route_count=count;a->route_speed=speed;a->route_loaded=0;a->route_state=1;
+        a->route_index=a->route_done=a->route_fault=0;a->route_elapsed=0;
+        afr2_put_u32(out,token);out[4]=count;*length=5;break;
+    }
+    case AFR2_EXT_ROUTE_LEG: {
+        if(n!=15 || afr2_get_u32(d))return AFR2_RESULT_BAD_REQUEST;
+        uint32_t token=afr2_get_u32(d+4);uint8_t index=d[8];
+        int16_t x=(int16_t)afr2_get_u16(d+9),y=(int16_t)afr2_get_u16(d+11),theta=(int16_t)afr2_get_u16(d+13);
+        if(a->route_state!=1 || token!=a->route_token)return AFR2_RESULT_UNAVAILABLE;
+        if(index>=a->route_count || x<-5000 || x>5000 || y<-5000 || y>5000 || theta<-3140 || theta>3140)return AFR2_RESULT_BAD_REQUEST;
+        p->sequence.route[index].x=x;p->sequence.route[index].y=y;p->sequence.route[index].theta=theta;a->route_loaded|=(1UL<<index);
+        uint8_t loaded=0;for(uint8_t i=0;i<a->route_count;i++)if(a->route_loaded&(1UL<<i))++loaded;
+        afr2_put_u32(out,token);out[4]=index;out[5]=loaded;*length=6;break;
+    }
+    case AFR2_EXT_ROUTE_START: {
+        if(n!=8 || afr2_get_u32(d))return AFR2_RESULT_BAD_REQUEST;
+        uint32_t token=afr2_get_u32(d+4),full=a->route_count>=32?0xffffffffUL:((1UL<<a->route_count)-1UL);
+        if(a->route_state!=1 || token!=a->route_token || a->route_loaded!=full)return AFR2_RESULT_UNAVAILABLE;
+        if(p->hall_measuring || (!p->stopped && p->origin==AFR2_SOURCE_LOCAL))return AFR2_RESULT_UNAVAILABLE;
+        p->manual_selected=0;
+        uint8_t rc=Afr2App_RouteStart(a);if(rc)return wire_result(rc);
+        afr2_put_u32(out,token);out[4]=a->route_state;*length=5;break;
+    }
+    case AFR2_EXT_ROUTE_STATUS: {
+        if(n!=4)return AFR2_RESULT_BAD_REQUEST;
+        float rx=0,ry=0;int32_t ryaw=0;
+        if(a->route_state>=3){float c=cosf((float)a->route_yaw0/1000.0f),s=sinf((float)a->route_yaw0/1000.0f),dx=(float)(p->x_mm-a->route_x0),dy=(float)(p->y_mm-a->route_y0);
+            rx=dx*c+dy*s;ry=-dx*s+dy*c;ryaw=p->yaw_mrad-a->route_yaw0;while(ryaw>3142)ryaw-=6283;while(ryaw<-3142)ryaw+=6283;}
+        afr2_put_u32(out,a->route_token);out[4]=a->route_state;out[5]=a->route_count;out[6]=a->route_index;out[7]=a->route_done;out[8]=a->route_fault;
+        afr2_put_u32(out+9,(uint32_t)(int32_t)rx);afr2_put_u32(out+13,(uint32_t)(int32_t)ry);afr2_put_u32(out+17,(uint32_t)ryaw);
+        afr2_put_u32(out+21,a->route_state==3?p->now-a->route_started_ms:a->route_elapsed);*length=25;break;
+    }
     case AFR2_EXT_CANCEL:
         if(n)return AFR2_RESULT_BAD_REQUEST;
         Afr2Product_Stop(p);out[0]=p->goto_state;*length=1;break;
@@ -224,7 +282,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
     case AFR2_EXT_UI_ACTION: {
         /* Hall wizard and mandatory save choice are local actions. A remote
          * synthetic click must not invoke callbacks hidden behind a view. */
-        if(a->ui->node==AFR2_N_ENCODER_TEST || a->ui->node==AFR2_N_ODOM_ASK || a->ui->node==AFR2_N_HALL_PICK || a->ui->node==AFR2_N_HALL_COUNT || a->ui->node==AFR2_N_SERVO_ANGLE ||
+        if(a->ui->node==AFR2_N_ENCODER_TEST || a->ui->node==AFR2_N_ODOM_ASK || a->ui->node==AFR2_N_EXAM_RUN || a->ui->node==AFR2_N_HALL_PICK || a->ui->node==AFR2_N_HALL_COUNT || a->ui->node==AFR2_N_SERVO_ANGLE ||
            (a->ui->node==AFR2_N_SAVE_CONFIRM && !(a->ui->confirm_save==AFR2_A_SAVE && a->ui->confirm_discard==AFR2_A_RADAR_DISCARD)))return AFR2_RESULT_UNAVAILABLE;
         if(n!=6 || d[4]>3 || (d[4]==0 && (int8_t)d[5]!=1 && (int8_t)d[5]!=-1) ||
            (d[4]!=0 && d[5]!=0))return AFR2_RESULT_BAD_REQUEST;

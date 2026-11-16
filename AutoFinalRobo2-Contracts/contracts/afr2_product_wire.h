@@ -53,6 +53,17 @@
 #define AFR2_EXT_SEQ_START 0x43u
 #define AFR2_EXT_SEQ_CANCEL 0x44u
 #define AFR2_EXT_SEQ_STATUS 0x45u
+/* AFR2-20261111-08: recorrido GOTO completo cargado en el ATmega y ejecutado en local (sigue sin WebSocket).
+ * BEGIN: reservado u32=0, token u32, cantidad u8 (1..32), velocidad u16 mm/s -> token u32, cantidad u8.
+ * LEG:   reservado u32=0, token u32, indice u8, x i16 mm, y i16 mm, theta i16 mrad (marco de partida) -> token u32, indice u8, cargados u8.
+ * START: reservado u32=0, token u32 -> token u32, estado u8.
+ * STATUS: token u32 (0 = actual) -> token u32, estado u8, cantidad u8, tramo u8, hechos u8, falla u8, x i32 mm, y i32 mm, yaw i32 mrad
+ *         (pose en el marco de partida), transcurrido u32 ms. Estados: 0 nada, 1 cargando, 3 ejecutando, 4 completo, 5 cancelado, 6 fallo. */
+#define AFR2_EXT_ROUTE_BEGIN 0x46u
+#define AFR2_EXT_ROUTE_LEG 0x47u
+#define AFR2_EXT_ROUTE_START 0x48u
+#define AFR2_EXT_ROUTE_STATUS 0x49u
+#define AFR2_ROUTE_MAX 32u
 #define AFR2_EXT_F_SEQUENCES 0x100UL
 #define AFR2_EXT_INFO 0x50u
 #define AFR2_EXT_REBOOT 0x51u

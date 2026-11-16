@@ -15,7 +15,8 @@ typedef struct { uint32_t limit,timeout,ramp; int16_t from,to; uint8_t wheel,con
 typedef struct {
     /* AFR2-20261106-04: disabled profile has no dormant step storage. */
 #if AFR2_SEQUENCE_MEMORY_APPROVED
-    union { Afr2Segment segments[AFR2_SEQUENCE_MAX]; Afr2WheelStep steps[AFR2_SEQUENCE_MAX]; };
+    /* AFR2-20261111-08: el recorrido GOTO reutiliza el mismo buffer (secuencia y recorrido no conviven). */
+    union { Afr2Segment segments[AFR2_SEQUENCE_MAX]; Afr2WheelStep steps[AFR2_SEQUENCE_MAX]; struct { int16_t x,y,theta; } route[AFR2_SEQUENCE_MAX]; };
     uint8_t kinds[(AFR2_SEQUENCE_MAX+1)/2]; /* packed semantic IDs; +16 SRAM bytes */
 #endif
     uint32_t token,execution,total,sum,started,elapsed,source_session;

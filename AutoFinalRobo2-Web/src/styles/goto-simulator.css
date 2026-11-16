@@ -55,3 +55,31 @@
 @media (max-width: 1199.98px) { .afr2-goto-builder { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 839.98px) { .afr2-goto-layout, .afr2-goto-workspace { gap: 20px; } .afr2-goto-program, .afr2-goto-builder { padding: 20px; } .afr2-goto-add-form, .afr2-goto-program { grid-template-columns: minmax(0, 1fr); } .afr2-goto-playback { position: static; margin-top: 20px; padding: 20px 0 0; border-left: 0; border-top: 1px solid var(--border-default); } }
 @media (max-width: 599.98px) { .afr2-goto-program .afr2-goto-command-list > li { grid-template-columns: 24px minmax(0, 1fr); padding: 16px 12px 8px; } .afr2-goto-program .afr2-goto-row-actions { grid-column: 2; } }
+
+/* AFR2-20261111-08: herramientas y deshacer/rehacer en una fila; ayuda debajo con estilo de subtítulo. */
+.afr2-goto-tools__row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.afr2-goto-tools__history { display: flex; gap: 6px; }
+.afr2-goto-tools__history > button { min-width: 40px; }
+.afr2-goto-tools__hint { margin: 0; color: var(--text-muted); font-size: var(--type-label-size, .85rem); line-height: 1.35; }
+
+/* AFR2-20261112-07: lápiz del GOTO. El trazo usa el puntero entero: sin scroll ni zoom del navegador mientras se dibuja. */
+.afr2-control-map__viewport[data-drawing="true"] canvas, .afr2-control-map__viewport[data-drawing="true"] svg { cursor: crosshair; touch-action: none !important; }
+
+/* AFR2-20261113-01: orientación del recorrido y ventana flotante del nodo de giro. */
+.afr2-goto-orientation { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 8px; }
+.afr2-map-overlay { position: absolute; z-index: 6; width: min(232px, calc(100% - 16px)); transform: translateX(-50%); overflow: auto; overscroll-behavior: contain; border-radius: 12px; }
+.afr2-map-overlay[data-placed="false"] { visibility: hidden; }
+.afr2-goto-turn { display: grid; gap: 6px; padding: 10px; border: 1px solid var(--border-default); border-radius: 12px; background: var(--surface-solid);
+  box-shadow: 0 10px 28px rgb(0 0 0 / .28); color: var(--text-strong); }
+.afr2-goto-turn > header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.afr2-goto-turn h3 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: var(--type-label-size, .9rem); }
+.afr2-goto-turn__glyph { width: 16px; height: 16px; border: 2px solid var(--action); border-radius: 50%; position: relative; flex: none; }
+.afr2-goto-turn__glyph::after { content: ''; position: absolute; inset: 3px; background: var(--action); transform: rotate(45deg) scale(.72); }
+.afr2-goto-turn__view { position: relative; height: 112px; border-radius: 10px; overflow: hidden; background: var(--map-floor); }
+.afr2-goto-turn__view .afr2-simulation-viewport { position: absolute; inset: 0; height: 100%; }
+.afr2-goto-turn__compass { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.afr2-goto-turn__angle { display: grid; grid-template-columns: 1fr 5.5rem; align-items: center; gap: 8px; font-size: var(--type-caption-size); color: var(--text-muted); }
+.afr2-goto-turn__angle input { font-variant-numeric: tabular-nums; }
+.afr2-goto-turn__slider { width: 100%; min-height: 28px; margin: 0; accent-color: var(--action); touch-action: pan-y; }
+.afr2-goto-turn .afr2-help { margin: 0; font-size: var(--type-caption-size); }
+.afr2-goto-turn__actions { display: flex; gap: 2px; }

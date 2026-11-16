@@ -1,6 +1,7 @@
 import { SimulationZoom } from '../../components/three/SimulationViewport';
+import { ModelSpinner } from '../../components/three/ModelSpinner';
 import { ModelAssetProgress } from '../../components/three/ModelAssetProgress';
-import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { Suspense, lazy, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Disclosure } from '../../components/ui/Disclosure';
 import { RenderBoundary } from '../../components/ui/RenderBoundary';
 import { Button } from '../../components/ui/Button';
@@ -23,9 +24,12 @@ export interface SimulationMapFeed {
 }
 
 /** Simulation only. Commanded motion and physical acknowledgements are never pose. */
-export function ControlMap({ requestedMotion, onViewChange, simulationFeed = null, title = 'Simulación de la secuencia', initialView = 'perspective', waypoints, plannedRoute, onSelectPoint, pickingDisabled = false, compact = false, routePanel, sidebarPanel, toolPanel }: {
+export function ControlMap({ requestedMotion, onViewChange, simulationFeed = null, title = 'Simulación de la secuencia', initialView = 'perspective', waypoints, plannedRoute, onSelectPoint, pickingDisabled = false, drawing = false, onDrawStroke, overlay = null, compact = false, routePanel, sidebarPanel, toolPanel }: {
   requestedMotion: RequestedMotion | null; onViewChange: () => void; simulationFeed?: SimulationMapFeed | null;
   title?: string; initialView?: MapView; waypoints?: MapWaypoint[]; plannedRoute?: MapPoint[]; onSelectPoint?: (point: MapPoint, toleranceMm?: number) => void; pickingDisabled?: boolean;
+  drawing?: boolean; onDrawStroke?: (points: MapPoint[], toleranceMm: number) => void;
+  /** AFR2-20261113-01: ventana flotante anclada a un punto del mapa (p. ej. el nodo de giro seleccionado). */
+  overlay?: { point: MapPoint; content: ReactNode } | null;
   compact?: boolean; routePanel?: ReactNode; sidebarPanel?: ReactNode; toolPanel?: ReactNode;
 }) {
   const { resolvedTheme } = useTheme();
@@ -34,6 +38,9 @@ export function ControlMap({ requestedMotion, onViewChange, simulationFeed = nul
   const [center, setCenter] = useState({ xMm: 0, yMm: 0 });
   const [showTrail, setShowTrail] = useState(true);
   const [viewerKey, setViewerKey] = useState(0);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const overlayKey = overlay ? `${overlay.point.xMm}:${overlay.point.yMm}` : '';
+  const overlayAnchor = useMemo(() => overlay ? { point: overlay.point, ref: overlayRef } : null, [overlayKey]); // eslint-disable-line react-hooks/exhaustive-deps
   const pose = simulationFeed?.pose ?? null;
   const route = plannedRoute ?? simulationFeed?.plannedRoute;
   const routeKey = JSON.stringify([...(route ?? []), ...(waypoints ?? [])].map(point => [point.xMm, point.yMm]));
@@ -47,7 +54,7 @@ export function ControlMap({ requestedMotion, onViewChange, simulationFeed = nul
   }, [routeKey, view]);
   useEffect(() => { if (routeFrame) { setCenter(routeFrame.center); setZoom(routeFrame.zoom); } }, [routeFrame]);
   useEffect(() => { if (view === 'follow' && pose) setCenter({ xMm: pose.xMm, yMm: pose.yMm }); }, [view, pose]);
-  const scene: MapSceneProps = { pose, wheelAngles: simulationFeed?.wheelAngles, trail: showTrail ? simulationFeed?.trail ?? [] : [], view, zoom, center, fresh: !!pose, dark: resolvedTheme === 'dark', waypoints, plannedRoute: route, onSelectPoint, pickingDisabled };
+  const scene: MapSceneProps = { pose, wheelAngles: simulationFeed?.wheelAngles, trail: showTrail ? simulationFeed?.trail ?? [] : [], view, zoom, center, fresh: !!pose, dark: resolvedTheme === 'dark', waypoints, plannedRoute: route, onSelectPoint, pickingDisabled, drawing: drawing && !!onDrawStroke && !pickingDisabled, onDrawStroke, overlayAnchor };
   const fallback = <div className="afr2-map-svg-recovery"><TopMap {...scene} /><div className="afr2-map-recovery-actions"><span>3D no disponible · esquema de simulación</span><Button size="sm" onClick={() => { onViewChange(); clearRobotModelCache(); setViewerKey(v => v + 1); }}>Reintentar modelo 3D</Button></div></div>;
   const minZoom = waypoints || route ? .02 : .5;
   const fitRoute = () => {
@@ -61,7 +68,7 @@ export function ControlMap({ requestedMotion, onViewChange, simulationFeed = nul
       <div className="afr2-map-tools"><button type="button" disabled={!pose} onClick={() => { onViewChange(); if (pose) setCenter({ xMm: pose.xMm, yMm: pose.yMm }); }}>Centrar</button>{(waypoints || route) && <button type="button" disabled={!routeFrame} onClick={fitRoute}>Ver ruta</button>}</div>
     </div>
     {toolPanel && <div className="afr2-map-editor-tools">{toolPanel}</div>}
-    <div className="afr2-control-map__viewport" data-picking={!!onSelectPoint && !pickingDisabled}><RenderBoundary key={`${view}-${viewerKey}`} fallback={fallback}><Suspense fallback={<div className="afr2-map-loading" role="status">Cargando modelo…</div>}><Scene {...scene} fallback={fallback} /></Suspense></RenderBoundary><SimulationZoom percent={Math.round((zoom - minZoom) / (1 - minZoom) * 100)} onChange={value => { onViewChange(); setZoom(minZoom + (1 - minZoom) * value / 100); }} /></div>
+    <div className="afr2-control-map__viewport" data-picking={!!onSelectPoint && !pickingDisabled} data-drawing={drawing && !!onDrawStroke && !pickingDisabled}><RenderBoundary key={`${view}-${viewerKey}`} fallback={fallback}><Suspense fallback={<div className="afr2-map-loading"><ModelSpinner label="Cargando modelo…" /></div>}><Scene {...scene} fallback={fallback} /></Suspense></RenderBoundary><SimulationZoom percent={Math.round((zoom - minZoom) / (1 - minZoom) * 100)} onChange={value => { onViewChange(); setZoom(minZoom + (1 - minZoom) * value / 100); }} />{overlay && <div ref={overlayRef} className="afr2-map-overlay" data-placed="false">{overlay.content}</div>}</div>
     <ModelAssetProgress label="Modelo del auto" />
     {routePanel && <div className="afr2-map-route">{routePanel}</div>}
     {onSelectPoint && !compact && <p className="afr2-map-command">{pickingDisabled ? 'Pausá la simulación para agregar destinos.' : 'Tocá el suelo para agregar un destino a la lista · Ajuste de 0,1 m. También podés ingresar coordenadas con el teclado.'}</p>}

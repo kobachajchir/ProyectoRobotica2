@@ -101,7 +101,7 @@ void Broker::ingest(Session &s) {
     if(req.wireCommand==AFR2_EXT_DRIVE || req.wireCommand==AFR2_EXT_WHEEL || req.wireCommand==AFR2_EXT_MODE ||
        req.wireCommand==AFR2_EXT_GOTO || req.wireCommand==AFR2_EXT_SEQ_START)pwmStreamPending_=false;
     if(req.wireCommand==AFR2_EXT_DRIVE || req.wireCommand==AFR2_EXT_DRIVE_PWM || req.wireCommand==AFR2_EXT_WHEEL || req.wireCommand==AFR2_EXT_MODE ||
-       req.wireCommand==AFR2_EXT_GOTO || req.wireCommand==AFR2_EXT_PREFS || req.wireCommand==AFR2_EXT_LINE_CAL ||
+       req.wireCommand==AFR2_EXT_GOTO || req.wireCommand==AFR2_EXT_ROUTE_START || req.wireCommand==AFR2_EXT_PREFS || req.wireCommand==AFR2_EXT_LINE_CAL ||
        (req.wireCommand==AFR2_EXT_CONFIG && req.body[4]) ||
        (req.wireCommand>=AFR2_EXT_SEQ_BEGIN && req.wireCommand<=AFR2_EXT_SEQ_START))s.inputSeen=now;
     if (!strcmp(command,"system.hello") &&
@@ -298,7 +298,7 @@ void Broker::describeCapabilities(JsonObject out,uint32_t now) {
     JsonObject pwm=out["capabilities"]["manual_pwm"].to<JsonObject>();
     bool manual=productReady_ && mega_.ready() && productStateAt_ && (uint32_t)(now-productStateAt_)<2000u && (productFeatures_&AFR2_EXT_F_MANUAL_PWM);
     pwm["present"]=true;pwm["implemented"]=manual;pwm["valid"]=manual;pwm["calibrated"]=false;pwm["freshness"]=manual?"fresh":"unknown";
-    pwm["reason"]=manual?F("PWM manual habilitado; sin odometria ni HC."):F("Habilitar motores; revisar fallo, radar, calibracion, secuencia, tarea local o enlace.");
+    pwm["reason"]=manual?F("PWM manual habilitado; sin odometria ni HC."):F("Habilitar motores; revisar fallo, radar, calibracion, secuencia, tarea local o enlace. En modo Manual se saltan.");
     pwm["limits"]["maxInputPct"]=100;pwm["limits"]["maxPwmPct"]=(uint16_t)pwmLimit_*100/255;
 
     const char *headNames[]={"sensor_head","radar_scanner"};

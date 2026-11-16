@@ -37,6 +37,23 @@ Reglas:
 
 | Versión | Tipo | Cambio |
 |---|---|---|
+| 1.31.4 | subversión mínima | AFR2-20261113-05: selector de secciones (pills) con la misma separación en todas las páginas; el del Simulador sale del encabezado. Web en fuente. |
+| 1.31.3 | subversión mínima | AFR2-20261113-04: Simulador GOTO con el mismo margen y padding de encabezado y selector de vista que el de secuencias. Web en fuente. |
+| 1.31.2 | subversión mínima | AFR2-20261113-03: Línea IR con cinta negra bajo el modelo 3D y ancho de cinta configurable (18 mm por defecto). Web en fuente. |
+| 1.31.1 | subversión mínima | AFR2-20261113-02: Línea IR con el modelo 3D del auto en vista superior (IR y línea sobre la posición real del sensor). Web en fuente. |
+| 1.31.0 | subversión | AFR2-20261113-01: GOTO con orientación «Frontal»/«Seguir camino» y nodos de giro sobre el camino (ventana con auto 3D, campo y deslizador); estado de la línea IR en Sensores. Web en fuente. |
+| 1.30.0 | subversión | AFR2-20261112-07: herramienta «Lápiz» en el GOTO: un trazo continuo que arranca en el último destino se simplifica a tramos rectos (comando `path`). Web en fuente. |
+| 1.29.0 | subversión | AFR2-20261112-04: botón «Burbuja» en los simuladores con brazo: esfera de malla con centro en la base y radio igual al alcance máximo. Web en fuente. |
+| 1.28.2 | subversión mínima | AFR2-20261112-03: OLED en vivo con layout fijo (aviso único, columna lateral reservada, lienzo 2:1 que no colapsa) y «Al cambiar» pide la pantalla solo al cambiar de pantalla. Web en fuente. |
+| 1.28.1 | subversión mínima | AFR2-20261112-01: calibración final del GOTO (tolerancias 4 mm / 10 mrad, EEPROM v13, rumbo en traslación). ATmega en fuente. |
+| 1.28.0 | subversión | AFR2-20261111-08: recorrido GOTO completo cargado en el ATmega (robot.route.*, 0x46..0x49) que sigue sin WebSocket/Wi-Fi/enlace, pantalla OLED de avance, trayectoria real en la Web, giro corregido 1,028, pruebas mínimas con dirección de medida. Solo fuente. |
+| 1.27.1 | subversión mínima | AFR2-20261111-07: un ensayo GOTO enviado sigue aunque se corte el WebSocket (origen local, MOTION_HALT no lo corta). ATmega en fuente; ESP/Web solo versión. |
+| 1.27.0 | subversión | AFR2-20261111-06: factores direccionales de odometría, pantallas OLED/Web y EEPROM v12 con migración. Solo fuente. |
+| 1.26.2 | subversión mínima | AFR2-20261111-05: PWM manual sin cortes por lazo/Hall y errores visibles sin cerrar el táctil ni encadenar STOP. ATmega/Web fuente; ESP solo versión. |
+| 1.26.1 | subversión mínima | AFR2-20261111-04: la pill de modo cambia el modo; Manual se conserva y salta los permisos de conducción. ATmega/ESP/Web en fuente. |
+| 1.26.0 | subversión | AFR2-20261111-03: precarga de los modelos 3D al conectar, con toast de avance y reintento. Solo fuente Web; ATmega/ESP solo versión. |
+| 1.25.0 | subversión | AFR2-20261111-02: odometría lateral ×0,775 (medido 77,5 cm por metro) y menú OLED Pruebas examen con pantalla de ejecución. ATmega/Web en fuente, ESP solo versión. |
+| 1.24.0 | subversión | AFR2-20261111-01: «Pruebas mínimas» en Conducir con registro y exportación, y slider «Cajas a recolectar» con meta de misión en el simulador del recolector. Solo fuente Web; ATmega/ESP solo versión. |
 | 1.22.0 | subversión | AFR2-20261110-14: limpieza real de fallo Web, CMD 0x56 y tiempos de F1; control antes de render. Solo fuente. |
 | 1.23.2 | subversión mínima | AFR2-20261110-18: logo de bienvenida a 768 px para que el paquete ESP entre en el presupuesto LittleFS. Solo fuente Web. |
 | 1.23.1 | subversión mínima | AFR2-20261110-17: renders CAD de Fusion y captura de Inicio en las tarjetas de Ayuda; versión Web leída de package.json. Solo fuente Web. |

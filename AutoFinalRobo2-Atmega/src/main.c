@@ -21,7 +21,8 @@ static Afr2Oled oled;
 static Afr2EncoderUi encoder;
 static Afr2Ui ui;
 static uint8_t stopped(void *ctx){return Afr2Product_Stop(((Afr2App *)ctx)->product);}
-static uint8_t halt_motion(void *ctx){return Afr2Product_HaltMotion(((Afr2App *)ctx)->product);}
+/* AFR2-20261111-08: la supervision del enlace no corta un ensayo/recorrido local en curso; termina solo (llegada, 60 s, STOP o falla). */
+static uint8_t halt_motion(void *ctx){Afr2Product *p=((Afr2App *)ctx)->product;return Afr2Product_LocalMission(p)?1:Afr2Product_HaltMotion(p);}
 static void snapshot(void *ctx,uint32_t now,Afr2LinkSnapshot *out){Afr2Product_Snapshot(((Afr2App *)ctx)->product,now,out);}
 static uint16_t capabilities(void *ctx) {
     Afr2Product *p=((Afr2App *)ctx)->product;

@@ -1,0 +1,229 @@
+\chapter{Modelo cinemático del manipulador}
+\label{cap:brazo}
+
+\section{Convención de transformaciones}
+Una pose rígida se representa con una rotación $\mat R_{AB}$ y una traslación $\vct t_{AB}$. Se adopta la formulación de movimientos rígidos~\cite{lynch}, con $\mat T_{AB}$ como transformación que lleva coordenadas expresadas en $B$ al marco $A$:
+\begin{equation}
+\widetilde{\vct p}_A=\mat T_{AB}\widetilde{\vct p}_B,
+\qquad
+\mat T_{AB}=\begin{bmatrix}
+\mat R_{AB}&\vct t_{AB}\\\vct0^{\trans}&1
+\end{bmatrix},
+\qquad \widetilde{\vct p}=\begin{bmatrix}\vct p\\1\end{bmatrix}.
+\end{equation}
+Las rotaciones propias cumplen $\mat R^{\trans}\mat R=\mat I$ y $\det\mat R=1$. La composición y la inversa son
+\begin{equation}
+\mat T_{AC}=\mat T_{AB}\mat T_{BC},\qquad
+\mat T_{AB}^{-1}=\begin{bmatrix}
+\mat R_{AB}^{\trans}&-\mat R_{AB}^{\trans}\vct t_{AB}\\
+\vct0^{\trans}&1
+\end{bmatrix}.
+\end{equation}
+El orden importa: las matrices actúan de derecha a izquierda sobre vectores columna. Los vectores libres tienen última coordenada cero y no reciben la traslación aplicada a los puntos.
+
+Las rotaciones elementales son
+\begin{align}
+\mat R_x(\theta)&=\begin{bmatrix}1&0&0\\0&\cos\theta&-\sin\theta\\0&\sin\theta&\cos\theta\end{bmatrix},\\
+\mat R_y(\theta)&=\begin{bmatrix}\cos\theta&0&\sin\theta\\0&1&0\\-\sin\theta&0&\cos\theta\end{bmatrix},\\
+\mat R_z(\theta)&=\begin{bmatrix}\cos\theta&-\sin\theta&0\\\sin\theta&\cos\theta&0\\0&0&1\end{bmatrix}.
+\end{align}
+Sus versiones homogéneas se obtienen agregando columna de traslación nula y fila $[0\;0\;0\;1]$. Una traslación local sobre $z$ es
+\begin{equation}
+\mat T_z(\ell)=\begin{bmatrix}1&0&0&0\\0&1&0&0\\0&0&1&\ell\\0&0&0&1\end{bmatrix}.
+\end{equation}
+En las ecuaciones se usan metros y radianes. Los grados se reservan para lectura de límites y consignas de interfaz.
+
+\section{Montura y cadena de articulaciones}
+El modelo usa seis ángulos geométricos $\vct q=[q_1,\ldots,q_6]^{\trans}$ con ejes locales $Z,Y,Y,Z,Y,Z$. Los parámetros equivalentes son
+\begin{align}
+h&=0{,}096+0{,}113=0{,}209\unit m,\\
+L_1&=0{,}070\unit m,\qquad
+L_2=0{,}060+0{,}055=0{,}115\unit m,\\
+d&=0{,}065+0{,}0785=0{,}1435\unit m.
+\end{align}
+La agrupación de $L_2$ y $d$ aprovecha tramos colineales que no cambian de dirección al rotar alrededor de su propio eje. Así, $L_2$ no es una longitud de corte del tubo y $d$ no es únicamente la longitud física de la pinza.
+
+La transformación desde la montura $M$ hasta la herramienta $E$ es
+\begin{equation}
+\begin{aligned}
+\mat T_{ME}(\vct q)={}&\mat T_z(h)\mat R_z(q_1)\mat R_y(q_2)\mat T_z(L_1)\\
+&\cdot\mat R_y(q_3)\mat T_z(L_2)\mat R_z(q_4)\mat R_y(q_5)
+\mat R_z(q_6)\mat T_z(d).
+\end{aligned}
+\label{eq:cadena}
+\end{equation}
+En esta expresión las matrices de rotación se entienden embebidas en $4\times4$. La montura del brazo respecto de la base móvil se representa por
+\begin{equation}
+\mat T_{BM}=\begin{bmatrix}
+0&1&0&0{,}027819\\-1&0&0&0\\0&0&1&0{,}079041\\0&0&0&1
+\end{bmatrix}.
+\label{eq:montura}
+\end{equation}
+La rotación equivale a $-90^{\circ}$ sobre $z$. La conversión de coordenadas CAD a la representación del robot y la transformación de montura cumplen funciones diferentes; no se suman como dos desplazamientos físicos del mismo origen. Las transformaciones de presentación del visor tampoco se aplican nuevamente a la pose física.
+
+\subsection{Formulación Denavit--Hartenberg equivalente}
+La convención DH estándar define
+\begin{equation}
+\mat A_i=\mat R_z(\theta_i)\mat T_z(d_i)\mat T_x(a_i)\mat R_x(\alpha_i).
+\end{equation}
+Con $c_\theta=\cos\theta_i$, $s_\theta=\sin\theta_i$, $c_\alpha=\cos\alpha_i$ y $s_\alpha=\sin\alpha_i$:
+\begin{equation}
+\mat A_i=\begin{bmatrix}
+c_\theta&-s_\theta c_\alpha&s_\theta s_\alpha&a_ic_\theta\\
+s_\theta&c_\theta c_\alpha&-c_\theta s_\alpha&a_is_\theta\\
+0&s_\alpha&c_\alpha&d_i\\0&0&0&1
+\end{bmatrix}.
+\end{equation}
+Una elección de marcos equivalente a la cadena~\eqref{eq:cadena} es la siguiente. Sus offsets pertenecen al modelo matemático y no son ceros electrónicos de servos.
+\begin{table}[!htbp]\centering
+\caption{Parámetros DH estándar del modelo equivalente.}
+\begin{tabular}{ccccc}\toprule
+$i$&$\theta_i$&$d_i\,[\mathrm m]$&$a_i\,[\mathrm m]$&$\alpha_i$\\\midrule
+1&$q_1$&$h$&0&$\pi/2$\\
+2&$\pi/2-q_2$&0&$L_1$&0\\
+3&$\pi/2-q_3$&0&0&$\pi/2$\\
+4&$q_4-\pi$&$L_2$&0&$-\pi/2$\\
+5&$q_5$&0&0&$\pi/2$\\
+6&$q_6$&$d$&0&0\\\bottomrule
+\end{tabular}
+\end{table}
+El producto ordenado $\mat A_1\cdots\mat A_6$ expresa la pose final con esos marcos. La cadena por movimientos elementales se mantiene como referencia de interpretación porque muestra directamente los ejes físicos y las agrupaciones de longitud.
+
+\section{Cinemática directa}
+Se define el centro de muñeca $C$ como el punto alcanzado por $L_1$ y $L_2$. Con $\beta=q_2+q_3$:
+\begin{align}
+\rho&=L_1\sin q_2+L_2\sin\beta,\\
+z_C&=h+L_1\cos q_2+L_2\cos\beta,\\
+\vct p_C&=\begin{bmatrix}\rho\cos q_1\\\rho\sin q_1\\z_C\end{bmatrix}.
+\end{align}
+Los senos aparecen en el alcance horizontal porque los eslabones parten de la dirección vertical. La orientación y posición del TCP son
+\begin{align}
+\mat R_{ME}&=\mat R_z(q_1)\mat R_y(\beta)
+\mat R_z(q_4)\mat R_y(q_5)\mat R_z(q_6),\\
+\vct p_E&=\vct p_C+d\mat R_{ME}\vct e_z,
+\qquad\vct e_z=\begin{bmatrix}0\\0\\1\end{bmatrix}.
+\label{eq:tcp}
+\end{align}
+La pose en la base se obtiene como $\mat T_{BE}=\mat T_{BM}\mat T_{ME}$. Las coordenadas del TCP deben indicar siempre el marco de expresión; una misma terna numérica cambia de significado al cambiar de marco.
+
+\subsection{Orientación explícita de la muñeca}
+Si $c_i=\cos q_i$ y $s_i=\sin q_i$, para $i=4,5,6$, la secuencia ZYZ vale
+\begin{equation}
+\mat R_{456}=\begin{bmatrix}
+c_4c_5c_6-s_4s_6&-c_4c_5s_6-s_4c_6&c_4s_5\\
+s_4c_5c_6+c_4s_6&-s_4c_5s_6+c_4c_6&s_4s_5\\
+-s_5c_6&s_5s_6&c_5
+\end{bmatrix}.
+\end{equation}
+Se premultiplica por $\mat R_z(q_1)\mat R_y(\beta)$ para expresar la orientación completa. La tercera columna indica la dirección del eje distal que multiplica al offset $d$ en~\eqref{eq:tcp}.
+
+\subsection{Límites y postura de transporte}
+Los límites geométricos son $q_1\in[-90^{\circ},90^{\circ}]$, $q_2\in[-10^{\circ},125^{\circ}]$ y $q_3,q_4,q_5,q_6\in[-90^{\circ},90^{\circ}]$. La postura de transporte del modelo es
+\begin{equation}
+\vct q_{\mathrm{tr}}=\begin{bmatrix}0&15&-40&0&25&0\end{bmatrix}^{\trans}
+\quad[^{\circ}].
+\end{equation}
+En ella $\beta=-25^{\circ}$ y $\beta+q_5=0$, por lo que la orientación ideal resultante es identidad. Los límites geométricos no acreditan ausencia de colisiones, margen de cables ni comportamiento bajo carga.
+
+Para $\vct q=\vct0$, la cadena ideal queda alineada con $z$ y produce $z_E=h+L_1+L_2+d=0{,}5375\unit m$ respecto de la montura. Esa postura es singular y no debe interpretarse como una altura física medida o una postura operativa aprobada.
+
+\section{Cinemática inversa}
+Para una pose objetivo $(\vct p_d,\mat R_d)$ expresada en la montura, se resta el desplazamiento de herramienta:
+\begin{equation}
+\vct p_{C,d}=\vct p_d-d\mat R_d\vct e_z.
+\end{equation}
+Se obtienen el azimut, alcance radial y altura relativa:
+\begin{equation}
+q_1=\atan(y_C,x_C),\qquad
+\rho=\sqrt{x_C^2+y_C^2},\qquad s=z_C-h.
+\end{equation}
+La ley de cosenos del subproblema de dos eslabones da
+\begin{align}
+c_3&=\frac{\rho^2+s^2-L_1^2-L_2^2}{2L_1L_2},\\
+q_3&=\pm\arccos(c_3),\\
+q_2&=\atan(\rho,s)-\atan\!\left(L_2\sin q_3,L_1+L_2\cos q_3\right).
+\end{align}
+Se requiere $|c_3|\le1$, salvo una tolerancia numérica explícita. Las dos ramas representan configuraciones distintas de codo. Al permitir radio firmado aparecen candidatos adicionales con un giro alternativo de base; todos deben filtrarse por límites y continuidad.
+
+Para orientar la muñeca se calcula
+\begin{equation}
+\mat R_{456,d}=\bigl[\mat R_z(q_1)\mat R_y(q_2+q_3)\bigr]^{\trans}\mat R_d
+=\mat R_z(q_4)\mat R_y(q_5)\mat R_z(q_6).
+\end{equation}
+Con elementos $r_{ij}$ de $\mat R_{456,d}$, una rama no singular de $0<q_5<\pi$ es
+\begin{align}
+q_5&=\atan\!\left(\sqrt{r_{13}^2+r_{23}^2},r_{33}\right),\\
+q_4&=\atan(r_{23},r_{13}),\qquad
+q_6=\atan(r_{32},-r_{31}).
+\end{align}
+La rama $(q_4+\pi,-q_5,q_6+\pi)$ permite buscar alternativas compatibles con los límites. Si $\sin q_5=0$, los giros primero y tercero quedan acoplados y se necesita un criterio de continuidad.
+
+\subsection{Factibilidad y selección}
+La solución algebraica se evalúa con límites articulares, colisiones, entorno, estabilidad y continuidad. Entre candidatos factibles puede minimizarse
+\begin{equation}
+C(\vct q)=\sum_{i=1}^6w_i\,\wrap(q_i-q_{i,\mathrm{actual}})^2.
+\end{equation}
+Los pesos reflejan desplazamientos admisibles y preferencias de postura. El costo no vuelve viable una solución que colisiona o compromete el apoyo. La función de agarre disponible en la Web resuelve una rama descendente restringida con J4 y J6 fijados; el desarrollo analítico anterior describe el modelo general y no implica que un solucionador general esté implementado en hardware.
+
+\section{Jacobiano y singularidades}
+Para cada articulación revoluta se expresan su eje unitario $\vct a_i$ y un punto $\vct o_i$ en un mismo marco. La columna del Jacobiano geométrico es
+\begin{equation}
+\mat J_i=\begin{bmatrix}
+\vct a_i\times(\vct p_E-\vct o_i)\\\vct a_i
+\end{bmatrix},
+\qquad\mat J=\begin{bmatrix}\mat J_1&\cdots&\mat J_6\end{bmatrix}.
+\end{equation}
+El eje $\vct a_i$ es la dirección real transformada de cada articulación, incluidos los ejes locales $Y$. Con el orden lineal--angular adoptado:
+\begin{equation}
+\begin{bmatrix}\vct v_E\\\vct\omega_E\end{bmatrix}=\mat J(\vct q)\dot{\vct q},
+\qquad \vct\tau_{\mathrm{ext}}=\mat J^{\trans}
+\begin{bmatrix}\vct F_E\\\vct M_E\end{bmatrix}.
+\end{equation}
+La segunda igualdad resulta de trabajo virtual y no incluye automáticamente peso propio, rozamiento ni aceleración.
+
+\subsection{Jacobiano de posición del centro de muñeca}
+Definiendo $a=L_1\cos q_2+L_2\cos\beta$ y $b=L_2\cos\beta$:
+\begin{equation}
+\mat J_C=\begin{bmatrix}
+-\rho\sin q_1&a\cos q_1&b\cos q_1\\
+\rho\cos q_1&a\sin q_1&b\sin q_1\\
+0&-\rho&-L_2\sin\beta
+\end{bmatrix}.
+\end{equation}
+De su determinante se obtiene
+\begin{equation}
+|\det\mat J_C|=|\rho L_1L_2\sin q_3|.
+\end{equation}
+El subproblema de posición pierde rango cuando $\rho=0$ o $\sin q_3=0$. La muñeca agrega singularidades con $\sin q_5=0$. Cerca de ellas, una pequeña velocidad cartesiana puede exigir velocidades articulares elevadas.
+
+Una opción de resolución amortiguada, para una tarea correctamente escalada, es
+\begin{equation}
+\dot{\vct q}=\mat J^{\trans}
+\left(\mat J\mat J^{\trans}+\lambda^2\mat I\right)^{-1}\vct V_d.
+\end{equation}
+Las componentes lineales y angulares requieren una escala consistente antes de comparar condicionamiento o elegir $\lambda$. Esta ley representa una alternativa de control a desarrollar, sin atribuirle ejecución física en el sistema.
+
+\section{Transmisiones y pinza}
+La relación de reducción $i_r=\omega_m/\omega_q$ y eficiencia $\eta$ vincula velocidad y par:
+\begin{equation}
+|\omega_q|=\frac{|\omega_m|}{i_r},\qquad
+|\tau_q|\simeq\eta i_r|\tau_m|.
+\end{equation}
+La transformación de una lectura de accionamiento al ángulo geométrico puede escribirse
+\begin{equation}
+q_i=\sigma_i\frac{\theta_{m,i}-\theta_{0,i}}{i_{r,i}},\qquad \sigma_i\in\{-1,+1\}.
+\end{equation}
+El cero, el sentido y la unidad nativa se calibran para el motor y su montaje. Un engranaje exterior invierte sentido; una correa abierta normalmente lo conserva. El cociente de dientes no determina por sí solo el signo completo de una articulación.
+
+La pinza utiliza un piñón de 24 dientes, módulo 1 y radio primitivo $r_p=12\unit{mm}$. Las dos cremalleras se desplazan simétricamente. Para un giro relativo $\theta$ en radianes:
+\begin{align}
+g(\theta)&=g_0+2r_p\theta,\qquad \dot g=2r_p\dot\theta,\\
+F_{\mathrm{mandíbula}}&\simeq\frac{\eta\tau_p}{2r_p}.
+\end{align}
+El intervalo geométrico de apertura es aproximadamente 4,007 a 79,405 mm. La fuerza anterior supone reparto simétrico entre cremalleras. Para dos contactos verticales con fricción $\mu$, la condición estática ideal de retención es
+\begin{equation}
+2\mu F_{\mathrm{mandíbula}}\ge m_o g_0,
+\qquad FS_{\mathrm{agarre}}=\frac{2\mu F_{\mathrm{mandíbula}}}{m_og_0}.
+\end{equation}
+Fricción, rigidez, geometría de contacto, calentamiento y límite continuo del servo deben medirse para asignar una carga útil. El par de bloqueo no se usa como capacidad continua de agarre.
+\FloatBarrier

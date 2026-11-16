@@ -1,0 +1,117 @@
+\chapter{Resultados y análisis del desempeño}
+\label{cap:resultados}
+
+\section{Condiciones de interpretación}
+Los resultados se presentan por subsistema. Las cifras de masa y estabilidad corresponden al modelo CAD con densidades y masas comerciales o estimadas. Las mediciones de movimiento corresponden a una tanda de la base del 12 de noviembre de 2026, sin carga, con consigna de 100 mm/s y firmware 1.28.0. No se extrapolan esos resultados al manipulador cargado ni a otra superficie.
+
+El modelo matemático determina cómo deberían relacionarse las magnitudes bajo sus hipótesis. La presencia de una ecuación, un modelo 3D o una función de software no sustituye la verificación del mecanismo físico. Esta sección permite evaluar lo obtenido y localizar las limitaciones que condicionan el cierre del proyecto.
+
+\section{Masa y estabilidad calculadas}
+El presupuesto de referencia del manipulador incluye montura y control propio. Se considera una base de 1,5 kg distribuida simétricamente y una carga objetivo de 0,2 kg. La masa de base es una hipótesis aproximada y no se confunde con el pesaje de todo el conjunto.
+
+\begin{table}[!htbp]\centering\small
+\caption{Presupuesto de masa del modelo. Las diferencias de centésimas provienen del redondeo.}
+\begin{tabularx}{\linewidth}{@{}YP{32mm}@{}}
+\toprule\textbf{Elemento} & \textbf{Masa calculada}\\\midrule
+PLA modelado con densidad sólida & 788,97 g\\
+Acero y herrajes & 566,78 g\\
+Cinco STS3250 & 377,50 g\\
+Dos STS3032 & 43,20 g\\
+Aluminio y aluminio 2024 & 217,76 g\\
+Rodamientos & 155,00 g\\
+Electrónica propia & 177,00 g\\
+PVC & 7,93 g\\
+Correa, latón y almohadillas & 10,86 g\\\midrule
+\textbf{Brazo, montura y control sin objeto} & \textbf{2344,99 g}\\
+Base móvil de referencia & 1500,00 g\\
+Objeto de referencia & 200,00 g\\\midrule
+\textbf{Conjunto de referencia} & \textbf{4044,99 g}\\\bottomrule
+\end{tabularx}
+\end{table}
+
+La masa del brazo representa volumen y asignaciones físicas de CAD, no peso de una impresión terminada. La fila de PLA usa densidad sólida y no incorpora todavía la distribución de rellenos del 25\,\% para envolventes, 80\,\% para estructura cargada y 100\,\% para transmisión. Por tanto, el presupuesto y el análisis de estabilidad siguientes conservan las hipótesis de ese modelo; deben actualizarse con masas por pieza y centros de masa del conjunto fabricado. Los servos y la electrónica se representan con propiedades aproximadas. La masa de 1,5 kg de la base se interpreta sin duplicar la electrónica propia del brazo incluida en el presupuesto.
+
+Con un apoyo rectangular nominal de $214\times124\unit{mm}$, la postura frontal extendida produce una distancia proyectada al borde cercana a 0,85 mm y
+\begin{equation}
+FS_{\mathrm{frontal}}=1{,}023<1{,}2=FS_{\mathrm{criterio}}.
+\end{equation}
+El cálculo no satisface el criterio elegido. Una pequeña variación de masa, contacto, pendiente o aceleración puede consumir el margen. Un actuador capaz de sostener la postura no evita el vuelco del conjunto.
+
+\figura[.90]{estabilidad.png}{Proyección calculada del centro de masa para diferentes orientaciones del brazo sobre el apoyo nominal. La posición frontal se aproxima al borde; el gráfico representa un modelo estático.}{fig:estabilidad}
+
+El estudio de configuración incluye 43.798 estados muestreados. Una muestra finita no demuestra ausencia de problemas en todo el espacio continuo. Para una postura de comparación se obtuvieron márgenes nominales de actuador de 2,58 en J2, 2,63 en J3, 19,91 en J4 y 3,51 en J5, bajo las hipótesis del modelo. Estos valores no sustituyen una envolvente de par por velocidad ni una aceptación resistente o térmica.
+
+\section{Mediciones de avance, lateral y giro}
+La tanda comprende cinco repeticiones por tipo de movimiento. La odometría es el valor interno estimado y la medida externa representa la referencia física registrada. Se diferencia error de llegada de deriva odométrica:
+\begin{equation}
+e_{\mathrm{llegada}}=y_{\mathrm{real}}-y_{\mathrm{objetivo}},
+\qquad e_{\mathrm{odom}}=y_{\mathrm{odom}}-y_{\mathrm{real}}.
+\end{equation}
+Los rangos y valores centrales siguientes describen los datos disponibles; no se les asigna una incertidumbre instrumental no determinada.
+
+\begin{table}[!htbp]\centering\small
+\caption{Resultados lineales con firmware 1.28.0. Valores en milímetros.}
+\begin{tabularx}{\linewidth}{@{}P{30mm}P{20mm}YP{27mm}P{26mm}@{}}
+\toprule\textbf{Movimiento} & \textbf{Meta} & \textbf{Odometría final} & \textbf{Medida real} & \textbf{Error medio de llegada}\\\midrule
+Avance & $+1000$ & 989 a 991 & 989 a 991 & $-10{,}2$\\
+Lateral derecho & $-1000$ & $-989$ a $-992$ & $-989$ a $-992$ & $+10{,}2$\\\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[!htbp]\centering\small
+\caption{Resultados angulares con firmware 1.28.0. Valores en grados.}
+\begin{tabularx}{\linewidth}{@{}P{29mm}P{20mm}YP{25mm}P{26mm}@{}}
+\toprule\textbf{Movimiento} & \textbf{Meta} & \textbf{Odometría final} & \textbf{Medida real} & \textbf{Error de llegada}\\\midrule
+CCW & $+90$ & 88,6 a 89,0 & $+91$ & $+1{,}0$\\
+CW & $-90$ & $-88{,}8$ a $-89{,}2$ & $-91$ & $-1{,}0$\\\bottomrule
+\end{tabularx}
+\end{table}
+
+En avance se registró una deriva media odometría--medida de aproximadamente $-0{,}2\unit{mm}$ y en lateral de 0,0 mm. En los giros, la diferencia fue aproximadamente $-2{,}2^{\circ}$ en CCW y $+2{,}0^{\circ}$ en CW. Los datos muestran que la estimación de distancia puede coincidir con la referencia y aun así terminar antes de la meta.
+
+\subsection{Interpretación del error lineal}
+Las bandas de llegada de la configuración ensayada eran 10 mm y 25 mrad. Al aproximarse a una meta de 1000 mm, el controlador admite finalizar desde 990 mm. Por eso un error cercano a 10 mm puede originarse en la condición de terminación sin exigir un cambio de escala.
+
+\begin{equation}
+|1000-990|=10\unit{mm}.
+\end{equation}
+Corregir el factor de odometría para eliminar ese efecto mezclaría error de calibración con decisión de llegada. Deben analizarse por separado consigna, pose estimada y medida externa.
+
+\subsection{Interpretación del giro}
+En giro se combinan la banda de parada y una subestimación angular de odometría. Una relación representativa es
+\begin{equation}
+\frac{|\psi_{\mathrm{real}}|}{|\psi_{\mathrm{odom}}|}
+\simeq\frac{91}{88{,}9}\simeq1{,}024.
+\end{equation}
+El valor es cercano al factor de fábrica 1,028, obtenido de una relación de giro de $92{,}5^{\circ}/90^{\circ}$. La configuración persistente puede conservar una escala distinta de la de fábrica. Por ello, actualizar software y modificar parámetros activos no son operaciones equivalentes.
+
+\section{Ajustes y resultados por demostrar}
+La fuente 1.28.1 contempla tolerancias de 4 mm y 10 mrad, migración de factores de giro y mayor ganancia de rumbo durante traslación. Su estado es fuente ATmega editada sin compilación ni carga acreditadas para ese ajuste; ESP y Web conservan actualización de versión. La tabla experimental corresponde a 1.28.0 y no demuestra el resultado de 1.28.1.
+
+Las pruebas sin carga no caracterizan la precisión del TCP, la fuerza de pinza, el comportamiento con objeto ni la estabilidad dinámica del manipulador móvil. La base no incorpora una IMU; el patinamiento que no se refleja en las cuentas necesita una referencia externa para observarse.
+
+\begin{table}[!htbp]\centering\small
+\caption{Estado técnico y condiciones de cierre por subsistema.}
+\begin{tabularx}{\linewidth}{@{}P{29mm}YY@{}}
+\toprule\textbf{Área} & \textbf{Resultado disponible} & \textbf{Condición pendiente}\\\midrule
+Mecánica & Geometría v17 e interfaces nominales. & Materiales, ajustes, fabricación e inspección.\\
+Brazo & Cadena, IK ideal y Jacobianos. & Ceros, bus, potencia y contraste de poses.\\
+Base & Mezcla, Hall y mediciones sin carga. & Caracterización ampliada por carga y superficie.\\
+Estabilidad & Modelo de masa y margen frontal insuficiente. & Pesajes, contactos reales y región operativa.\\
+Control & Servicios y leyes disponibles en fuente. & Ajuste, frenado y comportamiento bajo carga.\\
+Pinza & Apertura y relaciones de fuerza ideales. & Contacto, fricción, calentamiento y retención.\\
+Sensores & Modelos y asignación de señales. & Error, latencia, ángulo y tasa de inválidos.\\\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Métricas para ampliar la caracterización}
+Para $n$ mediciones con error $e_j=y_{\mathrm{med},j}-y_{\mathrm{ref},j}$:
+\begin{align}
+\overline e&=\frac1n\sum_{j=1}^n e_j,\\
+\RMSE&=\sqrt{\frac1n\sum_{j=1}^n e_j^2},\\
+s_e&=\sqrt{\frac{1}{n-1}\sum_{j=1}^n(e_j-\overline e)^2}.
+\end{align}
+El sesgo describe error sistemático, RMSE combina sesgo y dispersión, y $s_e$ describe dispersión alrededor de la media. La resolución de encoder es una cuantización; la repetibilidad exige repetir una condición y la exactitud exige una referencia. Ninguna de esas métricas se atribuye al brazo sin sus mediciones.
+
+Cada sesión debe registrar versión, calibración, batería, carga, superficie, instrumento, referencia, tiempos, cuentas crudas, consignas y causa de parada. La calibración debe cubrir avance, lateral y giro; una medida lineal no basta para estimar todos los errores de movimiento.
+\FloatBarrier

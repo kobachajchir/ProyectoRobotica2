@@ -33,6 +33,17 @@ export function forwardArm(q: ArmAngles, mount: Point3 = ARM_MOUNT) {
   const model = robotModel(), environment = mount === STANDALONE_MOUNT ? 'standalone' : 'mounted';
   return forwardModel(q, model, { ...model.mounts[environment], position: mount });
 }
+/** AFR2-20261112-04: cota máxima de alcance del modelo activo (suma de eslabones + TCP), en metros. */
+export function armReach() {
+  const model = robotModel();
+  return model.joints.reduce((sum, j) => sum + Math.hypot(...j.origin.position), Math.hypot(...model.tcp.position));
+}
+/** Burbuja de acción: esfera de radio armReach() con centro en la base del brazo (marco Three, Y arriba).
+ * Es la cota geométrica, no el volumen alcanzable real (para eso, la nube «Alcance»). */
+export function armBubble(environment: ArmEnvironment = 'mounted') {
+  const mount = environment === 'standalone' ? STANDALONE_MOUNT : ARM_MOUNT;
+  return { center: toThree(mount), radius: armReach(), baseHeight: mount[2] };
+}
 export function armViewFocus(): Point3 {
   const model = robotModel(), reach = model.joints.reduce((sum, j) => sum + Math.hypot(...j.origin.position), Math.hypot(...model.tcp.position));
   return toThree([STANDALONE_MOUNT[0], STANDALONE_MOUNT[1], STANDALONE_MOUNT[2] + reach / 2]);

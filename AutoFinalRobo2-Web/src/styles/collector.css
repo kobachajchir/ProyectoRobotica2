@@ -184,3 +184,13 @@
 .afr2-sim-side-controls .afr2-seg[data-fill] .afr2-seg__row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); width: 100%; }
 .afr2-sim-side-controls .afr2-seg[data-fill] .afr2-seg__glow { right: var(--seg-pad); }
 .afr2-sim-side-controls .afr2-seg[data-fill] :is(.afr2-seg__item, .afr2-seg__ghost) { padding-inline: 4px; }
+
+/* AFR2-20261111-01: slider «Cajas a recolectar» con marcas visibles y progreso entregadas / meta. */
+.afr2-collector-boxes { display: grid; gap: 6px; }
+.afr2-collector-boxes label { display: flex; justify-content: space-between; align-items: baseline; }
+.afr2-collector-boxes input[type="range"] { width: 100%; }
+.afr2-collector-boxes__ticks { display: flex; justify-content: space-between; font-size: var(--type-caption-size, .75rem); color: var(--text-muted); padding: 0 2px; }
+.afr2-collector-boxes__ticks span[data-active="true"] { color: var(--text); font-weight: 700; }
+.afr2-collector-boxes__confirm { border: 1px solid var(--warning-border, var(--border-default)); background: var(--warning-subtle, var(--surface-subtle)); border-radius: var(--radius-md); padding: 10px; display: grid; gap: 8px; }
+.afr2-collector-progress { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center; }
+.afr2-collector-progress progress { grid-column: 1 / -1; width: 100%; }

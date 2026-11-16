@@ -3,14 +3,14 @@ import { BANNER_VIEW_DIRECTION, frameModel } from '../../components/three/frameM
 import { ModelAssetProgress } from '../../components/three/ModelAssetProgress';
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
-import { Box3, BufferGeometry, CanvasTexture, Group, Matrix4, OrthographicCamera, Plane, Quaternion, Vector3 } from 'three';
+import { Box3, BufferGeometry, CanvasTexture, EdgesGeometry, Group, Matrix4, OrthographicCamera, Plane, Quaternion, SphereGeometry, Vector3 } from 'three';
 import { useRobotModel } from '../../components/three/RobotModel';
 import { SimulationRobot, SimulationOrbit } from './SimulationModel';
 import { RenderBoundary } from '../../components/ui/RenderBoundary';
 import { Button } from '../../components/ui/Button';
 import { useTheme } from '../../app/providers/ThemeProvider';
 import { getComponentAnchors } from '../model3d/modelComponents';
-import { ARM_MOUNT, STANDALONE_MOUNT, CAD_TO_THREE, forwardArm, groundWorkspacePoints, localToWorld, rad, toThree, workspacePoints, type Point3 } from './armKinematics';
+import { ARM_MOUNT, STANDALONE_MOUNT, CAD_TO_THREE, armBubble, forwardArm, groundWorkspacePoints, localToWorld, rad, toThree, workspacePoints, type Point3 } from './armKinematics';
 import { cubeReach, halt, moveBase, positionCube, setJoint } from './collectorSimulation';
 import { useCollector } from './CollectorContext';
 import { useArmPoints } from './ArmPointsContext';
@@ -28,7 +28,8 @@ interface SceneProps { view: SceneView; tool: SceneTool; focus: Point3; revision
 /** AFR2-20261102-03: zoom de la cámara ortográfica relativo al encuadre inicial (100 %). */
 interface ZoomLink { base: number; target: number | null; step: (factor: number) => void; reset: () => void; setPercent: (percent: number) => void }
 // UI 0 = safe widest framing; UI 100 = original framing. Camera zoom must stay positive.
-const ZOOM_MIN = .25, ZOOM_MAX = 1;
+/* AFR2-20261111-08: 100 % sigue siendo la vista base anterior (ZOOM_TOP); el zoom llega hasta 250 %. */
+const ZOOM_MIN = .25, ZOOM_TOP = 1, ZOOM_MAX = ZOOM_MIN + (ZOOM_TOP - ZOOM_MIN) * 2.5;
 
 function readPalette() {
   const css = getComputedStyle(document.documentElement);
@@ -86,7 +87,7 @@ function ZoomBridge({ zoom, onZoom }: { zoom: RefObject<ZoomLink>; onZoom: (perc
     const clamp = (value: number) => Math.min(link.base * ZOOM_MAX, Math.max(link.base * ZOOM_MIN, value));
     link.step = factor => { link.target = clamp((link.target ?? camera.zoom) * factor); invalidate(); };
     link.reset = () => { link.target = link.base; invalidate(); };
-    link.setPercent = percent => { link.target = link.base * (ZOOM_MIN + (ZOOM_MAX - ZOOM_MIN) * percent / 100); invalidate(); };
+    link.setPercent = percent => { link.target = link.base * (ZOOM_MIN + (ZOOM_TOP - ZOOM_MIN) * percent / 100); invalidate(); };
   }, [camera, invalidate, zoom]);
   useFrame((_, delta) => {
     const link = zoom.current; if (!link || !(camera instanceof OrthographicCamera)) return;
@@ -99,7 +100,7 @@ function ZoomBridge({ zoom, onZoom }: { zoom: RefObject<ZoomLink>; onZoom: (perc
     }
     const bounded = Math.min(link.base * ZOOM_MAX, Math.max(link.base * ZOOM_MIN, camera.zoom));
     if (bounded !== camera.zoom) { camera.zoom = bounded; camera.updateProjectionMatrix(); invalidate(); }
-    const percent = Math.round((camera.zoom / (link.base || camera.zoom) - ZOOM_MIN) / (ZOOM_MAX - ZOOM_MIN) * 100);
+    const percent = Math.round((camera.zoom / (link.base || camera.zoom) - ZOOM_MIN) / (ZOOM_TOP - ZOOM_MIN) * 100);
     if (percent !== last.current) { last.current = percent; onZoom(percent); }
   });
   return null;
@@ -119,6 +120,25 @@ function Workspace({ accent, error, standalone }: { accent: string; error: strin
       <pointsMaterial size={.006} color={error} transparent opacity={.35} depthWrite={false} />
     </points>
   </>;
+}
+/** AFR2-20261112-04: burbuja de acción del brazo. Malla de meridianos y paralelos (sin diagonales) con centro en la base
+ * y radio = alcance máximo; se corta en el piso. Velo tenue por dentro para leer el volumen. Cota geométrica, no IK. */
+function ReachBubble({ color, standalone }: { color: string; standalone: boolean }) {
+  const modelKey = `${robotModel().id}:${robotModel().revision}`;
+  const bubble = useMemo(() => armBubble(standalone ? 'standalone' : 'mounted'), [standalone, modelKey]);
+  // Polar angle (from the top) where the sphere meets the floor; the whole sphere if the floor is below it.
+  const floorTheta = bubble.baseHeight < bubble.radius ? Math.acos(Math.max(-1, Math.min(1, -bubble.baseHeight / bubble.radius))) : Math.PI;
+  const shell = useMemo(() => new SphereGeometry(bubble.radius, 32, 16, 0, Math.PI * 2, 0, floorTheta), [bubble.radius, floorTheta]);
+  const edges = useMemo(() => new EdgesGeometry(shell, 1), [shell]);
+  useEffect(() => () => { shell.dispose(); edges.dispose(); }, [shell, edges]);
+  return <group position={bubble.center}>
+    <lineSegments geometry={edges} renderOrder={2}><lineBasicMaterial color={color} transparent opacity={.55} depthWrite={false} /></lineSegments>
+    <mesh geometry={shell} renderOrder={1}><meshBasicMaterial color={color} transparent opacity={.05} depthWrite={false} side={2} /></mesh>
+    {bubble.baseHeight < bubble.radius && <mesh position={[0, .002 - bubble.center[1], 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <ringGeometry args={[Math.sqrt(Math.max(0, bubble.radius ** 2 - bubble.baseHeight ** 2)) - .003, Math.sqrt(Math.max(0, bubble.radius ** 2 - bubble.baseHeight ** 2)), 96]} />
+      <meshBasicMaterial color={color} transparent opacity={.7} depthWrite={false} />
+    </mesh>}
+  </group>;
 }
 function ArmRig({ accent, metal, text, standalone, onInteracting }: {
   accent: string; metal: string; text: string; standalone: boolean; onInteracting: (active: boolean) => void;
@@ -275,6 +295,7 @@ function SceneContents({ view, tool, focus, armPanel, carOnly = false, zoom, onZ
         <ringGeometry args={[.18, .184, 64]} /><meshBasicMaterial color={palette.accent} />
       </mesh>}
       {!carOnly && state.workspace && <Workspace accent={palette.accent} error={palette.error} standalone={armPanel} />}
+      {!carOnly && state.bubble && <ReachBubble color={palette.accent} standalone={armPanel} />}
       {!carOnly && <SavedPointsOverlay accent={palette.accent} text={palette.text} standalone={armPanel} />}
       {!armPanel && state.references && <>
         <RobotReferences accent={palette.accent} text={palette.text} />

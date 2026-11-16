@@ -10,11 +10,20 @@
 #include "afr2_sensor_head.h"
 #include "afr2_battery_wire.h"
 #include "afr2_geometry.h"
-#define AFR2_CONFIG_VERSION 11u /* AFR2-20261108-06: EEPROM v11, 66-byte payload, +wifi_retry_s (v10: 64 bytes, per-wheel CW convention). */
+#define AFR2_CONFIG_VERSION 13u /* AFR2-20261111-06: 78-byte payload; six directional odometry scales, v1..11 migrate in RAM.
+ * AFR2-20261112-01: v13 mismo payload; un registro v12 con giro CW/CCW = 1000 toma AFR2_TURN_ODOM_PERMILLE en RAM. */
 #define AFR2_WIFI_RETRY_DEFAULT_S 30u /* AFR2-20261108-06: "Seguir esperando" vuelve a preguntar tras este tiempo */
 #define AFR2_NOTICE_MS 3000u
 #define AFR2_FACTORY_HALL_MASK 0x0Fu /* AFR2-20261108-05: signos y convencion CW de fabrica en las 4 ruedas */
 #define AFR2_DEFAULT_CPR 370u /* AFR2-20261108-02: pulsos Hall por vuelta medidos por el usuario, iguales en las 4 ruedas */
+/* AFR2-20261112-01: llegada del GOTO. Con 10 mm / 25 mrad el auto cortaba en el primer ciclo dentro de la banda: 20 ensayos
+ * de Pruebas minimas terminaron 10 mm cortos (avance y lateral) y 1,1 grados cortos (giros), con odometria = medida.
+ * A la velocidad minima (40 mm/s, 235 mrad/s) cada ciclo de 10 ms avanza 0,4 mm / 2,4 mrad: la banda no se saltea. */
+#define AFR2_GOTO_POS_TOL_MM 4
+#define AFR2_GOTO_YAW_TOL_MRAD 10
+/* AFR2-20261112-01: ganancia de rumbo mientras traslada (1/s). Con 1 el lateral a la derecha se iba girando antihorario y
+ * recien se corregia al llegar. El giro puro conserva ganancia 1. */
+#define AFR2_GOTO_YAW_KP_TRANSLATE 3
 enum { AFR2_IDLE, AFR2_MANUAL, AFR2_LINE, AFR2_WHEEL_TEST, AFR2_GOTO, AFR2_FAULT, AFR2_SEQUENCE, AFR2_PWM_MANUAL };
 enum { AFR2_SOURCE_NONE, AFR2_SOURCE_LOCAL, AFR2_SOURCE_WEB };
 enum { AFR2_OK, AFR2_BAD, AFR2_UNAVAILABLE, AFR2_DENIED, AFR2_BUSY, AFR2_FAILED };
@@ -35,6 +44,7 @@ typedef struct {
     uint16_t line_kp, line_speed;
     uint32_t counts_per_rev[4];
     uint8_t hall_cw_mask; /* AFR2-20261106-12: calibrated CW from wheel exterior; per-wheel migration. */
+    uint16_t odom_scale[6]; /* AFR2-20261111-06: forward, reverse, left, right, CW, CCW; permille 0..2000. */
     uint16_t wifi_retry_s; /* AFR2-20261108-06: 10..300 s, paso 10; espera de "Seguir esperando" */
 } Afr2Config;
 typedef struct {
@@ -86,6 +96,10 @@ typedef struct Afr2Product {
     uint8_t mode, origin, fault, stopped, selected_wheel, web_seen;
     uint8_t prefs_state, prefs_loaded, reset_cause, goto_state, hall_measuring, hall_bad;
     uint8_t notice, extension_ready;
+    /* AFR2-20261111-04: modo Manual elegido (pill de la Web u OLED). Se conserva al detenerse (el auto queda en Manual, no
+     * vuelve a Reposo) y habilita el PWM manual saltando los permisos: detiene radar/secuencia/Hall, limpia fallo y habilita
+     * motores. Se borra al elegir Reposo, Linea, GOTO, prueba de rueda o secuencia. */
+    uint8_t manual_selected;
     uint16_t local_timeout_ms;
     uint32_t now, control_ms, command_ms, local_started_ms, session, web_ms;
     uint32_t test_started_ms, mission_started_ms;
@@ -110,6 +124,8 @@ typedef struct Afr2Product {
 #define AFR2_LATE_WINDOW_MS 2000u
 /* 0 sin datos, 1 coincide, 2 cruzado. */
 uint8_t Afr2Product_HallPwmState(const Afr2Product *p,uint8_t wheel);
+/* AFR2-20261111-08: GOTO en curso con origen local (examen, prueba de distancia, recorrido o prueba enviada desde la Web). */
+static inline uint8_t Afr2Product_LocalMission(const Afr2Product *p){return p->mode==AFR2_GOTO && !p->stopped && p->origin==AFR2_SOURCE_LOCAL;}
 void Afr2Product_Init(Afr2Product *p,uint8_t reset_cause);
 void Afr2Product_Task(Afr2Product *p,uint32_t now);
 uint8_t Afr2Product_Stop(void *ctx);

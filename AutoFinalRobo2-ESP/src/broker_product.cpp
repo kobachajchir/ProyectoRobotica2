@@ -76,6 +76,19 @@ bool Broker::encodeProduct(BrokerRequest &q,JsonObjectConst p) {
         if(!p["confirm"].is<bool>())return fail();
         q.wireCommand=AFR2_EXT_LINE_CAL;q.bodyLength=5;q.body[4]=p["confirm"].as<bool>()?0:1;
         const char *sample=p["sample"]|"";if(*sample){if(!strcmp(sample,"background"))q.body[4]=2;else if(!strcmp(sample,"line"))q.body[4]=3;else return fail();}
+    /* AFR2-20261111-08: recorrido GOTO completo en el ATmega (0x46..0x49). Reservado u32=0 al frente, como GOTO. */
+    } else if(!strcmp(c,"robot.route.begin")) {
+        if(!p["token"].is<uint32_t>() || !p["token"].as<uint32_t>() || !number(p["count"],1,32) || !number(p["maxSpeedMmS"],10,1000))return fail();
+        q.wireCommand=AFR2_EXT_ROUTE_BEGIN;q.bodyLength=11;afr2_put_u32(q.body+4,p["token"].as<uint32_t>());q.body[8]=p["count"].as<uint8_t>();afr2_put_u16(q.body+9,p["maxSpeedMmS"].as<uint16_t>());
+    } else if(!strcmp(c,"robot.route.leg")) {
+        if(!p["token"].is<uint32_t>() || !p["token"].as<uint32_t>() || !number(p["index"],0,31) || !number(p["xMm"],-5000,5000) || !number(p["yMm"],-5000,5000) || !number(p["thetaMrad"],-3140,3140))return fail();
+        q.wireCommand=AFR2_EXT_ROUTE_LEG;q.bodyLength=15;afr2_put_u32(q.body+4,p["token"].as<uint32_t>());q.body[8]=p["index"].as<uint8_t>();
+        afr2_put_u16(q.body+9,(int16_t)p["xMm"].as<int32_t>());afr2_put_u16(q.body+11,(int16_t)p["yMm"].as<int32_t>());afr2_put_u16(q.body+13,(int16_t)p["thetaMrad"].as<int32_t>());
+    } else if(!strcmp(c,"robot.route.start")) {
+        if(!p["token"].is<uint32_t>() || !p["token"].as<uint32_t>())return fail();
+        q.wireCommand=AFR2_EXT_ROUTE_START;q.bodyLength=8;afr2_put_u32(q.body+4,p["token"].as<uint32_t>());
+    } else if(!strcmp(c,"robot.route.status")) {
+        q.wireCommand=AFR2_EXT_ROUTE_STATUS;q.bodyLength=4;afr2_put_u32(q.body,p["token"]|0u);
     } else if(!strcmp(c,"robot.goto.cancel")) {q.wireCommand=AFR2_EXT_CANCEL;q.bodyLength=0;
     } else if(!strcmp(c,"robot.state")) {q.wireCommand=AFR2_EXT_STATE;
     } else if(!strcmp(c,"robot.screen.get")) {q.wireCommand=AFR2_EXT_UI_META;
@@ -270,7 +283,19 @@ bool Broker::finishProduct(const BrokerRequest &q,const MegaResult &r) {
     } else if(q.wireCommand==AFR2_EXT_TOUCH_UI){out["enabled"]=q.body[0]!=0;out["powerPercent"]=p[9];out["confirmed"]=true;
     } else if((q.wireCommand==AFR2_EXT_DRIVE || q.wireCommand==AFR2_EXT_DRIVE_PWM)){out["accepted"]=true;
     } else if(q.wireCommand==AFR2_EXT_WHEEL || q.wireCommand==AFR2_EXT_GOTO){f["status"]="accepted";out["accepted"]=true;
-    } else if(q.wireCommand==AFR2_EXT_MODE){out["confirmed"]=true;if(q.body[4]==0){productOrigin_=0;publishStatus();}}
+    } else if(q.wireCommand==AFR2_EXT_MODE){out["confirmed"]=true;if(q.body[4]==0){productOrigin_=0;publishStatus();}
+    /* AFR2-20261111-08: respuestas del recorrido GOTO local. */
+    } else if(q.wireCommand==AFR2_EXT_ROUTE_BEGIN){out["token"]=afr2_get_u32(p+9);out["count"]=p[13];
+    } else if(q.wireCommand==AFR2_EXT_ROUTE_LEG){out["token"]=afr2_get_u32(p+9);out["index"]=p[13];out["loaded"]=p[14];
+    } else if(q.wireCommand==AFR2_EXT_ROUTE_START || q.wireCommand==AFR2_EXT_ROUTE_STATUS){
+        static const char *const states[]={"idle","loading","ready","running","completed","cancelled","failed"};
+        out["token"]=afr2_get_u32(p+9);out["state"]=p[13]<=6?states[p[13]]:"unknown";
+        if(q.wireCommand==AFR2_EXT_ROUTE_STATUS){
+            out["count"]=p[14];out["leg"]=p[15];out["done"]=p[16];out["fault"]=p[17];
+            JsonObject pose=out["pose"].to<JsonObject>();pose["xMm"]=(int32_t)afr2_get_u32(p+18);pose["yMm"]=(int32_t)afr2_get_u32(p+22);pose["thetaMrad"]=(int32_t)afr2_get_u32(p+26);
+            out["elapsedMs"]=afr2_get_u32(p+30);
+        }
+    }
     answer(q,f);return true;
 }
 void Broker::tickProduct(uint32_t now) {

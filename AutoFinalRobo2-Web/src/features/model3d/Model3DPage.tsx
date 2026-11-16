@@ -1,4 +1,5 @@
 import { ModelAssetProgress } from '../../components/three/ModelAssetProgress';
+import { ModelSpinner } from '../../components/three/ModelSpinner';
 import { Disclosure } from '../../components/ui/Disclosure';
 import React, { Component, Suspense, useState } from 'react';
 import { clearRobotModelCache } from '../../components/three/RobotModel';
@@ -83,7 +84,7 @@ export function Model3DPage() {
       {!viewerEnabled ? <div className="afr2-model-inspection__loading"><p>Visor en pausa</p>
         <Button onClick={() => setViewerEnabled(true)}>Reanudar visor</Button></div>
         : <ViewerErrorBoundary key={`${modelo}-${viewerKey}`} onReset={retryModel}>
-          <Suspense fallback={<div className="afr2-model-inspection__loading" role="status">Cargando modelo 3D…</div>}>
+          <Suspense fallback={<div className="afr2-model-inspection__loading"><ModelSpinner label="Cargando modelo 3D…" /></div>}>
             <ModelInspection model={modelo} referencesVisible={referencesVisible} onToggleReferences={() => setReferencesVisible(v => !v)} action={simulate} />
           </Suspense>
         </ViewerErrorBoundary>}

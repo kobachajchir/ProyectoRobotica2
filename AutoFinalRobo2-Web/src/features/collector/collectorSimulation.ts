@@ -18,6 +18,10 @@ export const PHASE_LABELS: Record<Phase, string> = {
   release: 'Confirmando entrega', stow: 'Recogiendo brazo', complete: 'Recorrido terminado', fault: 'Intervención necesaria',
 };
 export const DROP_RADIUS = .24;
+/** AFR2-20261111-01: «Cajas a recolectar». Genera esa cantidad de cajas y es la meta de la misión. */
+export const COLLECTOR_MIN_BOXES = 3, COLLECTOR_MAX_BOXES = 10, COLLECTOR_DEFAULT_BOXES = 5;
+/** Intentos fallidos por caja antes de darla por inalcanzable (se reintenta en cada vuelta mientras tanto). */
+const MAX_ATTEMPTS = 4;
 const ZERO = (): RobotWheelValues => ({ fl: 0, fr: 0, rl: 0, rr: 0 });
 export interface CollectorState {
   pose: { x: number; y: number; yaw: number };
@@ -26,14 +30,22 @@ export interface CollectorState {
   navigation: { goal: GroundPose; route: Point3[]; purpose: NavPurpose } | null;
   dropTarget: Point3 | null; searchSectors: number; searchHeading: number;
   /** Cyclic patrol: next stop, legs travelled since the last detection, boxes set aside for later. */
-  searchStop: number; searchLegs: number; skipIds: number[]; skipRetried: boolean; targetId: number | null;
-  cubes: Cube[]; seed: number; requestedCount: number;
+  searchStop: number; searchLegs: number; laps: number;
+  /** Persistent clearing move (car axes) while an in-place turn is blocked; avoids back-and-forth jitter. */
+  escape: [number, number] | null; skipIds: number[]; skipRetried: boolean; targetId: number | null;
+  cubes: Cube[]; seed: number;
+  /** Meta de la misión: cajas a entregar (= cajas generadas con el slider). */
+  requestedCount: number;
+  /** Fallos por caja (id) con el último motivo; sirve para reintentar y para explicar la intervención. */
+  failures: Record<number, { count: number; reason: string }>;
   sensorAngle: number; sensorHeight: number; scanning: boolean; scanDirection: number;
   echoes: Echo[]; reading: Echo | null; clock: number; sampleDue: number; scanComplete: boolean;
   phase: Phase; running: boolean; detail: string; elapsed: number;
   target: Point3 | null; jointTarget: ArmAngles | null; stored: number;
   jointQueue: ArmAngles[]; environment: ArmEnvironment; singleTarget: boolean;
   selected: string; references: boolean; workspace: boolean;
+  /** AFR2-20261112-04: burbuja de acción del brazo (malla), apagada por defecto. */
+  bubble: boolean;
   selectedJoint: number;
   motionEpoch: number;
   rigIssue: string | null;
@@ -53,38 +65,43 @@ export function generateCubes(seed: number, count: number): Cube[] {
   let value = seed >>> 0;
   const random = () => { value = (Math.imul(value, 1664525) + 1013904223) >>> 0; return value / 4294967296; };
   const cubes: Cube[] = [];
-  for (let attempt = 0; cubes.length < count && attempt < 2000; attempt++) {
-    const point: Point3 = cubes.length === 0
-      ? [.225 + random() * .01, (random() - .5) * .04, CUBE_SIZE / 2]
-      : [.45 + random() * 1.05, (random() - .5) * 1.4, CUBE_SIZE / 2];
-    if (cubes.every(cube => Math.hypot(cube.point[0] - point[0], cube.point[1] - point[1]) > .15)) {
-      cubes.push({ id: cubes.length + 1, point, location: 'floor' });
+  // AFR2-20261111-01: siempre `count` cajas (antes podía quedar corto si 2000 intentos no alcanzaban); si no entran con la
+  // separación normal se relaja de a poco hasta el mínimo físico (cajas de 50 mm con luz de 100 mm).
+  for (const gap of [.15, .13, .11]) {
+    for (let attempt = 0; cubes.length < count && attempt < 2000; attempt++) {
+      const point: Point3 = cubes.length === 0
+        ? [.225 + random() * .01, (random() - .5) * .04, CUBE_SIZE / 2]
+        : [.45 + random() * 1.05, (random() - .5) * 1.4, CUBE_SIZE / 2];
+      if (cubes.every(cube => Math.hypot(cube.point[0] - point[0], cube.point[1] - point[1]) > gap)) {
+        cubes.push({ id: cubes.length + 1, point, location: 'floor' });
+      }
     }
+    if (cubes.length >= count) break;
   }
   return cubes;
 }
-export function initialCollector(seed = 42, count = 6): CollectorState {
+export function initialCollector(seed = 42, count = COLLECTOR_DEFAULT_BOXES): CollectorState {
   return {
     drop: { center: [-.65 - (seed % 5) * .04, -.65 - (seed % 7) * .03, 0], radius: DROP_RADIUS, visible: false },
-    navigation: null, dropTarget: null, searchSectors: 0, searchHeading: 0, searchStop: 0, searchLegs: 0, skipIds: [], skipRetried: false, targetId: null,
+    navigation: null, dropTarget: null, searchSectors: 0, searchHeading: 0, searchStop: 0, searchLegs: 0, laps: 0, escape: null, skipIds: [], skipRetried: false, targetId: null, failures: {},
     pose: { x: 0, y: 0, yaw: 0 }, joints: [...robotModel().initial], opening: robotModel().gripper.open,
     wheels: ZERO(), wheelAngles: ZERO(), cubes: generateCubes(seed, count), seed, requestedCount: count,
     sensorAngle: 0, sensorHeight: .045, scanning: false, scanDirection: 1,
     echoes: [], reading: null, clock: 0, sampleDue: 0, scanComplete: false,
     phase: 'idle', running: false, detail: 'Seleccioná el robot o el brazo para empezar.', elapsed: 0,
     target: null, jointTarget: null, jointQueue: [], environment: 'mounted', singleTarget: false,
-    stored: 0, selected: 'robot', selectedJoint: 0, references: false, workspace: true, pointRun: null, motionEpoch: 0,
+    stored: 0, selected: 'robot', selectedJoint: 0, references: false, workspace: true, bubble: false, pointRun: null, motionEpoch: 0,
     rigIssue: robotModel().visual.kind === 'gltf' ? 'Cargando y vinculando el rig del brazo.' : null,
   };
 }
 export function halt(s: CollectorState, detail = 'Simulación detenida. Posiciones conservadas.'): CollectorState {
-  return { ...s, navigation: null, wheels: ZERO(), scanning: false, running: false, jointTarget: null, jointQueue: [], pointRun: null, motionEpoch: s.motionEpoch + 1, phase: 'idle', elapsed: 0, detail };
+  return { ...s, navigation: null, escape: null, wheels: ZERO(), scanning: false, running: false, jointTarget: null, jointQueue: [], pointRun: null, motionEpoch: s.motionEpoch + 1, phase: 'idle', elapsed: 0, detail };
 }
 function fail(s: CollectorState, detail: string): CollectorState {
   return { ...halt(s, detail), phase: 'fault' };
 }
 function transition(s: CollectorState, phase: Phase, detail: string): CollectorState {
-  return { ...s, phase, elapsed: 0, detail, wheels: ZERO() };
+  return { ...s, phase, elapsed: 0, detail, wheels: ZERO(), escape: null };
 }
 function startScan(s: CollectorState, reset = true): CollectorState {
   return { ...transition(s, 'scan', 'Barrido con la base detenida.'), scanning: true, sensorAngle: -90,
@@ -93,9 +110,10 @@ function startScan(s: CollectorState, reset = true): CollectorState {
 export function startCollection(s: CollectorState): CollectorState {
   if (s.rigIssue || s.jointTarget || s.scanning || Object.values(s.wheels).some(v => v !== 0) || modelProblems(robotModel()).length) return s;
   if (s.cubes.some(c => c.location === 'gripper')) return fail(s, 'Hay un cubo sujeto. Depositalo antes de comenzar.');
-  if (s.cubes.every(c => c.location !== 'floor')) return { ...s, running: false, phase: 'complete', detail: 'Todas las cargas se entregaron en el drop.' };
+  if (s.stored >= s.requestedCount) return { ...s, running: false, phase: 'complete', detail: `Meta cumplida: ${s.stored} de ${s.requestedCount} cajas entregadas en el drop.` };
+  if (s.cubes.every(c => c.location !== 'floor')) return fail(s, `No quedan cajas en el suelo y faltan ${s.requestedCount - s.stored} para la meta (${s.stored} de ${s.requestedCount}). Agregá cajas o bajá la meta.`);
   return scheduleArm({ ...transition(s, 'stow', 'Preparando la postura de transporte.'), running: true,
-    singleTarget: false, searchStop: 0, searchLegs: 0, skipIds: [], skipRetried: false, targetId: null, dropTarget: null, drop: { ...s.drop, visible: true }, environment: 'mounted' }, TRANSPORT);
+    singleTarget: false, searchStop: 0, searchLegs: 0, laps: 0, skipIds: [], skipRetried: false, failures: {}, targetId: null, dropTarget: null, drop: { ...s.drop, visible: true }, environment: 'mounted' }, TRANSPORT);
 }
 
 /** Ideal horizontal ray vs virtual 50 mm cargo envelopes. Invalid echo is null.
@@ -133,6 +151,7 @@ export function baseClear(s: CollectorState, pose: CollectorState['pose'], margi
   });
 }
 const ROUTE_MARGIN = .01;
+const TURN_MARGIN = .006;
 /** Planning check with margin; the first few cm next to the start only need the strict footprint. */
 function routeClear(s: CollectorState, start: CollectorState['pose']) {
   return (pose: CollectorState['pose']) => baseClear(s, pose, ROUTE_MARGIN) || (Math.hypot(pose.x - start.x, pose.y - start.y) < .03 && baseClear(s, pose));
@@ -197,22 +216,44 @@ function dockingRange(yaw: number) {
   return feasible.length ? feasible[Math.floor(feasible.length / 2)] : undefined;
 }
 const angleGap = (a: number, b: number) => Math.abs(Math.atan2(Math.sin(a - b), Math.cos(a - b)));
-/** In-place turn towards `heading` that keeps the base footprint clear: shortest
- * side first, then the long way; if both sweep into a box, back away and retry. */
-function turnTowards(s: CollectorState, heading: number): CollectorState {
-  const error = Math.atan2(Math.sin(heading - s.pose.yaw), Math.cos(heading - s.pose.yaw));
+/** Signed sweep of an in-place turn from `pose` to `heading` that keeps the base footprint clear, or null if both sides hit a box. */
+function sweepOf(s: CollectorState, pose: CollectorState['pose'], heading: number): { direction: number; sweep: number } | null {
+  const error = Math.atan2(Math.sin(heading - pose.yaw), Math.cos(heading - pose.yaw));
   for (const direction of [Math.sign(error), -Math.sign(error)]) {
     const sweep = direction === Math.sign(error) ? Math.abs(error) : 2 * Math.PI - Math.abs(error);
     let clear = true;
-    for (let a = .02; a < sweep + .02 && clear; a += .02) clear = baseClear(s, { ...s.pose, yaw: s.pose.yaw + direction * Math.min(a, sweep) });
-    if (clear) return { ...s, wheels: driveVector(0, 0, direction * clamp(sweep * 2, .05, .5)) };
+    // AFR2-20261111-01: 6 mm de holgura; con 0 mm un giro que roza una caja chocaba por la deriva de la cinemática (semilla 67).
+    for (let a = .02; a < sweep + .02 && clear; a += .02) clear = baseClear(s, { ...pose, yaw: pose.yaw + direction * Math.min(a, sweep) }, TURN_MARGIN);
+    if (clear) return { direction, sweep };
   }
-  // Mecanum escape: back, sideways, then forward, whichever keeps the footprint clear.
-  for (const [vx, vy] of [[-1, 0], [0, 1], [0, -1], [1, 0]]) {
-    const next = localToWorld([vx * .02, vy * .02, 0], s.pose);
-    if (baseClear(s, { ...s.pose, x: next[0], y: next[1] })) return { ...s, wheels: driveVector(vx * .05, vy * .05, 0), detail: 'Despejando el auto para tener espacio de giro.' };
+  return null;
+}
+/** In-place turn towards `heading` that keeps the base footprint clear: shortest
+ * side first, then the long way; if both sweep into a box, back away and retry.
+ * AFR2-20261111-01: the clearing move is chosen once (looking up to 0.8 m ahead for a pose where the turn is free) and kept
+ * until the turn is possible. Before, every tick re-picked its direction and could oscillate for ever (seed 35, 9 boxes). */
+function turnTowards(s: CollectorState, heading: number): CollectorState {
+  const turn = sweepOf(s, s.pose, heading);
+  if (turn) return { ...s, escape: null, wheels: driveVector(0, 0, turn.direction * clamp(turn.sweep * 2, .05, .5)) };
+  const step = .02;
+  let escape = s.escape;
+  if (escape) {
+    const next = localToWorld([escape[0] * step, escape[1] * step, 0], s.pose);
+    if (!baseClear(s, { ...s.pose, x: next[0], y: next[1] })) escape = null;
   }
-  return fail(s, 'No hay espacio para girar ni desplazarse: reubicá una carga.');
+  if (!escape) {
+    // Mecanum escape: back, sideways, then forward, whichever reaches a pose with a free turn.
+    for (const [vx, vy] of [[-1, 0], [0, 1], [0, -1], [1, 0]] as const) {
+      for (let d = step; d <= .8; d += step) {
+        const p = localToWorld([vx * d, vy * d, 0], s.pose), pose = { ...s.pose, x: p[0], y: p[1] };
+        if (!baseClear(s, pose)) break;
+        if (sweepOf(s, pose, heading)) { escape = [vx, vy]; break; }
+      }
+      if (escape) break;
+    }
+  }
+  if (!escape) return fail(s, 'No hay espacio para girar ni desplazarse: reubicá una carga.');
+  return { ...s, escape, wheels: driveVector(escape[0] * .05, escape[1] * .05, 0), detail: 'Despejando el auto para tener espacio de giro.' };
 }
 const NAV_TEXT: Record<NavPurpose, [align: string, phase: Phase, travel: string]> = {
   pickup: ['Caja elegida: encuadrando el frente del auto con una cara de la caja.', 'approach', 'Acercando de frente y midiendo la distancia a la caja.'],
@@ -228,10 +269,14 @@ function navigate(s: CollectorState, goal: GroundPose, purpose: NavPurpose): Col
 function giveUp(s: CollectorState, why: string): CollectorState {
   if (s.singleTarget) return fail(s, why);
   const skipIds = s.targetId !== null && !s.skipIds.includes(s.targetId) ? [...s.skipIds, s.targetId] : s.skipIds;
-  const next = startExploration({ ...s, navigation: null, target: null, targetId: null, skipIds });
+  // AFR2-20261111-01: se cuenta el fallo de esa caja; después de MAX_ATTEMPTS deja de reintentarse y se informa el motivo.
+  const failures = s.targetId === null ? s.failures
+    : { ...s.failures, [s.targetId]: { count: (s.failures[s.targetId]?.count ?? 0) + 1, reason: why.replace(/\.$/, '') } };
+  const next = startExploration({ ...s, navigation: null, target: null, targetId: null, skipIds, failures });
   return next.phase === 'fault' ? next : { ...next, detail: `${why} Se deja para después y sigue buscando.` };
 }
-const skipped = (s: CollectorState, echo: Echo) => echo.objectId !== undefined && s.skipIds.includes(echo.objectId);
+const abandoned = (s: CollectorState, id: number) => (s.failures[id]?.count ?? 0) >= MAX_ATTEMPTS;
+const skipped = (s: CollectorState, echo: Echo) => echo.objectId !== undefined && (s.skipIds.includes(echo.objectId) || abandoned(s, echo.objectId));
 /** Detected box: far away → get closer and scan again; close → square up and dock. */
 const SCOUT_RANGE = .55, SCOUT_STANDOFF = .40;
 function chooseTarget(s: CollectorState, echo: Echo): CollectorState {
@@ -278,14 +323,47 @@ function beginDrop(s: CollectorState): CollectorState {
  * scan the surroundings; during travel keep taking forward distance samples.
  */
 const SEARCH_STOPS: Point3[] = [[.4, 0, 0], [.8, 0, 0], [1.2, .6, 0], [.6, .6, 0], [0, .6, 0], [-.6, .6, 0], [-1.2, 1.2, 0], [0, 1.2, 0], [1.2, 1.2, 0], [1.2, -.6, 0], [.6, -.6, 0], [0, -.6, 0], [-.6, -.6, 0], [-1.2, -1.2, 0], [0, -1.2, 0], [1.2, -1.2, 0]];
+/** Why a box on the floor cannot be fetched from the current position, or null if some approach exists. */
+function boxAccess(s: CollectorState, cube: Cube): string | null {
+  if (abandoned(s, cube.id)) return `${s.failures[cube.id].count} intentos fallidos (${s.failures[cube.id].reason})`;
+  let dockable = false, faceFree = false;
+  const bearing = Math.atan2(cube.point[1] - s.pose.y, cube.point[0] - s.pose.x);
+  for (const yaw of [0, 1, 2, 3].map(k => k * Math.PI / 2 - (k > 2 ? 2 * Math.PI : 0)).sort((a, b) => angleGap(a, bearing) - angleGap(b, bearing))) {
+    const distance = dockingRange(yaw);
+    if (distance === undefined) continue;
+    dockable = true;
+    const goal = { x: cube.point[0] - Math.cos(yaw) * distance, y: cube.point[1] - Math.sin(yaw) * distance, yaw };
+    if (!baseClear(s, goal, ROUTE_MARGIN)) continue;
+    faceFree = true;
+    const aligned = { ...s.pose, yaw };
+    if (baseClear(s, aligned) && groundRoute(aligned, goal, routeClear(s, aligned))) return null;
+  }
+  return !dockable ? 'el modelo no tiene una toma frontal válida' : !faceFree ? 'ninguna cara está libre para acercar el frente del auto' : 'no hay ruta libre hasta la caja';
+}
+/** Explanation when none of the boxes still on the floor can be reached; null while at least one can. */
+function interventionReason(s: CollectorState): string | null {
+  const remaining = s.cubes.filter(c => c.location === 'floor');
+  if (!remaining.length) return `No quedan cajas en el suelo y faltan ${s.requestedCount - s.stored} para la meta (${s.stored} de ${s.requestedCount}).`;
+  const reasons: string[] = [];
+  for (const cube of remaining) {
+    const why = boxAccess(s, cube);
+    if (why === null) return null;
+    reasons.push(`C${cube.id}: ${why}`);
+  }
+  return `Ninguna de las ${remaining.length} caja(s) restantes es alcanzable (${s.stored} de ${s.requestedCount} entregadas). ${reasons.slice(0, 4).join('; ')}${reasons.length > 4 ? '…' : ''}. Reubicá el auto o las cajas.`;
+}
 function startExploration(s: CollectorState): CollectorState {
-  if (s.cubes.every(c => c.location !== 'floor')) return { ...halt(s, 'Todas las cargas se entregaron en el drop.'), phase: 'complete' };
+  // AFR2-20261111-01: la misión termina con éxito solo al llegar a la meta de cajas entregadas.
+  if (s.stored >= s.requestedCount) return { ...halt(s, `Meta cumplida: ${s.stored} de ${s.requestedCount} cajas entregadas en el drop.`), phase: 'complete' };
+  if (s.cubes.every(c => c.location !== 'floor')) return fail(s, interventionReason(s) ?? 'No quedan cajas en el suelo.');
   const front = measure({ ...s, sensorAngle: 0 });
   if (front.center && !skipped(s, front)) return chooseTarget({ ...s, scanning: false }, front);
-  // Two full patrol laps without a usable detection: retry set-aside boxes once, then ask for help.
-  if (s.searchLegs >= 2 * SEARCH_STOPS.length) {
-    if (s.skipIds.length && !s.skipRetried) return startExploration({ ...s, skipIds: [], skipRetried: true, searchLegs: 0 });
-    return fail(s, 'Dos vueltas de patrulla sin cajas alcanzables. Reubicá el auto o las cajas.');
+  // A full lap without a usable detection: retry the boxes set aside, then ask for help ONLY if none can be reached.
+  // Without that the patrol never ends: it keeps cycling over the map while boxes remain.
+  if (s.searchLegs >= SEARCH_STOPS.length) {
+    const reason = interventionReason(s);
+    if (reason) return fail(s, reason);
+    return startExploration({ ...s, skipIds: [], skipRetried: true, searchLegs: 0, laps: s.laps + 1 });
   }
   // The patrol is cyclic: keep walking the stops in order, wrapping around.
   for (let n = 0; n < SEARCH_STOPS.length; n++) {
@@ -295,7 +373,7 @@ function startExploration(s: CollectorState): CollectorState {
     if (baseClear(s, goal, ROUTE_MARGIN) && groundRoute(s.pose, goal, routeClear(s, s.pose)))
       return navigate({ ...s, searchStop: (i + 1) % SEARCH_STOPS.length, searchLegs: s.searchLegs + 1, target: null, targetId: null }, goal, 'explore');
   }
-  return fail(s, 'Ningún punto de patrulla tiene ruta libre. Reubicá el auto o las cajas.');
+  return fail(s, interventionReason(s) ?? 'Ningún punto de patrulla tiene ruta libre y el auto no puede desplazarse. Reubicá el auto o las cajas.');
 }
 function followNavigation(s: CollectorState): CollectorState {
   const nav = s.navigation;
@@ -442,6 +520,12 @@ export function tickCollector(previous: CollectorState, dt: number): CollectorSt
         const nav = s.navigation;
         if (!nav) return fail(s, 'Falta el destino de navegación.');
         const error = Math.atan2(Math.sin(nav.goal.yaw - s.pose.yaw), Math.cos(nav.goal.yaw - s.pose.yaw));
+        // AFR2-20261111-01: ningún giro puede durar para siempre; mismo criterio que el tope de navegación.
+        if (s.elapsed > 60) {
+          if (nav.purpose === 'drop') return fail(s, 'No se pudo orientar el auto hacia el drop.');
+          s = nav.purpose === 'explore' || nav.purpose === 'leave' ? startScan({ ...s, navigation: null }) : giveUp(s, 'No se pudo orientar el auto hacia la caja.');
+          break;
+        }
         if (Math.abs(error) > .015) s = turnTowards(s, nav.goal.yaw);
         else {
           const aligned = { ...s.pose, yaw: nav.goal.yaw }, goal = nav.goal;
@@ -520,7 +604,9 @@ export function tickCollector(previous: CollectorState, dt: number): CollectorSt
       case 'stow':
         if (!s.jointTarget) {
           if (s.singleTarget) return { ...s, running: false, phase: 'complete', detail: 'Caja entregada en el drop. Seleccioná la siguiente caja.' };
-          if (s.cubes.every(c => c.location !== 'floor')) return { ...s, running: false, phase: 'complete', detail: 'Todas las cargas se entregaron en el drop.' };
+          // AFR2-20261111-01: solo se termina con éxito al llegar a la meta; si faltan, sigue (o pide ayuda con el motivo).
+          if (s.stored >= s.requestedCount) return { ...s, running: false, phase: 'complete', detail: `Meta cumplida: ${s.stored} de ${s.requestedCount} cajas entregadas en el drop.` };
+          if (s.cubes.every(c => c.location !== 'floor')) return fail(s, interventionReason(s) ?? 'No quedan cajas en el suelo.');
           // Cycle: leave the drop, scan, choose, approach... Set-aside boxes get another chance.
           s = s.dropTarget ? leaveDrop({ ...s, dropTarget: null, skipIds: [], skipRetried: false, searchLegs: 0, target: null, targetId: null }) : startExploration(s);
         }

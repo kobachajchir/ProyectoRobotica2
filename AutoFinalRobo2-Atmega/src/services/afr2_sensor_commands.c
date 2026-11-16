@@ -58,7 +58,11 @@ uint8_t Afr2App_SensorCommand(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,u
         out[8]=a->ui->selection;out[9]=a->ui->firstVisible;out[10]=Afr2App_UiPrivate(a);*length=11;break;
     case AFR2_EXT_MOTION_HALT:
         if(n)return AFR2_RESULT_BAD_REQUEST;
-        Afr2Product_HaltMotion(p);out[0]=1;*length=1;break;
+        /* AFR2-20261111-06: el ESP lo manda al cerrarse el WebSocket. Un ensayo GOTO en curso (prueba minima enviada desde la
+         * Web, examen u odometria del OLED) es autonomo: termina solo (llegada, 60 s, STOP o falla) y no se corta por perder la
+         * Web. El resto de la conduccion Web se detiene como antes. El acuse sigue siendo 1 (el ESP lo exige). */
+        if(!Afr2Product_LocalMission(p))Afr2Product_HaltMotion(p);
+        out[0]=1;*length=1;break;
     default:return AFR2_RESULT_UNAVAILABLE;
     }
     if(r){*length=0;return result(r);}return AFR2_RESULT_OK;

@@ -1,0 +1,55 @@
+\documentclass[11pt,oneside]{report}
+\usepackage{estilo}
+\begin{document}
+\begin{titlepage}
+\thispagestyle{empty}
+{\sffamily\small\color{granate} UNIVERSIDAD NACIONAL DE ENTRE RÍOS\par}
+{\sffamily\small Facultad de Ciencias de la Alimentación\par}
+\vspace{14mm}
+{\sffamily\bfseries\fontsize{35}{40}\selectfont\color{black}AutoFinalRobo2\par}
+\vspace{5mm}
+{\sffamily\fontsize{19}{25}\selectfont\color{azul}Diseño y desarrollo de un\par manipulador móvil omnidireccional\par}
+\vspace{5mm}
+{\large Proyecto de Robótica 2\par}
+\vspace{7mm}
+\begin{center}
+\includegraphics[width=.79\linewidth,height=.40\textheight,keepaspectratio]{robot.png}
+\end{center}
+\vfill
+\begin{tabularx}{\linewidth}{@{}P{27mm}Y@{}}
+\textbf{Integrantes} & Koba Chajchir \textperiodcentered{} Santiago Baccon\\[5pt]
+\textbf{Docentes} & Nahuel Medina \textperiodcentered{} Patricio Silva\\[5pt]
+\textbf{Asignatura} & Robótica 2\\[5pt]
+\textbf{Ciclo lectivo} & 2026\\[5pt]
+\textbf{Fecha} & 12 de noviembre de 2026
+\end{tabularx}
+\vspace{7mm}
+{\small\color{suave}La imagen representa el diseño CAD del conjunto.\par}
+\end{titlepage}
+
+\pagenumbering{roman}
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+AutoFinalRobo2 es un proyecto de manipulación móvil que combina una plataforma de cuatro ruedas Mecanum, un brazo antropomorfo de seis articulaciones rotacionales y una pinza simétrica. El desarrollo integra diseño mecánico, electrónica, programación embebida, sensado, comunicación inalámbrica e interfaces de operación local y remota.
+
+La base puede representar movimientos de avance, desplazamiento lateral y giro mediante una matriz cinemática que relaciona tres velocidades del chasis con cuatro velocidades de rueda. Los encoders Hall permiten estimar desplazamientos relativos y cerrar el control de velocidad. El brazo se describe mediante una cadena de transformaciones homogéneas, cinemática directa e inversa y un Jacobiano que relaciona velocidades y fuerzas. La unión entre ambos subsistemas permite expresar la pose mundial de la herramienta y estudiar la manipulación móvil como un único sistema.
+
+El proyecto dispone de geometría CAD del manipulador y de mediciones de la base realizadas sin carga manipulada. Los desplazamientos lineales de referencia presentan errores de llegada cercanos a 10 mm para una meta de 1 m, bajo la configuración ensayada. Los giros muestran una diferencia entre rumbo real y odométrico que requiere calibración. El análisis de masa y apoyo del conjunto identifica una limitación frontal: un factor estático de estabilidad de 1,023, inferior al criterio de diseño de 1,2. Por ello, el alcance geométrico del brazo no se identifica con una envolvente operativa segura.
+
+El resultado del trabajo es una arquitectura integrada y un modelo matemático que conecta consigna, movimiento, medición y restricciones mecánicas. La fabricación definitiva del brazo, su potencia y bus de comunicación, la calibración de articulaciones y la caracterización de la manipulación cargada constituyen las tareas de integración que permanecen abiertas.
+
+\textbf{Palabras clave:} robótica móvil, Mecanum, manipulador 6R, cinemática, odometría, control, estabilidad.
+
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+\input{01_proyecto}
+\input{02_electronica}
+\input{03_movilidad}
+\input{04_manipulador}
+\input{05_dinamica}
+\input{06_resultados}
+\input{07_cierre}
+\appendix
+\input{08_anexos}
+\end{document}

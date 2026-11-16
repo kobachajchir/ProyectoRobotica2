@@ -213,12 +213,13 @@ static void go_back(Afr2Ui *u){
         if(u->node==AFR2_N_QUICK)u->quick_selection=u->selection;
         Afr2Ui_ConfirmSave(u,AFR2_A_SAVE,AFR2_A_RADAR_DISCARD,target);return;
     }
-    if(!clean(u) && (u->node==AFR2_N_PREFS || u->node==AFR2_N_CALIB || u->node==AFR2_N_ENCODER_CONFIG || u->node==AFR2_N_DISPLAY_MENU || u->node==AFR2_N_MOTOR_CALIB || u->node==AFR2_N_LINE_CALIB || u->node==AFR2_N_RADAR_CONFIG)){
+    if(!clean(u) && (u->node==AFR2_N_PREFS || u->node==AFR2_N_CALIB || u->node==AFR2_N_ENCODER_CONFIG || u->node==AFR2_N_DISPLAY_MENU || u->node==AFR2_N_MOTOR_CALIB || u->node==AFR2_N_LINE_CALIB || u->node==AFR2_N_FACTORS || u->node==AFR2_N_RADAR_CONFIG)){
         Afr2Ui_ConfirmSave(u,AFR2_A_SAVE,AFR2_A_DISCARD,target);return;
     }
     if(u->node==AFR2_N_SERVO_ANGLE)(void)invoke(u,AFR2_A_SERVO_EDIT_END,0,0);
     if(u->node==AFR2_N_WHEEL || u->node==AFR2_N_MOVE)(void)invoke(u,AFR2_A_HALL_CANCEL,1,0);
     if(u->node==AFR2_N_ODOM_RUN)(void)invoke(u,AFR2_A_STOP,0,0); /* AFR2-20261108-03: salir detiene la prueba */
+    if(u->node==AFR2_N_EXAM_RUN)(void)invoke(u,AFR2_A_EXAM_CLEAR,0,0); /* AFR2-20261111-02: salir detiene el examen */
     if(u->node==AFR2_N_ODOM_ASK){ /* AFR2-20261108-04: largo al soltar = descartar la propuesta */
         (void)invoke(u,AFR2_A_ODOM_ANSWER,0,0);Afr2Ui_NotifyFlash(u,0,PSTR("Odometria"),PSTR("Prueba descartada"),2500);
     }
@@ -408,6 +409,8 @@ uint16_t Afr2Ui_TextOffsetFlash(const char *text,uint8_t width,uint32_t elapsed)
 uint32_t Afr2Ui_ReportedScreen(const Afr2Ui *u) {
     if((u->edit && u->editing.action==AFR2_A_WHEEL) || u->node==AFR2_N_HALL_PICK)return AFR2_SCREEN_MOTOR_SELECTOR;
     if(u->edit && u->editing.action==AFR2_A_POWER)return 0x030040UL;
+    if(u->edit && u->editing.action>=AFR2_A_SCALE_FORWARD && u->editing.action<=AFR2_A_SCALE_CCW)
+        return 0x030051UL+(u->editing.action-AFR2_A_SCALE_FORWARD);
     if(u->touch_active)return AFR2_SCREEN_TOUCH;
     if(u->splash)return AFR2_SCREEN_SPLASH; /* AFR2-20261108-07 */
     if(u->notices){uint8_t kind=u->notification[u->tail].kind;
@@ -523,6 +526,16 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
         u->notices=u->head=u->tail=u->notice_target=0;u->edit=0;u->hold_progress=0;
         back(u,AFR2_N_WIFI);u->redraw=true;u->scroll_redraw=false;Afr2Qr_Invalidate();return;
     }
+    /* AFR2-20261111-02: vista del examen. Mientras ejecuta, corto o largo la detiene; al terminar queda hasta OK. */
+    if(u->node==AFR2_N_EXAM_RUN){
+        if(u->notices){if(in.click || in.menu)dismiss_input(u);return;}
+        if(in.click || in.menu){
+            if(u->ops.value && u->ops.value(u->ops.ctx,AFR2_A_EXAM_STATE)==1)(void)invoke(u,AFR2_A_EXAM_STOP,0,0);
+            else {(void)invoke(u,AFR2_A_EXAM_CLEAR,0,0);back(u,AFR2_N_EXAM_MENU);}
+            u->redraw=true;
+        }
+        return;
+    }
     if(in.menu){go_back(u);return;}
     if(u->notices){if(in.click)dismiss_input(u);return;}
     /* AFR2-20261029-29: short opens full menu; long-release opens quick cards. */
@@ -622,6 +635,9 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
             else Afr2Ui_NotifyFlash(u,0,PSTR("Modo seleccionado"),i.arg?PSTR("Manual"):PSTR("Reposo"),2500);
         } else if(i.action==AFR2_A_RADAR_RANGE){
             uint8_t r=invoke(u,i.action,i.arg,0);if(r)result(u,r);else back(u,AFR2_N_RADAR_OPTIONS);
+        } else if(i.action==AFR2_A_EXAM_START){
+            uint8_t r=invoke(u,i.action,i.arg,0);u->redraw=true;
+            if(r)action_result(u,r,i.action);else Afr2Ui_Open(u,AFR2_N_EXAM_RUN);
         } else if(i.action==AFR2_A_ODOM_TOGGLE){
             /* AFR2-20261108-03: al iniciar abre la vista en marcha; si era Detener solo repinta. */
             uint8_t was=u->ops.value && u->ops.value(u->ops.ctx,AFR2_A_ODOM_TOGGLE);
@@ -798,6 +814,12 @@ static void render_screen(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s) {
         Afr2Ui_GestureHint(o,0,39,1,u->test_long?PSTR("Correcto"):PSTR("Pulse"));
         if(u->test_long)Afr2Ui_GestureHint(o,0,52,1,PSTR("Salir"));
     }
+    else if(u->node==AFR2_N_EXAM_RUN){
+        /* AFR2-20261111-02: titulo y lineas preparados por la app (snapshot); el renderer no lee sensores. */
+        Afr2Component_Header(o,AFR2_ICON_TOOLS,s->labels[0],0,0);
+        for(uint8_t i=0;i<3;i++)Afr2Oled_Text(o,0,16+12*i,s->lines[i],AFR2_WHITE);
+        Afr2Ui_GestureHint(o,0,53,0,s->labels[1][0]=='R'?PSTR("Detener"):PSTR("OK"));
+    }
     else if(u->node==AFR2_N_ODOM_ASK){
         /* AFR2-20261108-04: lines[0] direccion, lines[1] distancia (preparadas por la app). */
         Afr2Component_HeaderFlash(o,AFR2_ICON_TOOLS,PSTR("Prueba odometria"),0,0);
@@ -835,6 +857,8 @@ static void render_screen(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s) {
         /* AFR2-20261108-02: la direccion de la prueba de odometria se muestra con su nombre. */
         if(u->editing.action==AFR2_A_ODOM_DIR)Afr2Ui_OdomDirName(value,(uint8_t)u->draft);
         else if(u->editing.action==AFR2_A_ODOM_CM)snprintf_P(value,sizeof(value),PSTR("%ld cm"),(long)u->draft);
+        else if(u->editing.action>=AFR2_A_SCALE_FORWARD && u->editing.action<=AFR2_A_SCALE_CCW)
+            snprintf_P(value,sizeof(value),PSTR("%u.%03u"),(unsigned)(u->draft/1000),(unsigned)(u->draft%1000));
         else snprintf_P(value,sizeof(value),PSTR("%ld"),(long)u->draft);
         Afr2Oled_Text(o,0,16,value,AFR2_WHITE);Afr2Ui_GestureHint(o,0,28,2,PSTR("Ajustar"));
         Afr2Ui_GestureHint(o,0,40,0,(u->editing.action==AFR2_A_ODOM_DIR || u->editing.action==AFR2_A_ODOM_CM)?PSTR("Guardar"):PSTR("Aplicar"));Afr2Ui_GestureHint(o,0,53,1,PSTR("Descartar"));

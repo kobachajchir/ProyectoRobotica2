@@ -1,3 +1,5 @@
+> **AFR2-20261111-06 / 1.27.0:** [Escala de factores por dirección](changes/2026-11-11-06-directional-scale-factors.md): OLED/Web, rango 0.000..2.000, EEPROM v12 y confirmación Sí/No. ATmega/Web fuente; ESP solo versión. Sin nuevas pruebas, builds, generadores ni cargas.
+
 > **AFR2-20261106-15:** [informe completo de pinout](hardware/INFORME_PINOUT_ROBOT_20261106.md), PDF y fuente de generación. Agregados propios identificados: OLED, encoder, batería A5, AutoKEY D32 y AutoRESET D33 por NPN. Solo documentación y revisión visual del PDF; ATmega/ESP/Web sin cambios, sin tests, compilaciones, validadores ni pruebas físicas.
 
 > **AFR2-20261106-14:** [referencia BioLog y cotejo de encoders](hardware/COTEJO_ENCODERS_BIOLOG_20261106.md). PDF original preservado con autorías; pines coincidentes, diferencias de decodificación, CPR, orden, signos y diámetro documentadas. ATmega/ESP/Web sin cambios; solo documentación, sin tests, compilaciones, validadores ni pruebas físicas.

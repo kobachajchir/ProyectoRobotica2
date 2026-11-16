@@ -17,6 +17,8 @@ import { SamplingPanel } from './SamplingPanel';
 import { useSensorPoll } from './useSensorPoll';
 import { RadarScene, formatRadarDistance, type RadarView } from './RadarScene';
 import { ScanAngleRange, ScanRangeField } from './ScanControls';
+import { LINE_TAPE_DEFAULT_MM, LINE_TAPE_MAX_MM, LINE_TAPE_MIN_MM, LineTopView } from './LineTopView';
+import { analyzeLine, LINE_CENTER_TEXT, LINE_HISTORY_MS, LINE_ORIENTATION_TEXT, type LineAnalysis, type LineSample } from './lineAnalysis';
 
 type StoredPoint=RangeSample & {receivedAtMs:number};
 /* AFR2-20261106-35: estados separados de una orden de servo. «Recibido» = el ATmega aceptó la orden;
@@ -174,12 +176,48 @@ function DistanceWorkspace(){
 }
 function LineWorkspace(){
   const [reading,setReading]=useState<(IrReading & {receivedAtMs:number})|null>(null),[now,setNow]=useState(Date.now());
-  const {wsState,megaLinkState}=useConnection();useSensorPoll<IrReading>('robot.ir.get',100,r=>setReading({...r,receivedAtMs:Date.now()}));
+  // AFR2-20261113-01: historial corto de la posición de la línea para estimar su orientación.
+  const history=useRef<LineSample[]>([]);
+  const {wsState,megaLinkState}=useConnection();useSensorPoll<IrReading>('robot.ir.get',100,r=>{
+    const at=Date.now();setReading({...r,receivedAtMs:at});
+    if(r.valid && r.kind==='digital'){const a=analyzeLine(r.bits,[]);history.current=[...history.current.filter(x=>at-x.atMs<=LINE_HISTORY_MS),{atMs:at,position:a.position,horizontal:a.horizontal}];}
+    else history.current=[];
+  });
   useEffect(()=>{const id=setInterval(()=>setNow(Date.now()),250);return()=>clearInterval(id);},[]);
   const fresh=wsState==='ready' && megaLinkState==='ready' && reading?.rawValid && reading.ageMs!==null && now-reading.receivedAtMs+reading.ageMs<=500;
-  return <section className="afr2-sensor-panel"><SectionHeader title="Línea IR" description="Cinco canales, separados de la distancia ultrasonica."/><div className="afr2-ir-readings">{Array.from({length:5},(_,i)=>{
+  const line=fresh && reading?.valid && reading.kind==='digital'?analyzeLine(reading.bits,history.current):null;
+  return <section className="afr2-sensor-panel"><SectionHeader title="Línea IR" description="Cinco canales, separados de la distancia ultrasonica."/>
+    <LineStatus line={line}/><div className="afr2-ir-readings">{Array.from({length:5},(_,i)=>{
     const value=fresh?reading!.raw[i]:null,active=fresh && !!(reading!.bits&(1<<i));return <div key={i}><strong>IR{i+1}</strong><div className="afr2-ir-bar"><span style={{height:active?'100%':'0%',backgroundColor:'var(--text-primary)'}}/></div><output>{value??'—'}</output><span>{value===null?'Sin dato':reading?.kind==='digital'?(active?'Línea activa':'Fondo'):'Perfil incompatible'}</span></div>;
   })}</div><p className="afr2-help">{fresh?(reading!.calibrated?'Calibración confirmada':'Lecturas originales disponibles · calibración pendiente'):'Sin lectura actual'} · Mascara procesada: {fresh && reading?.valid?reading.bits.toString(2).padStart(5,'0'):'—'}. Los cuadros muestran actividad; el número es el nivel eléctrico 0/1.</p></section>;
+}
+/** AFR2-20261113-01: estado de la línea: detección, línea horizontal, orientación estimada y posición (centrado o deriva). */
+const TAPE_KEY='afr2.sensors.lineTapeMm';
+function LineStatus({line}:{line:LineAnalysis|null}){
+  const dash='—';
+  const rows:[string,string,string][]=[
+    ['Línea',!line?dash:line.detected?`Detectada · ${line.count} de 5 sensores`:'No detectada',!line?'idle':line.detected?'ok':'warn'],
+    ['Línea horizontal',!line?dash:line.horizontal?'Sí · cruce o meta bajo los sensores':'No',!line?'idle':line.horizontal?'info':'idle'],
+    ['Orientación',!line?dash:LINE_ORIENTATION_TEXT[line.orientation],!line||line.orientation==='unknown'?'idle':line.orientation==='aligned'?'ok':'info'],
+    ['Posición',!line?dash:LINE_CENTER_TEXT[line.center],!line?'idle':line.center==='centered'||line.center==='cross'?'ok':'warn'],
+  ];
+  // AFR2-20261113-03: ancho de la cinta configurable (preferencia de este navegador; 18 mm por defecto).
+  const [tapeText,setTapeText]=useState(()=>{try{return localStorage.getItem(TAPE_KEY)??String(LINE_TAPE_DEFAULT_MM);}catch{return String(LINE_TAPE_DEFAULT_MM);}});
+  const tapeValue=Number(tapeText),tapeOk=tapeText.trim()!=='' && Number.isFinite(tapeValue) && tapeValue>=LINE_TAPE_MIN_MM && tapeValue<=LINE_TAPE_MAX_MM;
+  const [tapeMm,setTapeMm]=useState(()=>tapeOk?tapeValue:LINE_TAPE_DEFAULT_MM);
+  useEffect(()=>{if(!tapeOk)return;setTapeMm(tapeValue);try{localStorage.setItem(TAPE_KEY,String(tapeValue));}catch{/* sin almacenamiento */}},[tapeOk,tapeValue]);
+  // AFR2-20261113-02: modelo 3D del auto en vista superior con los cinco IR y la línea estimada.
+  return <div className="afr2-line-status">
+    <div className="afr2-line-status__view">
+      <LineTopView line={line} tapeMm={tapeMm} label={line?`${LINE_CENTER_TEXT[line.center]}. ${LINE_ORIENTATION_TEXT[line.orientation]}.`:'Sin lectura de la línea'}/>
+      <label className="afr2-line-status__tape">Ancho de la cinta (mm)
+        <input className="afr2-glass-field" type="number" inputMode="numeric" min={LINE_TAPE_MIN_MM} max={LINE_TAPE_MAX_MM} step={1} value={tapeText}
+          aria-invalid={!tapeOk} onChange={event=>setTapeText(event.target.value)} onBlur={()=>{if(!tapeOk)setTapeText(String(tapeMm));}}/>
+      </label>
+      <p className="afr2-help">{tapeOk?`Normalmente 18 mm. Solo cambia el dibujo de la cinta.`:`Entre ${LINE_TAPE_MIN_MM} y ${LINE_TAPE_MAX_MM} mm.`}</p>
+    </div>
+    <dl className="afr2-line-status__list">{rows.map(([k,v,tone])=><div key={k} data-tone={tone}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+  </div>;
 }
 interface WheelsReading {wired:boolean;valid:boolean;counts:Record<string,number|null>;ageMs:number|null;receivedAtMs:number}
 function WheelsWorkspace(){
