@@ -51,7 +51,9 @@ enum {
  AFR2_N_HALL_PICK, AFR2_N_HALL_COUNT, AFR2_N_SAVE_CONFIRM,
  AFR2_N_BATTERY, AFR2_N_BATTERY_VIEW, AFR2_N_QUICK, AFR2_N_RADAR_OPTIONS, AFR2_N_RADAR_RANGE, AFR2_N_QUICK_MODES, AFR2_N_ENCODER_TEST, AFR2_N_ESP_TEST, AFR2_N_POWER, AFR2_N_WIFI_DATA, AFR2_N_WIFI_SEARCH, AFR2_N_WIFI_MODE_SELECT, AFR2_N_QR_AP, AFR2_N_QR_WEB, AFR2_N_HALL_LIVE, AFR2_N_ODOM_MENU, AFR2_N_ODOM_RUN, AFR2_N_ODOM_ASK,
  /* AFR2-20261108-06: la red STA elegida no conecto; elegir Iniciar AP (defecto a los 5 s) o Seguir esperando. */
- AFR2_N_WIFI_ASK, AFR2_N_COUNT };
+ AFR2_N_WIFI_ASK,
+ /* AFR2-20261111-02: Pruebas examen (desplazamiento 1 m y giros) y su pantalla de ejecucion. */
+ AFR2_N_EXAM_MENU, AFR2_N_EXAM_MOVE, AFR2_N_EXAM_TURN, AFR2_N_EXAM_RUN, AFR2_N_FACTORS, AFR2_N_COUNT };
 enum {
  AFR2_A_NONE = 0,
  AFR2_A_STOP = 1,
@@ -125,7 +127,13 @@ enum {
  AFR2_A_US_TOGGLE = 107,
  /* AFR2-20261108-13: IR line sensors on/off from Controles rapidos, without motors. */
  AFR2_A_IR_TOGGLE = 108,
- AFR2_A_WIFI_FALLBACK = 109, AFR2_A_WIFI_AP_TOGGLE = 110 };
+ AFR2_A_WIFI_FALLBACK = 109, AFR2_A_WIFI_AP_TOGGLE = 110,
+ /* AFR2-20261111-02: examen. START arg 0..3 = 1 m adelante/atras/izquierda/derecha; 10..13 = giro 90 der, 90 izq, 180, 360.
+  * STATE = fase (0 nada, 1 ejecutando, 2 terminada, 3 detenida, 4 interrumpida). Solo locales (encoder). */
+ AFR2_A_EXAM_START = 111, AFR2_A_EXAM_STOP = 112, AFR2_A_EXAM_CLEAR = 113, AFR2_A_EXAM_STATE = 114,
+ /* AFR2-20261111-06: local factor editors; not CONFIG wire keys. */
+ AFR2_A_SCALE_FORWARD = 115, AFR2_A_SCALE_REVERSE = 116, AFR2_A_SCALE_LEFT = 117,
+ AFR2_A_SCALE_RIGHT = 118, AFR2_A_SCALE_CW = 119, AFR2_A_SCALE_CCW = 120 };
 typedef struct { char label[33]; uint8_t target,action; int16_t arg,min,max,step; } Afr2MenuItem;
 typedef struct { char title[18]; uint8_t parent,view,count; uint16_t first; uint32_t code; } Afr2MenuNode;
 void Afr2Menu_Node(uint8_t index,Afr2MenuNode *out);

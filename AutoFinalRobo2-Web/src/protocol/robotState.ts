@@ -25,6 +25,8 @@ export interface RobotStateSnapshot {
   longPressMs: number | null;
   origin: 'none' | 'local' | 'web' | 'unknown';
   fault: number | null;
+  /** AFR2-20261111-01: motores habilitados en el auto (`motorsEnabled` de robot.state); null si el auto no lo informa. */
+  motorsEnabled?: boolean | null;
 }
 function finite(value: unknown, bound: number): value is number { return typeof value === 'number' && Number.isFinite(value) && Math.abs(value) <= bound; }
 function uint32(value: unknown): value is number { return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 0xffffffff; }
@@ -49,6 +51,7 @@ export function parseRobotState(value: Record<string, unknown>): RobotStateSnaps
     preferencesState: uint32(value.preferencesState) ? value.preferencesState : null,
     origin: value.origin === 'none' || value.origin === 'local' || value.origin === 'web' ? value.origin : 'unknown',
     fault: uint32(value.fault) ? value.fault : null,
+    motorsEnabled: typeof value.motorsEnabled === 'boolean' ? value.motorsEnabled : null,
   };
 }
 

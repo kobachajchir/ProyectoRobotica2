@@ -1,6 +1,6 @@
 {
   "schema": "afr2-wire-catalog-1",
-  "updated_by": "AFR2-20261110-14",
+  "updated_by": "AFR2-20261111-08",
   "notes": "Catalogo de comandos UART ROBO2/perfil 2 + EX01 v13 para interpretes (Loader, Protocol Studio). Autoridad de IDs: afr2_wire.h, afr2_product_wire.h, afr2_sensor_wire.h, afr2_network_wire.h, afr2_battery_wire.h. Largos cotejados con el despachador del ATmega (afr2_link.c, afr2_app_wire.c, afr2_sensor_commands.c, afr2_network.c, afr2_sequence.c) el 08/11/2026; sin prueba en placa. Toda alta/baja/modificacion de un CMD actualiza este archivo (skill afr2-wire-commands). 'bytes' cuenta el cuerpo de aplicacion, sin sesion/transaccion/resultado. 'variable' indica largo dependiente del contenido.",
   "envelope": {
     "header": "52 4F 42 4F 32",
@@ -168,6 +168,22 @@
     { "id": "0x45", "name": "SEQ_STATUS", "family": "SEQ", "ws": "robot.sequence.status",
       "does": "Estado de programa y ejecucion.",
       "request": { "bytes": 8 }, "reply": { "bytes": 19 } },
+    { "id": "0x46", "name": "ROUTE_BEGIN", "family": "ROUTE", "ws": "robot.route.begin",
+      "does": "Abre la carga de un recorrido GOTO completo (1..32 tramos) que el ATmega ejecuta en local (AFR2-20261111-08).",
+      "request": { "bytes": 11, "fields": [ { "name": "reserved", "type": "u32le" }, { "name": "token", "type": "u32le" }, { "name": "count", "type": "u8" }, { "name": "speed", "type": "u16le", "unit": "mm/s" } ] },
+      "reply": { "bytes": 5, "fields": [ { "name": "token", "type": "u32le" }, { "name": "count", "type": "u8" } ] } },
+    { "id": "0x47", "name": "ROUTE_LEG", "family": "ROUTE", "ws": "robot.route.leg",
+      "does": "Carga un tramo del recorrido en el marco de partida (x adelante, y izquierda, theta antihorario).",
+      "request": { "bytes": 15, "fields": [ { "name": "reserved", "type": "u32le" }, { "name": "token", "type": "u32le" }, { "name": "index", "type": "u8" }, { "name": "x", "type": "i16le", "unit": "mm" }, { "name": "y", "type": "i16le", "unit": "mm" }, { "name": "theta", "type": "i16le", "unit": "mrad" } ] },
+      "reply": { "bytes": 6, "fields": [ { "name": "token", "type": "u32le" }, { "name": "index", "type": "u8" }, { "name": "loaded", "type": "u8" } ] } },
+    { "id": "0x48", "name": "ROUTE_START", "family": "ROUTE", "ws": "robot.route.start",
+      "does": "Inicia el recorrido cargado; sigue aunque se corte el WebSocket o el enlace (termina por llegada, STOP o falla).",
+      "request": { "bytes": 8, "fields": [ { "name": "reserved", "type": "u32le" }, { "name": "token", "type": "u32le" } ] },
+      "reply": { "bytes": 5, "fields": [ { "name": "token", "type": "u32le" }, { "name": "state", "type": "u8", "enum": "route_state" } ] } },
+    { "id": "0x49", "name": "ROUTE_STATUS", "family": "ROUTE", "ws": "robot.route.status",
+      "does": "Avance del recorrido: estado, tramo, tramos hechos, falla y pose en el marco de partida.",
+      "request": { "bytes": 4, "fields": [ { "name": "token", "type": "u32le" } ] },
+      "reply": { "bytes": 25, "fields": [ { "name": "token", "type": "u32le" }, { "name": "state", "type": "u8", "enum": "route_state" }, { "name": "count", "type": "u8" }, { "name": "leg", "type": "u8" }, { "name": "done", "type": "u8" }, { "name": "fault", "type": "u8" }, { "name": "x", "type": "i32le", "unit": "mm" }, { "name": "y", "type": "i32le", "unit": "mm" }, { "name": "yaw", "type": "i32le", "unit": "mrad" }, { "name": "elapsed", "type": "u32le", "unit": "ms" } ] } },
 
     { "id": "0x50", "name": "INFO", "family": "SYSTEM", "ws": "system.info",
       "does": "Pagina de identidad de compilacion del ATmega (0..4).",
@@ -235,6 +251,7 @@
       "request": { "bytes": 0 }, "reply": { "bytes": 1, "fields": [ { "name": "halted", "type": "u8" } ] } }
   ],
   "enums": {
+    "route_state": { "0": "idle", "1": "loading", "3": "running", "4": "completed", "5": "cancelled", "6": "failed" },
     "result": { "0": "OK", "1": "BAD_REQUEST", "2": "UNAVAILABLE", "3": "SESSION", "4": "INTERNAL" },
     "esp_reset_reason": { "0": "power-on", "1": "hw-watchdog", "2": "exception", "3": "soft-watchdog", "4": "soft-restart", "5": "deep-sleep", "6": "external-reset", "253": "stack-smash", "254": "user-exception", "255": "desconocida" },
     "avr_reset_bits": { "1": "power-on", "2": "reset-pin", "4": "brown-out", "8": "watchdog", "16": "jtag" },

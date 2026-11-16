@@ -1,3 +1,5 @@
+> **AFR2-20261111-06 / 1.27.0:** [Escala de factores por dirección](../changes/2026-11-11-06-directional-scale-factors.md): OLED/Web, rango 0.000..2.000, EEPROM v12 y confirmación Sí/No. ATmega/Web fuente; ESP solo versión. Sin nuevas pruebas, builds, generadores ni cargas.
+
 > **AFR2-20261109-03 / 1.9.1:** fuente actual de Wi-Fi/AP y PWM coordinada ATmega/ESP/Web; recursos OLED y metadatos 3D regenerados. Sin compilación, tests ni carga en esta entrega. Las referencias inferiores conservan evidencia histórica. [Cierre y límites](../changes/2026-11-09-03-source-completion.md).
 
 > **AFR2-20261106-13:** retirado HC-SR04 como requisito y causa de parada de movimiento en todos los modos físicos vigentes. Sensores/radar y simulación conservados; aproximación física al brazo pendiente. ATmega y simulador UI Web solo fuente, ESP sin cambios; sin tests, compilaciones, validadores ni cargas.

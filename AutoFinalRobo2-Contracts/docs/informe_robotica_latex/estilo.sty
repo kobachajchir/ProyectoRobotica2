@@ -1,0 +1,63 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{estilo}[2026/11/12 AutoFinalRobo2]
+\usepackage[a4paper,left=24mm,right=22mm,top=23mm,bottom=24mm,headheight=15pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish,es-nodecimaldot,es-tabla]{babel}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{graphicx,xcolor,colortbl,booktabs,array,tabularx,longtable}
+\usepackage{titlesec,fancyhdr,caption,float,placeins,needspace,enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage[unicode,hypertexnames=false,colorlinks=true,linkcolor=azul,citecolor=granate,urlcolor=granate]{hyperref}
+\definecolor{azul}{HTML}{19334B}
+\definecolor{granate}{HTML}{9B2948}
+\definecolor{gris}{HTML}{F0F3F6}
+\definecolor{texto}{HTML}{253442}
+\definecolor{suave}{HTML}{62717D}
+\hypersetup{pdftitle={AutoFinalRobo2 - Proyecto de Robotica 2},pdfauthor={Koba Chajchir y Santiago Baccon},pdfsubject={Robot movil Mecanum con manipulador antropomorfo}}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\sffamily\footnotesize\bfseries\color{azul} AUTOFINALROBO2}
+\fancyhead[R]{\sffamily\footnotesize\color{suave} Robótica 2}
+\fancyfoot[L]{\sffamily\footnotesize\color{suave} FCAL \textperiodcentered{} Universidad Nacional de Entre Ríos}
+\fancyfoot[R]{\sffamily\bfseries\color{granate}\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[L]{\sffamily\footnotesize\color{suave} FCAL \textperiodcentered{} Universidad Nacional de Entre Ríos}\fancyfoot[R]{\sffamily\bfseries\color{granate}\thepage}\renewcommand{\headrulewidth}{0pt}}
+\titleformat{\chapter}[display]{\sffamily\bfseries\color{azul}\raggedright\hyphenpenalty=10000\exhyphenpenalty=10000}{\fontsize{11}{13}\selectfont\color{granate}CAPÍTULO \thechapter}{9pt}{\fontsize{27}{32}\selectfont}
+\titlespacing*{\chapter}{0pt}{0pt}{21pt}
+\titleformat{\section}{\sffamily\Large\bfseries\color{azul}}{\thesection}{.7em}{}
+\titleformat{\subsection}{\sffamily\normalsize\bfseries\color{granate}}{\thesubsection}{.7em}{}
+\titlespacing*{\section}{0pt}{19pt}{9pt}
+\titlespacing*{\subsection}{0pt}{13pt}{6pt}
+\captionsetup{font=small,labelfont={bf,color=granate},textfont={color=suave},skip=7pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6.5pt}
+\renewcommand{\baselinestretch}{1.08}
+\setlength{\emergencystretch}{2em}
+\raggedbottom
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.25}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{1}
+\setlist[itemize]{leftmargin=*,itemsep=3pt,topsep=4pt}
+\setlist[enumerate]{leftmargin=*,itemsep=4pt,topsep=4pt}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\cab}[1]{\cellcolor{azul}\color{white}\sffamily\bfseries #1}
+\newcommand{\nota}[1]{\par\medskip\noindent\colorbox{gris}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{\small\textbf{\color{granate}Interpretación.} #1}}\par\medskip}
+\newcommand{\vct}[1]{\boldsymbol{#1}}
+\newcommand{\mat}[1]{\mathbf{#1}}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\trans}{\mathsf{T}}
+\newcommand{\unit}[1]{\,\mathrm{#1}}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\atan}{atan2}
+\DeclareMathOperator{\sat}{sat}
+\DeclareMathOperator{\wrap}{wrap}
+\DeclareMathOperator{\rank}{rango}
+\DeclareMathOperator{\RMSE}{RMSE}
+\newcommand{\figura}[4][0.85]{\begin{figure}[!htbp]\centering\includegraphics[width=#1\linewidth,height=.42\textheight,keepaspectratio]{#2}\caption{#3}\label{#4}\end{figure}}
+\graphicspath{{figuras/}}
+\color{texto}

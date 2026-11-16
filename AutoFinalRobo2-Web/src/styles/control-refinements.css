@@ -29,9 +29,9 @@
 .afr2-goto-playback .afr2-goto-builder h2 { font-size:17px; }
 .afr2-control-map[data-compact="true"] { display:grid; grid-template-columns:minmax(0,1fr) 230px; --map-height:clamp(220px,29dvh,300px); }
 .afr2-control-map[data-compact="true"] .afr2-control-map__heading, .afr2-control-map[data-compact="true"] .afr2-control-map__toolbar, .afr2-map-details { grid-column:1/-1; }
-.afr2-control-map[data-compact="true"] .afr2-control-map__heading { padding:16px 20px 8px; gap:8px; }
-.afr2-control-map[data-compact="true"] .afr2-control-map__heading h2 { font-size:20px; }
-.afr2-control-map[data-compact="true"] .afr2-control-map__toolbar { padding:0 20px 12px; gap:8px; }
+/* AFR2-20261113-04: el modo compacto (GOTO) usa el mismo encabezado y selector que el simulador de secuencias. */
+.afr2-control-map[data-compact="true"] .afr2-control-map__heading { gap:8px; }
+.afr2-control-map[data-compact="true"] .afr2-control-map__toolbar { gap:8px; }
 .afr2-control-map[data-compact="true"] .afr2-control-map__viewport { grid-column:1; grid-row:3; }
 .afr2-map-route { grid-column:1; grid-row:4; display:grid; gap:8px; padding:8px 20px 12px; min-width:0; }
 .afr2-map-route { align-content:start; }
@@ -49,6 +49,8 @@
 @media (prefers-reduced-motion:reduce) { .afr2-goto-list-toggle .afr2-chevron { transition:none; } }
 /* Drawing controls have their own row, above the canvas in both layouts. */
 .afr2-control-map[data-compact="true"][data-editor="true"] > .afr2-map-editor-tools { grid-column:1/-1; grid-row:3; }
+/* AFR2-20261113-04: las herramientas de dibujo con el mismo margen lateral y aire arriba que el selector de vista. */
+.afr2-control-map[data-editor="true"] > .afr2-map-editor-tools { padding:16px 20px; }
 .afr2-control-map[data-compact="true"][data-editor="true"] > .afr2-control-map__viewport { grid-row:4; }
 .afr2-control-map[data-compact="true"][data-editor="true"] > .afr2-map-route { grid-row:5; }
 .afr2-control-map[data-compact="true"][data-editor="true"] > .afr2-map-sidebar { grid-row:4/span 2; }

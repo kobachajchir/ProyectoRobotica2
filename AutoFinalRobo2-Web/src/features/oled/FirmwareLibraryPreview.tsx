@@ -18,7 +18,8 @@ const layout: FirmwareSnapshot = {
 interface Position { node: number; selection: number; firstVisible: number }
 const clock = () => Math.floor(performance.now()) >>> 0;
 export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { screen: Afr2ScreenMetadata; onNavigate: (code: Afr2ScreenCode) => void; active?: boolean }) {
-  const foundNode = library.nodes.findIndex(item => Number(item[5]) === Number.parseInt(screen.code.slice(2), 16));
+  const scaleIndex=Number(screen.code)>=0x030051 && Number(screen.code)<=0x030056?Number(screen.code)-0x030051:-1;
+  const foundNode = scaleIndex>=0?79:library.nodes.findIndex(item => Number(item[5]) === Number.parseInt(screen.code.slice(2), 16));
   const node = foundNode<0 && ['0x03003d','0x03003e','0x03003f','0x030040','0x030041','0x030042','0x030043','0x030044'].includes(screen.code) ? screen.code==='0x030044'?MOTOR_SELECTOR_NODE:61+['0x03003d','0x03003e','0x03003f','0x030040','0x030041','0x030042','0x030043','0x030044'].indexOf(screen.code) : foundNode;
   const defaultSel = (n: number) => (n === 34 || n === 35 ? 1 : 0);
   const [position, setPosition] = useState<Position>({ node, selection: defaultSel(node), firstVisible: 0 });
@@ -57,13 +58,14 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
     const result = new Afr2OledBuffer();
     if (drawable) renderFirmwareScreen({ ...state, clockMs, scrollStartedMs: scrollStarted.current,
       noticeStartedMs: 0, redraw: true, scrollRedraw: false, keyboard: false, keyboardField: false,
-      key: 0, length: 0, ssid: '', edit: false, editingLabel: '', draft: 0, notice: null,
+      key: 0, length: 0, ssid: '', edit: scaleIndex>=0, editingAction:scaleIndex>=0?115+scaleIndex:undefined, editingLabel:scaleIndex>=0?['Adelante','Atras','Izquierda','Derecha','Giro derecha','Giro izquierda'][scaleIndex]:'', draft: scaleIndex>=0?Number.NaN:0, notice: null,
       splashMs: splash ? (clockMs - ((clockMs - scrollStarted.current) >>> 0) % SPLASH_MS) >>> 0 : undefined,
     }, result, caps ? {...layout,lines:[['UI: encoder/OLED','Dibujo por TWI','Estado: sin datos'],['UART: puente ESP','Wi-Fi/HTTP/WS','Estado: sin datos'],['Sensores: IR/HC','Linea / Hall','Estado: sin datos'],['PWM: sin odometria','STOP corta salidas','Estado: sin datos'],['GOTO requiere pose','CPR y CAD nominal','Estado: sin datos'],['Secuencias: pasos','Guardar explicito','Estado: sin datos']][state.selection]} : batteryView ? { ...layout, lines: ['Bateria: -- V', 'Realizar medicion', 'Desde Bateria'] } : layout);
     return result;
-  }, [drawable, state.node, state.selection, state.firstVisible, clockMs, batteryView]);
+  }, [drawable, state.node, state.selection, state.firstVisible, clockMs, batteryView, scaleIndex]);
   const move = (delta: number) => {
     if(!active)return;
+    if(scaleIndex>=0){setFeedback('El factor actual requiere el controlador; usá la simulación para editar datos de ejemplo.');return;}
     if(hallCount)return;
     if(motorPick){setPosition({...state,selection:stepMotor(state.selection,delta)});setFeedback(null);return;}
     if(node===45 || node===67){setPosition({...state,selection:Math.max(0,Math.min(node===45?1:2,state.selection+delta))});return;}
@@ -103,6 +105,7 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
   const press = (kind: 'short' | 'long') => {
     if(active && splash){setFeedback('La pantalla de inicio dura 3 s al encender; corto o largo la saltean.');return;}
     if (!active || !current) return;
+    if(scaleIndex>=0){if(kind==='long')onNavigate('0x030050');else setFeedback('Vista sin datos del controlador; no se aplica un factor inventado.');return;}
     if(motorPick){if(kind==='long')navigate(history.current.pop()??{node:library.symbols.AFR2_N_TESTS,selection:0,firstVisible:0});else {const chosen=MOTOR_IDS[state.selection&3];navigate(history.current.pop()??{node:library.symbols.AFR2_N_TESTS,selection:0,firstVisible:0});setFeedback(`Motor ${chosen} confirmado en la vista local; sin modificar el equipo.`);}return;}
     if(node===45 || node===65 || node===68 || node===69){if(kind==='long' || kind==='short')navigateBack(node===68 || node===69?31:32);return;}
     if(node===67 && kind==='short'){setFeedback('Cambiar el modo requiere confirmación del ESP; la biblioteca no modifica la radio.');return;}

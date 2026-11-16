@@ -743,3 +743,28 @@ html[data-input="keyboard"] .afr2-route-link, html[data-input="keyboard"] .afr2-
 .afr2-settings-about { margin-top: 0; padding-top: 20px; border-top: 0; display: grid; gap: 12px; }
 .afr2-settings-about > h3, .afr2-settings-about > p { margin: 0; }
 .afr2-settings-about .afr2-route-link { width: fit-content; min-height: 44px; margin-left: -12px; }
+
+/* AFR2-20261112-03: OLED en vivo con layout fijo. El lienzo mantiene 2:1 y nunca baja de 128x64 px reales
+   (256x128 cuando entra); la columna lateral, el aviso, la pill y el pie siempre ocupan su lugar. */
+.afr2-oled-canvas { display: block; width: 100%; min-width: min(256px, 100%); height: auto; aspect-ratio: 2 / 1; }
+.afr2-oled-bench__screen { min-width: 128px; }
+.afr2-oled-bench__screen canvas.afr2-oled-canvas { min-width: max(128px, min(256px, 100%)); }
+.afr2-oled-with-side.afr2-oled-with-side--reserved { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.afr2-oled-with-side.afr2-oled-with-side--reserved > .afr2-oled-bench__screen { flex: 1 1 288px; min-width: min(288px, 100%); }
+.afr2-oled-side-slot { flex: 0 0 7.5rem; min-width: 7.5rem; min-height: 3rem; }
+.afr2-oled-live__notice { margin: 0; min-height: 2.9em; line-height: 1.45; font-size: var(--type-label-size, .85rem); color: var(--text-muted);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; padding-left: 10px; border-left: 2px solid transparent; }
+.afr2-oled-live__notice[data-tone="warning"] { border-left-color: var(--warning); }
+.afr2-oled-live__notice[data-tone="error"] { border-left-color: var(--danger, var(--warning)); }
+.afr2-oled-live__notice[data-tone="info"] { border-left-color: var(--action); }
+.afr2-oled-live__capture { min-width: 15.5ch; }
+.afr2-oled-live__caption { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+/* AFR2-20261113-05: selector de secciones de página (pills) igual en todas las páginas.
+   Encabezado → selector = separación de sección de la página; selector → contenido = 24 px (20 px en angosto).
+   Mismo tamaño (md), mismo relleno de pills y ancho completo en celular. */
+:root { --afr2-task-nav-after: 24px; }
+:root .afr2-route-view.afr2-control-workspace { gap: var(--visual-section-gap); }
+:root .afr2-route-view > .afr2-workspace > .afr2-task-nav { margin: 0 0 var(--afr2-task-nav-after); }
+:root .afr2-control-workspace > .afr2-workspace > .afr2-task-panel { padding-top: 0; }
+@media (max-width: 599.98px) { :root { --afr2-task-nav-after: 20px; } }
+

@@ -148,3 +148,7 @@ No mostrar IMU/MPU/balance de dos ruedas. Funciones pendientes o sin hardware se
 Conservar los cuatro IDs locales existentes de screens.json. Asignar IDs nuevos al implementar, con rol/estado/acciones y evidencia. No reutilizar códigos históricos como activos por copiar este árbol. Wire/reportes/actions nuevos requieren ficha AFR2 y adaptación de productor y consumidores.
 
 La evidencia [del shield](../hardware/WIFI_SHIELD.md) no añade botones de navegación: KEY/RST son mantenimiento del ESP. Wi-Fi será gestionado por el firmware Arduino propio; el menú no envía AT, no conmuta jumpers y no inicia flasheo. Estado del enlace y errores de LittleFS deben venir del servicio real cuando se implemente, sin presentar la configuración nominal del módulo como medición.
+
+## Adición en fuente AFR2-20261111-06
+
+Pruebas → Pruebas examen → Escala de factores → Adelante / Atrás / Izquierda / Derecha / Giro derecha / Giro izquierda / Guardar EEPROM / Descartar cambios / Volver. Editores 0.000..2.000; aplicación en RAM y guardado explícito con confirmación obligatoria al salir. Implementado solo en fuente AVR/Web, sin builds ni prueba física. Ver contracts/DIRECTIONAL_SCALE_FACTORS_20261111.md para IDs y alcance; este apartado no convierte el resto del árbol objetivo en implementación.

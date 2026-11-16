@@ -356,6 +356,35 @@ static const Afr2MenuItem odom[] PROGMEM={
  { "Iniciar", 255, AFR2_A_ODOM_TOGGLE, 0, 0, 0, 0 },
  { "Volver", AFR2_N_CALIB, 0, 0, 0, 0, 0 },
 };
+/* AFR2-20261111-02: Pruebas examen. Filas 0..3 menu, 4..8 desplazamiento, 9..13 giros (node.first apunta aca). */
+static const Afr2MenuItem exam[] PROGMEM={
+ { "Desplazamiento 1 m", AFR2_N_EXAM_MOVE, 0, 0, 0, 0, 0 },
+ { "Giros", AFR2_N_EXAM_TURN, 0, 0, 0, 0, 0 },
+ { "Escala de factores", AFR2_N_FACTORS, 0, 0, 0, 0, 0 },
+ { "Volver", AFR2_N_TESTS, 0, 0, 0, 0, 0 },
+ { "Adelante 1 m", 255, AFR2_A_EXAM_START, 0, 0, 0, 0 },
+ { "Atras 1 m", 255, AFR2_A_EXAM_START, 1, 0, 0, 0 },
+ { "Izquierda 1 m", 255, AFR2_A_EXAM_START, 2, 0, 0, 0 },
+ { "Derecha 1 m", 255, AFR2_A_EXAM_START, 3, 0, 0, 0 },
+ { "Volver", AFR2_N_EXAM_MENU, 0, 0, 0, 0, 0 },
+ { "Giro 90 derecha", 255, AFR2_A_EXAM_START, 10, 0, 0, 0 },
+ { "Giro 90 izquierda", 255, AFR2_A_EXAM_START, 11, 0, 0, 0 },
+ { "Giro 180", 255, AFR2_A_EXAM_START, 12, 0, 0, 0 },
+ { "Giro 360", 255, AFR2_A_EXAM_START, 13, 0, 0, 0 },
+ { "Volver", AFR2_N_EXAM_MENU, 0, 0, 0, 0, 0 },
+};
+/* AFR2-20261111-06: factors use the standard numeric draft editor and mandatory save/discard flow. */
+static const Afr2MenuItem factors[] PROGMEM={
+ { "Adelante",255,AFR2_A_SCALE_FORWARD,0,0,2000,1 },
+ { "Atras",255,AFR2_A_SCALE_REVERSE,0,0,2000,1 },
+ { "Izquierda",255,AFR2_A_SCALE_LEFT,0,0,2000,1 },
+ { "Derecha",255,AFR2_A_SCALE_RIGHT,0,0,2000,1 },
+ { "Giro derecha",255,AFR2_A_SCALE_CW,0,0,2000,1 },
+ { "Giro izquierda",255,AFR2_A_SCALE_CCW,0,0,2000,1 },
+ { "Guardar EEPROM",255,AFR2_A_SAVE,0,0,0,0 },
+ { "Descartar cambios",255,AFR2_A_DISCARD,0,0,0,0 },
+ { "Volver",AFR2_N_EXAM_MENU,0,0,0,0,0 },
+};
 static const Afr2MenuNode nodes[] PROGMEM={
  { "AutoFinalRobo2", AFR2_N_HOME, 1, 1, 0, 0x10001UL },
  { "Menu principal", AFR2_N_HOME, 0, 7, 1, 0x10002UL },
@@ -374,7 +403,7 @@ static const Afr2MenuNode nodes[] PROGMEM={
  { "Revisar objetivo", AFR2_N_GOTO_MENU, 1, 1, 59, 0x3000eUL },
  { "Resultado GOTO", AFR2_N_GOTO_MENU, 1, 1, 60, 0x3000fUL },
  { "Odometria", AFR2_N_GOTO_MENU, 1, 1, 61, 0x30010UL },
- { "Pruebas", AFR2_N_MENU, 0, 8, 0x4008u, 0x30011UL }, /* AFR2-20261108-02: sin "Hall una vuelta" (es calibracion) */
+ { "Pruebas", AFR2_N_MENU, 0, 9, 0x4008u, 0x30011UL }, /* AFR2-20261108-02: sin "Hall una vuelta"; AFR2-20261111-02: Pruebas examen primera */
  { "Motor individual", AFR2_N_TESTS, 0, 6, 0x4031u, 0x30012UL },
  { "Estado motores", AFR2_N_WHEEL, 1, 1, 78, 0x30013UL },
  { "Hall una vuelta", AFR2_N_CALIB, 0, 6, 79, 0x30014UL }, /* AFR2-20261108-02: ahora solo desde Calibracion > Hall */
@@ -437,6 +466,12 @@ static const Afr2MenuNode nodes[] PROGMEM={
  { "Prueba odometria", AFR2_N_CALIB, 1, 1, 85, 0x3004aUL },
  /* AFR2-20261108-06: aparece sola cuando la red STA elegida no conecta (tras el aviso 0x04000c). */
  { "Sin red Wi-Fi", AFR2_N_WIFI_AP, 1, 2, 85, 0x3004bUL },
+ /* AFR2-20261111-02: Pruebas examen, sus dos listas y la vista de ejecucion (queda hasta OK con el encoder). */
+ { "Pruebas examen", AFR2_N_TESTS, 0, 4, 0, 0x3004cUL },
+ { "Desplazamiento", AFR2_N_EXAM_MENU, 0, 5, 4, 0x3004dUL },
+ { "Giros", AFR2_N_EXAM_MENU, 0, 5, 9, 0x3004eUL },
+ { "Ejecutando test", AFR2_N_EXAM_MENU, 1, 1, 85, 0x3004fUL },
+ { "Escala factores", AFR2_N_EXAM_MENU, 0, 9, 0, 0x30050UL },
 };
 void Afr2Menu_Node(uint8_t index,Afr2MenuNode *out) {
     if(index>=AFR2_N_COUNT)index=AFR2_N_HOME;
@@ -463,6 +498,10 @@ void Afr2Menu_Item(uint8_t node,uint8_t index,Afr2MenuItem *out) {
     if(node==AFR2_N_ODOM_MENU){memcpy_P(out,&odom[index],sizeof(*out));return;}
     /* AFR2-20261108-06: Preferencias inserta "Reintento Wi-Fi s" en la fila 2 sin mover reform[]. */
     if(node==AFR2_N_PREFS){if(index==2){memcpy_P(out,&extra[47],sizeof(*out));return;}if(index>2)--index;}
+    if(node==AFR2_N_FACTORS){memcpy_P(out,&factors[index],sizeof(*out));return;}
+    if(node==AFR2_N_EXAM_MENU || node==AFR2_N_EXAM_MOVE || node==AFR2_N_EXAM_TURN){memcpy_P(out,&exam[n.first+index],sizeof(*out));return;}
+    /* AFR2-20261111-02: "Pruebas examen" primera en Pruebas; el resto se corre una fila sin mover reform[]. */
+    if(node==AFR2_N_TESTS){if(!index){memset(out,0,sizeof(*out));strcpy_P(out->label,PSTR("Pruebas examen"));out->target=AFR2_N_EXAM_MENU;return;}--index;}
     if(node==AFR2_N_TESTS && index==1){memset(out,0,sizeof(*out));strcpy_P(out->label,PSTR("Prueba Hall"));out->target=AFR2_N_HALL_LIVE;return;}
     if(n.first&0x2000u){memcpy_P(out,&wifiReform[(n.first&0x1fffu)+index],sizeof(*out));return;}
     if(n.first&0x4000u){memcpy_P(out,&reform[(n.first&0x3fffu)+index],sizeof(*out));return;}

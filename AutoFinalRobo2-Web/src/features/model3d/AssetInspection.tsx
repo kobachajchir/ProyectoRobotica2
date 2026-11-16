@@ -4,7 +4,7 @@ import { UiIcon } from '../../components/ui/UiIcon';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Canvas, useLoader, useThree } from '@react-three/fiber';
 import { Box3, PropertyBinding, Vector3 } from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { ProgressGLTFLoader } from '../../components/three/modelAssetLoading';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { Link } from 'react-router-dom';
 import { OrbitControls } from '../../components/three/OrbitControls';
@@ -30,8 +30,8 @@ export const ARM_REFERENCES = [
 const CUBE_REFERENCES = [{ node: 'AFR2_Auxiliar_Cubo50', label: 'Cubo de referencia', detail: 'Pieza auxiliar de 50 × 50 × 50 mm usada en el simulador.' }];
 
 export function clearInspectionAssetCache() {
-  useLoader.clear(GLTFLoader, modelAssetUrl('brazo'));
-  useLoader.clear(GLTFLoader, modelAssetUrl('cubo'));
+  useLoader.clear(ProgressGLTFLoader, modelAssetUrl('brazo'));
+  useLoader.clear(ProgressGLTFLoader, modelAssetUrl('cubo'));
 }
 
 function Camera({ modelSize }: { modelSize: Vector3 }) {
@@ -49,7 +49,8 @@ export function AssetInspection({ model, referencesVisible, onToggleReferences, 
   model: 'brazo' | 'cubo'; referencesVisible: boolean; onToggleReferences: () => void; action?: ReactNode;
 }) {
   const palette = useInspectionPalette();
-  const asset = useLoader(GLTFLoader, modelAssetUrl(model), loader => loader.setDRACOLoader(draco));
+  // AFR2-20261111-03: same loader as the other 3D views, so the prefetched model is reused.
+  const asset = useLoader(ProgressGLTFLoader, modelAssetUrl(model), loader => loader.setDRACOLoader(draco));
   const prepared = useMemo(() => {
     const scene = asset.scene.clone(true); scene.updateMatrixWorld(true);
     const bounds = new Box3().setFromObject(scene, true), size = bounds.getSize(new Vector3()), center = bounds.getCenter(new Vector3());

@@ -1,4 +1,5 @@
 import { ModelAssetProgress } from '../../../components/three/ModelAssetProgress';
+import { ModelSpinner } from '../../../components/three/ModelSpinner';
 import { getModelAssetState, ROBOT_MODEL_URL, subscribeModelAssets } from '../../../components/three/modelAssetLoading';
 /* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 import { lazy, Suspense, useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from 'react';
@@ -12,6 +13,7 @@ import { UiIcon } from '../../../components/ui/UiIcon';
 import { clearRobotModelCache } from '../../../components/three/RobotModel';
 import { useConnection } from '../../connection/ConnectionContext';
 import { Afr2CommandError } from '../../../protocol/afr2Client';
+import { notify } from '../../../components/notifications/notify';
 import { DEFAULT_KINEMATIC_PROFILE } from '../sequences/sequenceTypes';
 import { useManualDrivePointers, type DragVisual } from './useManualDrivePointers';
 
@@ -76,8 +78,6 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
   const touchLatest = useRef({ direction: 8, heading: 0, powerPercent:0 });
   touchLatest.current = { direction: direction ? DIRECTIONS.findIndex(d => d.id === direction.id) : 8,
     heading: headingIndex, powerPercent:Math.max(0,Math.min(100,Math.round(speed))) };
-  const exitTouch = useRef({onRelease,onClose});
-  exitTouch.current={onRelease,onClose};
   const touchFlush = useRef<(() => void) | null>(null);
   useEffect(()=>()=>{if(powerNoticeTimer.current)clearTimeout(powerNoticeTimer.current);},[]);
   const input = useRef<HTMLDivElement>(null);
@@ -100,7 +100,13 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
           }
           activated = true; last = key; sentAt = Date.now(); setOledError(null);
         }
-      } catch (err) { if (!cancelled && activated && err instanceof Afr2CommandError && err.code === 'CAPABILITY_UNAVAILABLE') { cancelled=true; exitTouch.current.onRelease(); exitTouch.current.onClose(); return; } if (!cancelled) setOledError(err instanceof Error ? err.message : 'No se pudo activar la OLED táctil.'); }
+      } catch (err) {
+        // AFR2-20261111-05: a lost touch session (link hiccup, ESP/ATmega renegotiating) no longer closes the panel or releases the
+        // held move, warn with a toast and keep retrying every 100 ms until the car accepts the touch view again.
+        if (!cancelled && activated && err instanceof Afr2CommandError && err.code === 'CAPABILITY_UNAVAILABLE') {
+          activated = false; last = '';
+          notify.warning({ id: 'afr2-touch-link', title: 'Control táctil sin enlace con el auto', description: `${err.message} El panel sigue abierto y se reconecta solo.` });
+        } if (!cancelled) setOledError(err instanceof Error ? err.message : 'No se pudo activar la OLED táctil.'); }
       finally { busy = false; }
     };
     const disable = () => { activated = false; last = ''; void requestCommand('robot.touch.ui', { enabled: false, direction: 8, heading: 0, powerPercent:touchLatest.current.powerPercent }, 2000).catch(() => undefined); };
@@ -238,13 +244,13 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
       cancel();
     }
   }, [open, connected, canDrive, cancel, resetPointers, resetHeading]);
-  useEffect(() => { if (mode === 'robot' && error) cancel(); }, [error, mode, cancel]);
+  // AFR2-20261111-05: command diagnostics do not cancel a manual gesture.
   useEffect(() => { if (!enabled) cancel(); }, [enabled, cancel]);
   useEffect(() => { cancel(); }, [stopSignal, cancel]);
   // AFR2-20261106-10: the first PWM itself moves the mode idle -> manual(-pwm), and a failed
   // robot.state read yields undefined; cancelling on those killed the gesture after one move.
-  // Cancel only when another owner takes the car (mission, line, sequence, wheel test, fault).
-  const takeoverMode = robotState?.mode && !['idle', 'manual', 'manual-pwm', 'unknown'].includes(robotState.mode) ? robotState.mode : null;
+  // Cancel only when another owner takes the car (mission, line, sequence, wheel test). Controller faults are advisory here.
+  const takeoverMode = robotState?.mode && !['idle', 'manual', 'manual-pwm', 'unknown', 'fault'].includes(robotState.mode) ? robotState.mode : null;
   useEffect(() => { if (takeoverMode && takeoverMode !== 'goto') cancel(); }, [takeoverMode, cancel]);
   useEffect(() => {
     if (current.current && enabled && modeRef.current === 'robot' && robotAvailable.current) {
@@ -357,7 +363,7 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
   } else {
     directionLabel = !connected ? 'Simulación detenida' : mode === 'preview' ? 'Vista local detenida' : 'Deslizá y mantené para mover';
   }
-  const helpText = `Un dedo sobre el auto desplaza (arrastrá desde el modelo) · Dos dedos sobre el auto giran el auto sobre su eje (con Hall: al soltar gira al ángulo marcado; sin Hall: gira mientras girás) · Soltá para detener. Flechas: mover · Q/E: girar 15° · 0: centrar rumbo. ${modelBlockedReason ? modelBlockedReason : !connected ? 'Auto desconectado. Simulación local sin movimientos físicos.' : !canDrive ? `Control bloqueado: ${blockedReason || 'PWM manual no disponible.'}` : error ? `Última orden sin confirmar: ${error}. Soltá y volvé a deslizar para reintentar.` : mode === 'preview' ? 'Vista local sin movimientos. Cerrá y volvé a abrir para controlar el auto.' : 'Vista superior · Dirección y ruedas solicitadas, sin feedback físico.'}`;
+  const helpText = `Un dedo sobre el auto desplaza (arrastrá desde el modelo) · Dos dedos sobre el auto giran el auto sobre su eje (con Hall: al soltar gira al ángulo marcado; sin Hall: gira mientras girás) · Soltá para detener. Flechas: mover · Q/E: girar 15° · 0: centrar rumbo. ${modelBlockedReason ? modelBlockedReason : !connected ? 'Auto desconectado. Simulación local sin movimientos físicos.' : !canDrive ? `Control bloqueado: ${blockedReason || 'PWM manual no disponible.'}` : error ? `Última orden sin confirmar: ${error}. Se reintenta mientras mantenés el gesto.` : mode === 'preview' ? 'Vista local sin movimientos. Cerrá y volvé a abrir para controlar el auto.' : 'Vista superior · Dirección y ruedas solicitadas, sin feedback físico.'}`;
   // Opening a sheet ends any held gesture so the car never keeps moving under it.
   const openSheet = (next: 'info' | 'params' | 'turns', anchor: HTMLElement) => { cancel(); setSheetAnchor(anchor); setSheet(previous => previous === next ? null : next); };
   return <FloatingModal open={open} origin={origin} size="fullscreen" title="Conducción manual" kicker="Control táctil"
@@ -377,7 +383,7 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
               : <><span className="sr-only">Rumbo simulado: </span>{headingDegrees.toFixed(1)}°</>}</span></div>
         </div>
         <div className="afr2-manual-model" aria-hidden="true"><RenderBoundary key={viewerKey} fallback={<Unavailable onFailure={failed} />}>
-          <Suspense fallback={<p className="afr2-manual-model-message">Cargando modelo 3D…</p>}><Model onReady={ready} wheelSpeeds={wheelSpeeds} headingRad={viewHeadingRad} /></Suspense>
+          <Suspense fallback={<p className="afr2-manual-model-message"><ModelSpinner label="Cargando modelo 3D…" /></p>}><Model onReady={ready} wheelSpeeds={wheelSpeeds} headingRad={viewHeadingRad} /></Suspense>
         </RenderBoundary></div>
         {twisting && turnSide !== 0 && <div className="afr2-manual-spin" aria-hidden="true"><ChassisSpinGraphic direction={turnSide > 0 ? 'ccw' : 'cw'} active size="md" /><span>{connected && mode === 'robot' ? 'Giro ordenado' : 'Giro simulado'} · orden enviada, no medida</span></div>}
         <div className="afr2-manual-compass" aria-hidden="true">{DIRECTIONS.map(item => <span key={item.id} className="afr2-manual-stream" data-active={direction?.id === item.id}>
@@ -454,7 +460,12 @@ export function ManualDriveOverlay({ open, origin, onClose, onRelease, onDirecti
           reason={!connected ? 'auto desconectado.' : mode !== 'robot' ? 'vista local; cerrá y volvé a abrir para controlar el auto.' : !physicalReady ? blockedReason || 'control no disponible.' : hallTurnReason}
           onTurnTo={thetaMrad => callbacks.current.onTurnTo?.(thetaMrad)} onDone={() => setSheet(null)} />
       </FloatingSheet>}
-      {hallNotice && <div key={hallNotice.key} className="afr2-manual-toast" role="status" data-on={hallNotice.on}>
+      {(error || oledError) && <div className="afr2-manual-toast" role="status" aria-live="polite">
+        <span className="afr2-manual-rail__icon"><UiIcon name="warning" /></span>
+        <span><strong>{error ? 'Consigna manual sin confirmar' : 'Presentación OLED sin confirmar'}</strong>
+          <small>{error || oledError} El panel sigue abierto.</small></span>
+      </div>}
+      {!error && !oledError && hallNotice && <div key={hallNotice.key} className="afr2-manual-toast" role="status" data-on={hallNotice.on}>
         <span className="afr2-manual-rail__icon"><UiIcon name="sensors" /></span>
         <span><strong>{hallNotice.on ? 'Sensores Hall activados' : 'Sensores Hall desactivados'}</strong>
           <small>{hallNotice.on ? hallTurnAvailable ? 'Los giros con dos dedos van al ángulo marcado.' : 'Sin odometría calibrada: el giro sigue en lazo abierto.' : 'Los giros siguen a los dedos mientras girás.'}</small></span>

@@ -855,6 +855,111 @@
       "build_evidence": "../documentation/builds/2026-10-25-14/README.md"
     },
     {
+      "name": "robot.route.begin",
+      "owner": "atmega",
+      "wire_id": "0x46",
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "source",
+        "esp": "source",
+        "web": "source"
+      },
+      "timeout_ms": 1500,
+      "idempotent": false,
+      "payload_schema": {
+        "req": {
+          "token": "uint32 1..2^32-1",
+          "count": "1..32",
+          "maxSpeedMmS": "10..límite configurado"
+        },
+        "res": {
+          "token": "uint32",
+          "count": "1..32"
+        }
+      },
+      "current_source_change": "AFR2-20261111-08"
+    },
+    {
+      "name": "robot.route.leg",
+      "owner": "atmega",
+      "wire_id": "0x47",
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "source",
+        "esp": "source",
+        "web": "source"
+      },
+      "timeout_ms": 1500,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {
+          "token": "uint32",
+          "index": "0..count-1",
+          "xMm": "-5000..5000 marco de partida",
+          "yMm": "-5000..5000",
+          "thetaMrad": "-3140..3140"
+        },
+        "res": {
+          "token": "uint32",
+          "index": "0..31",
+          "loaded": "tramos cargados"
+        }
+      },
+      "current_source_change": "AFR2-20261111-08"
+    },
+    {
+      "name": "robot.route.start",
+      "owner": "atmega",
+      "wire_id": "0x48",
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "source",
+        "esp": "source",
+        "web": "source"
+      },
+      "timeout_ms": 1500,
+      "idempotent": false,
+      "payload_schema": {
+        "req": {
+          "token": "uint32"
+        },
+        "res": {
+          "token": "uint32",
+          "state": "idle|loading|running|completed|cancelled|failed"
+        }
+      },
+      "current_source_change": "AFR2-20261111-08"
+    },
+    {
+      "name": "robot.route.status",
+      "owner": "atmega",
+      "wire_id": "0x49",
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "source",
+        "esp": "source",
+        "web": "source"
+      },
+      "timeout_ms": 1500,
+      "idempotent": true,
+      "payload_schema": {
+        "req": {
+          "token": "uint32 (0 = actual)"
+        },
+        "res": {
+          "token": "uint32",
+          "state": "idle|loading|running|completed|cancelled|failed",
+          "count": "0..32",
+          "leg": "tramo en curso",
+          "done": "tramos completos",
+          "fault": "0..4",
+          "pose": "{xMm,yMm,thetaMrad} marco de partida",
+          "elapsedMs": "uint32"
+        }
+      },
+      "current_source_change": "AFR2-20261111-08"
+    },
+    {
       "name": "wifi.status",
       "owner": "esp",
       "wire_id": null,

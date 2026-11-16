@@ -103,6 +103,11 @@ static bool productReply(uint8_t cmd,const uint8_t *p,uint8_t n,const uint8_t *q
     case AFR2_EXT_WEB_PULSE:return qn==2 && n==11 && afr2_get_u16(p+9)==afr2_get_u16(q);
     case AFR2_EXT_DRIVE_PWM:case AFR2_EXT_DRIVE:case AFR2_EXT_WHEEL:case AFR2_EXT_MODE:case AFR2_EXT_GOTO:return n==9;
     case AFR2_EXT_CANCEL:return n==10 && p[9]<=4;
+    /* AFR2-20261111-08: recorrido GOTO local; el token del pedido tiene que volver igual. */
+    case AFR2_EXT_ROUTE_BEGIN:return qn==11 && n==14 && afr2_get_u32(p+9)==afr2_get_u32(q+4) && p[13]==q[8];
+    case AFR2_EXT_ROUTE_LEG:return qn==15 && n==15 && afr2_get_u32(p+9)==afr2_get_u32(q+4) && p[13]==q[8] && p[14]<=32;
+    case AFR2_EXT_ROUTE_START:return qn==8 && n==14 && afr2_get_u32(p+9)==afr2_get_u32(q+4) && p[13]<=6;
+    case AFR2_EXT_ROUTE_STATUS:return qn==4 && n==34 && p[13]<=6 && p[14]<=32;
     case AFR2_EXT_POSE:return n==34 && p[9]<=1 && (!p[9] ||
         ((int32_t)afr2_get_u32(p+18)>=-3142 && (int32_t)afr2_get_u32(p+18)<=3142 && afr2_get_u32(p+22)!=AFR2_AGE_UNKNOWN && afr2_get_u32(p+26) && afr2_get_u32(p+30)));
     case AFR2_EXT_UI_META:return n==23 && afr2_get_u16(p+19)==1024 && p[21]<=1;

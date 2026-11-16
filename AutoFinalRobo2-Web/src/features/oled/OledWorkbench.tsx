@@ -30,9 +30,11 @@ export interface OledWorkbenchProps {
   caption?: ReactNode;
   /** Pantalla en vivo: nada se selecciona ni recibe foco con el teclado. */
   lockFocus?: boolean;
+  /** AFR2-20261112-03: reserva siempre la columna lateral (aunque la pantalla no tenga filas) para que el lienzo no cambie de ancho. */
+  reserveSide?: boolean;
 }
 
-export function OledWorkbench({ header, lastInput, headerAction, statusBar, notices, screen, stale, busy, placeholderText, side, encoder, caption, lockFocus = false }: OledWorkbenchProps) {
+export function OledWorkbench({ header, lastInput, headerAction, statusBar, notices, screen, stale, busy, placeholderText, side, encoder, caption, lockFocus = false, reserveSide = false }: OledWorkbenchProps) {
   const guard = lockFocus ? {
     'data-lock-focus': '' as const,
     onFocusCapture: (event: React.FocusEvent<HTMLElement>) => { if (event.target instanceof HTMLElement && event.target !== event.currentTarget) event.target.blur(); },
@@ -48,12 +50,12 @@ export function OledWorkbench({ header, lastInput, headerAction, statusBar, noti
     {notices && <div className="afr2-oled-bench__notices empty:hidden">{notices}</div>}
     <div className="afr2-oled-bench__body">
       <div className="afr2-oled-bench__display">
-        <div className="afr2-oled-with-side">
+        <div className={`afr2-oled-with-side${reserveSide ? ' afr2-oled-with-side--reserved' : ''}`}>
           <div className={`afr2-oled-bench__screen${placeholderText ? ' afr2-oled-bench__placeholder' : ''}`} data-stale={stale || undefined} aria-busy={busy}>
             {screen}
             {placeholderText && <p className="afr2-oled-bench__placeholder-text" role="status">{placeholderText}</p>}
           </div>
-          {side && <MenuSideControls {...side} />}
+          {reserveSide ? <div className="afr2-oled-side-slot">{side && <MenuSideControls {...side} />}</div> : side && <MenuSideControls {...side} />}
         </div>
         {caption}
       </div>

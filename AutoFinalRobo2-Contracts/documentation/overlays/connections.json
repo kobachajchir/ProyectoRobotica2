@@ -603,6 +603,19 @@
       "state": "source-linked-uncompiled-runtime-unverified",
       "changeId": "AFR2-20261110-14",
       "note": "Dedicated guarded clear returns actual AVR result, retains timing of F1; no automatic movement or optimistic Web suppression. Same local clear service and linked OLED simulation guards."
+    },
+    {
+      "id": "shared:flow/directional-scale-factors",
+      "path": [
+        "shared:screen/03004C",
+        "shared:screen/030050",
+        "shared:screen/030051..030056",
+        "shared:screen/030038",
+        "atmega:EEPROM-v12"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "note": "Local six-direction odometry scales; linked AVR/TS numeric editors; explicit EEPROM save and mandatory Yes/No; no CMD changes.",
+      "changeId": "AFR2-20261111-06"
     }
   ],
   "updated_by": "AFR2-20261109-05",

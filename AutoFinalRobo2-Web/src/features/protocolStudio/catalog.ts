@@ -52,6 +52,11 @@ export const COMMANDS: StudioCommand[] = [
   { id: 0x43, name: 'SEQ_START', description: 'Inicia una secuencia preparada.', requestBytes: 12, replyBytes: 14 },
   { id: 0x44, name: 'SEQ_CANCEL', description: 'Cancela la secuencia identificada.', requestBytes: 13, replyBytes: 10 },
   { id: 0x45, name: 'SEQ_STATUS', description: 'Estado de programa y ejecución.', requestBytes: 8, replyBytes: 19 },
+  // AFR2-20261111-08: recorrido GOTO completo en el ATmega (cargar, tramo, iniciar, avance).
+  { id: 0x46, name: 'ROUTE_BEGIN', description: 'Abre la carga de un recorrido GOTO (1..32 tramos) que el ATmega ejecuta en local. reserved:u32=0, token:u32, count:u8, speed:u16 mm/s.', requestBytes: 11, replyBytes: 5 },
+  { id: 0x47, name: 'ROUTE_LEG', description: 'Tramo del recorrido en el marco de partida: x/y i16 mm, theta i16 mrad.', requestBytes: 15, replyBytes: 6 },
+  { id: 0x48, name: 'ROUTE_START', description: 'Inicia el recorrido; sigue aunque se corte el WebSocket o el enlace.', requestBytes: 8, replyBytes: 5 },
+  { id: 0x49, name: 'ROUTE_STATUS', description: 'Avance: estado, tramo, hechos, falla, pose x/y/yaw (marco de partida) y tiempo.', requestBytes: 4, replyBytes: 25 },
   { id: 0x50, name: 'INFO', description: 'Página de identidad de compilación (0..4).', requestBytes: 1, example: '00' },
   { id: 0x51, name: 'REBOOT', description: 'Solicitud explícita de reinicio ATmega.', requestBytes: 1, replyBytes: 5, example: 'A5' },
   { id: 0x52, name: 'BOOT', description: 'Evento BT01 de arranque, sin sesión/transacción; solo lectura.', readOnly: true },

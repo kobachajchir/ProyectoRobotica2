@@ -1,3 +1,5 @@
+> **AFR2-20261111-06 / 1.27.0:** factores de odometría por dirección (0.000–2.000), menú de examen y editores OLED/Web vinculados, con Guardar/Descartar. EEPROM v12 migra v1..11 sin autoguardar. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-11-06-directional-scale-factors.md). Solo fuente, sin pruebas, compilaciones, generadores ni cargas.
+
 > **AFR2-20261106-04:** SRAM AVR 5614 bytes, libres antes de pila 2578; QR finish 29 bytes. Se conservan ambos buffers OLED. Builds y paridad C/Web 2104/2104 PASS; sin carga ni prueba física. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-04/README.md).
 
 > **AFR2-20261106-02:** regeneración y builds AVR/ESP/Web/Loader comprobados; paridad host OLED 1680/1680. **Carga bloqueada por presupuesto SRAM/pila AVR**; sin COM, flasheo ni prueba física. [Evidencia](../AutoFinalRobo2-Contracts/documentation/builds/2026-11-06-02/README.md).

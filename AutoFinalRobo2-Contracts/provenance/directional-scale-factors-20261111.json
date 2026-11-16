@@ -1,0 +1,116 @@
+{
+  "changeId": "AFR2-20261111-06",
+  "productVersion": "1.27.0",
+  "atmega": "source-only-uncompiled",
+  "esp": "shared-version-only",
+  "web": "source-only-uncompiled",
+  "origin": "Own AFR2 adaptation of existing numeric editor, menu, save/discard and versioned EEPROM. Earlier authors retained; reference sources unchanged.",
+  "execution": "No tests, builds, validators, generators, browser, COM, promotion or flashing.",
+  "files": [
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_product.h",
+      "adaptation": "Six u16 directional factors; EEPROM version 12.",
+      "sha256": "ad998517a9989f3ed7ec0f2c154a3b5a23822d46dd5952ab28b0ad0973d632f7"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/include/afr2_menu_catalog.h",
+      "adaptation": "Appended node 79 and local actions 115..120.",
+      "sha256": "3b34b578764566f65030f0b0b2e792b852ba6925cda443ad91ea770e2b51861c"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/platform/afr2_preferences.c",
+      "adaptation": "78-byte payload; explicit v12 LE append and v1..11 migration.",
+      "sha256": "436bec8f91de18b04b8bd8e3a735fae2bad68f65c95227cb1471ddf0031cb3c0"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_product.c",
+      "adaptation": "Defaults/ranges; directional chassis odometry scales; zero component interlocks.",
+      "sha256": "f3121e6f4542f0541fcaa8dc6334777b34f4bae979b9e2c78e29cb2688cf0c79"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/services/afr2_app.c",
+      "adaptation": "Local values/settings, dirty tracking, stopped edit availability and exam zero guard.",
+      "sha256": "bb3466dcd80d20177e5027e32939ae8296e1e2a70c9ee37ccd5b153b760ea91b"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_menu_catalog.c",
+      "adaptation": "Exam factor entry, six numeric rows, save/discard/back; preserved existing IDs.",
+      "sha256": "94c13266fbd3198f7645d1090492ca5e194af033b38ebf202ab2f09fb7cfd934"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/src/ui/afr2_screens.c",
+      "adaptation": "Per-direction reported editor codes; X.XXX formatting and mandatory exit guard.",
+      "sha256": "6e4c6fba3794f477a5b8e2d8b471aebea1a362de9608e51858688a72f4aa4e3b"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.ts",
+      "adaptation": "Linked rows, offsets, X.XXX rendering; motor-selector virtual node moved to 80.",
+      "sha256": "f4b949697b8ae4dc41c242ff92197c8fdf83b1cd005df931318fc294cea8b3d4"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/generated/firmwareLibrary.ts",
+      "adaptation": "Focused metadata edit of symbols/nodes/source hashes; fonts and icons retained; no generator executed.",
+      "sha256": "c871f89fc107e6b59b8b5822381030f156536f129ffdc6a2ea6fb4b0dc8e135f"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/firmwareRenderer.sources.json",
+      "adaptation": "Reviewed C layout hashes after TS port.",
+      "sha256": "7e00c00f76e7cd7f518437607cc5ba048a1cf1011c7c5e7c20a0b76520ed3daa"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/oled/FirmwareLibraryPreview.tsx",
+      "adaptation": "New editor previews with unknown current factor shown as --.",
+      "sha256": "5d15ddb3dd21584e8636057efaea8a708d887eeabea443ea736d54239479fa7b"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/src/features/developer/uiSimulation.ts",
+      "adaptation": "Independent demo values, draft editing, persistence simulation and mandatory confirmation.",
+      "sha256": "b6b1ef77731cb0a6ebe6f79c4785c1765c42d5c2638ad56c9fe978ec1ee762f1"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/package.json",
+      "adaptation": "Product version 1.27.0.",
+      "sha256": "591775bb10203f517d912a272163725880fcb592a6cf79dd3cbbd3c28c56a7aa"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/package-lock.json",
+      "adaptation": "Root/product lock version only.",
+      "sha256": "c599dc162565ad06872b0222300c5ba86bfc503784b93e2cd03e2a964a635604"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/contracts/afr2_build_info.h",
+      "adaptation": "Shared ATmega/ESP/Web product version 1.27.0.",
+      "sha256": "49bb5cc9146a72389560550f630ba3377605d12a933d4851dbc8c3786074e9c0"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/screens.json",
+      "adaptation": "Shared identities 030050..030056; exam menu count.",
+      "sha256": "180a06f5f3eac9f5f9aa9ceac3686035e0050885f51ec5a9bc5b60b881e515ea"
+    },
+    {
+      "path": "AutoFinalRobo2-Contracts/documentation/overlays/connections.json",
+      "adaptation": "Directional factor flow source state.",
+      "sha256": "0767600bad8d74b01c9fd4ea92cdd3970c43ec750bb7e13c8f84c6b685a0cada"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/README.md",
+      "adaptation": "Adaptation pointer and source-only status; earlier authors/content retained.",
+      "sha256": "3804914d965a9d687c4e571f644ea0960de2885a8d6a4eee11866161b401aade"
+    },
+    {
+      "path": "AutoFinalRobo2-Atmega/INFORME_ADAPTACION.md",
+      "adaptation": "Adaptation pointer and source-only status; earlier authors/content retained.",
+      "sha256": "b9539696dde94f2f20dc47f7faebadc574d07e499526b55bcbb4bedfd7dfb067"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/README.md",
+      "adaptation": "Adaptation pointer and source-only status; earlier authors/content retained.",
+      "sha256": "32bfe1eb18f1039f75477fd492bb88c81e51b88ce2e07f05fbc4beaa49073938"
+    },
+    {
+      "path": "AutoFinalRobo2-Web/INFORME_ADAPTACION.md",
+      "adaptation": "Adaptation pointer and source-only status; earlier authors/content retained.",
+      "sha256": "f4cc4b4a34e940774c28b193bb234c98b36c2ab4f228f846ea08c2ec2a4adbf7"
+    }
+  ]
+}

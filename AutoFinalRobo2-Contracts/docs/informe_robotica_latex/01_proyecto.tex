@@ -1,0 +1,127 @@
+\chapter{Proyecto y diseño del sistema}
+\label{cap:proyecto}
+
+\section{Problema y propósito}
+Un robot manipulador fijo puede orientar y posicionar una herramienta dentro de un espacio limitado por su geometría. Una base móvil amplía la región de trabajo, aunque introduce incertidumbre de localización y modifica la estabilidad del conjunto. AutoFinalRobo2 aborda esa integración mediante una plataforma Mecanum y un brazo de seis ejes.
+
+El problema consiste en convertir una consigna de desplazamiento o una pose de herramienta en acciones coordinadas, manteniendo una correspondencia clara entre geometría, unidades, sentidos de giro, mediciones y restricciones físicas. La integración debe permitir explicar por qué gira cada rueda, cómo se obtiene una posición estimada, cómo cambian las coordenadas del efector y qué condiciones limitan su operación.
+
+El objetivo general es desarrollar una plataforma móvil con capacidad de manipulación y documentar los principios que gobiernan su diseño y funcionamiento. Los objetivos específicos son:
+\begin{itemize}
+\item formular la cinemática de la base y la relación entre cuentas Hall y movimiento;
+\item desarrollar las transformaciones, la cinemática y el Jacobiano del brazo;
+\item describir motores, transmisiones, sensores, alimentación e interfaces;
+\item relacionar estabilidad, masa y cargas con las posturas de trabajo;
+\item comparar consignas y mediciones para interpretar el desempeño;
+\item identificar las condiciones necesarias para completar la integración física.
+\end{itemize}
+
+\section{Alcance y metodología}
+El sistema contempla movilidad planar, manipulación, operación local mediante pantalla y encoder, control desde un navegador y herramientas de mantenimiento. El diseño mecánico del brazo es la configuración v17 con eslabones de PVC de 25 y 20 mm de diámetro exterior y pinza de dos mandíbulas. La plataforma se apoya únicamente sobre sus ruedas.
+
+El desarrollo se organiza en definición de requisitos, diseño CAD, modelado matemático, implementación y caracterización. Las dimensiones nominales representan geometría de diseño; las masas calculadas dependen de densidades y de la representación de componentes. Las mediciones describen únicamente las condiciones en que fueron obtenidas. Esta distinción permite formular conclusiones proporcionadas a la evidencia disponible.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Requisitos funcionales y forma de abordarlos.}
+\begin{tabularx}{\linewidth}{@{}P{33mm}YY@{}}
+\toprule
+\textbf{Necesidad} & \textbf{Solución del proyecto} & \textbf{Condición de aceptación}\\\midrule
+Movilidad planar & Cuatro ruedas Mecanum y mezcla de velocidades. & Comparar recorrido y giro con una referencia externa.\\
+Posicionar herramienta & Manipulador de seis ejes y definición de TCP. & Contrastar poses y respetar límites e interferencias.\\
+Sujetar objetos & Pinza de dos cremalleras accionadas por un piñón. & Caracterizar fuerza de contacto y retención.\\
+Operar localmente & OLED monocroma y encoder con pulsador. & Navegación consistente y cambios confirmados.\\
+Operar a distancia & Web, Wi-Fi, ESP y enlace serie al ATmega. & Consignas compatibles y estado de ejecución observable.\\
+Mantener estabilidad & Restricción de postura y análisis de apoyo. & Centro de masa y momentos con margen suficiente.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Arquitectura general}
+El ATmega2560 concentra el control de los motores de la plataforma, adquisición de sensores e interacción con la OLED y el encoder. El ESP-12S, basado en ESP8266, aporta conectividad, servidor HTTP, WebSocket y almacenamiento LittleFS. La aplicación React y Vite se ejecuta en el navegador y presenta estado, control, visualización y herramientas de exploración.
+
+La arquitectura se completa con las definiciones compartidas de comunicación y unidades, los modelos CAD y un cargador de mantenimiento para Windows. El software de ATmega está escrito en C con avr-libc, sin entorno Arduino ni DMA; el ESP utiliza Arduino ESP8266. La OLED es el único dispositivo I2C y su acceso se centraliza en el I2C Manager.
+
+\begin{figure}[!htbp]
+\centering
+\begin{tikzpicture}[node distance=8mm and 7mm,box/.style={draw=azul!35,fill=gris,rounded corners=2mm,text width=39mm,minimum height=17mm,align=center,font=\small},arr/.style={-{Stealth[length=2mm]},thick,granate}]
+\node[box] (web) {Operador y Web\\Control y visualización};
+\node[box,right=of web] (esp) {ESP8266\\Wi-Fi, HTTP y WS};
+\node[box,right=of esp] (avr) {ATmega2560\\Control y adquisición};
+\node[box,below=of web] (tools) {CAD y herramientas\\Diseño y mantenimiento};
+\node[box,below=of esp] (local) {OLED y encoder\\Interfaz local};
+\node[box,below=of avr] (io) {Motores y sensores\\Plataforma física};
+\draw[arr] (web)--node[above=8mm,font=\scriptsize]{WebSocket}(esp);
+\draw[arr] (esp)--node[above=8mm,font=\scriptsize]{UART}(avr);
+\draw[arr] (avr)--(io);
+\draw[arr] (avr.south west)--(local.north east);
+\end{tikzpicture}
+\caption{Responsabilidades funcionales de la plataforma. La potencia y el bus STS del brazo se integran como un subsistema específico.}
+\label{fig:arquitectura}
+\end{figure}
+\FloatBarrier
+
+\section{Configuración mecánica}
+La plataforma emplea cuatro ruedas Mecanum accionadas individualmente. El brazo incorpora seis articulaciones rotacionales: giro de base, hombro, codo, giro de muñeca, inclinación de muñeca y giro final de herramienta. La pinza añade apertura, sin aumentar los seis componentes de la pose rígida del TCP.
+
+\figura[.69]{brazo.png}{Representación CAD del manipulador y sus interfaces principales.}{fig:brazo}
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Parámetros nominales de geometría y estructura.}
+\begin{tabularx}{\linewidth}{@{}P{51mm}P{27mm}Y@{}}
+\toprule\textbf{Magnitud} & \textbf{Valor} & \textbf{Interpretación}\\\midrule
+Diámetro de rueda & 80 mm & Geometría nominal de la plataforma.\\
+Suma de semidistancias & 170 mm & Parámetro de mezcla Mecanum.\\
+Hombro--codo & 70 mm & Distancia geométrica entre ejes.\\
+Codo--J4 & 60 mm & Tramo distal al codo.\\
+J4--J5 & 55 mm & Separación hasta el centro de muñeca.\\
+J5--J6 & 65 mm & Tramo distal sobre el eje de muñeca.\\
+J6--TCP & 78,5 mm & Desplazamiento hasta el punto de herramienta.\\
+Tubo del brazo & $\varnothing 25\times1{,}2$ mm & Diámetro interior nominal 22,6 mm.\\
+Tubo del antebrazo & $\varnothing 20\times1$ mm & Diámetro interior nominal 18 mm.\\
+Longitudes de corte & 42 y 28,5 mm & Piezas de tubo; no son distancias entre ejes.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La estructura se divide en montura y control fijo, base y hombro, brazo, antebrazo y giro J4, muñeca J5--J6 y herramienta. El accionamiento del codo está próximo al hombro y transmite por correa. Al acercar una masa al eje se reduce su contribución gravitatoria, aunque el cálculo completo también debe incluir poleas, soportes, tensión e inercias.
+
+Se seleccionan cinco servos STS3250 para J1 a J5 y dos STS3032 A0 para J6 y pinza. Las reducciones incrementan el par de salida y disminuyen la velocidad. La forma CAD define la ocupación geométrica; ajustes, roscas, tolerancias, orientación de impresión y referencias comerciales deben cerrarse antes de liberar fabricación.
+
+\subsection{Transmisiones y selección de materiales}
+\begin{table}[!htbp]
+\centering\small
+\caption{Transmisiones nominales del manipulador.}
+\begin{tabularx}{\linewidth}{@{}P{19mm}YP{28mm}@{}}
+\toprule\textbf{Eje} & \textbf{Transmisión} & \textbf{Relación motor/salida}\\\midrule
+J1 & Directa. & 1\\
+J2 & Piñón de 18 y rueda de 72 dientes, módulo 0,8. & 4\\
+J3 & Correa HP3M $210\times6$ y poleas de 20/50 dientes. & 2,5\\
+J4 & Engranajes de 24/24 dientes. & 1\\
+J5 y J6 & Directas. & 1\\\bottomrule
+\end{tabularx}
+\end{table}
+Los tubos de PVC ofrecen secciones cerradas con masa reducida. Las uniones impresas resuelven alojamientos y enlaces entre piezas metálicas, rodamientos y actuadores. La resistencia de una pieza FDM depende del material efectivo, orientación, paredes, relleno, temperatura y fijación; una densidad de CAD no sustituye esas propiedades.
+
+\subsection{Fabricación de las piezas por impresión 3D}
+Fabricamos por impresión 3D FDM las piezas propias del brazo, como carcasas, alojamientos, soportes, uniones y elementos de transmisión. Los tubos de PVC, rodamientos, tornillería y actuadores se incorporan como componentes separados. El porcentaje de relleno interior, o \emph{infill}, se elige según la función mecánica de cada pieza: se reduce en las envolventes y aumenta donde deben transmitirse fuerzas y momentos.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Criterio de relleno de las piezas impresas del brazo.}
+\begin{tabularx}{\linewidth}{@{}P{37mm}P{20mm}Y@{}}
+\toprule\textbf{Grupo de piezas} & \textbf{Relleno} & \textbf{Aplicación y motivo}\\\midrule
+Carcasas y alojamientos no estructurales & 25\,\% & Todos los \emph{housings}, tapas, cubiertas y secciones no cargadas: dan forma, protegen y alojan componentes con menor consumo de material.\\
+Estructura y soportes cargados & 80\,\% & Torre entre J1 y J2, soportes estructurales y uniones que transmiten momentos: se aumenta el relleno donde pasa la carga del brazo.\\
+Engranajes y transmisión impresa & 100\,\% & Engranajes, piñones, cremalleras y demás piezas impresas de transmisión que requieren construcción maciza.\\\bottomrule
+\end{tabularx}
+\end{table}
+
+\needspace{5\baselineskip}
+La clasificación depende del recorrido de la carga. Una carcasa se imprime al 25\,\% cuando cumple una función de envolvente; si una zona también actúa como soporte y recibe el momento de una articulación, se trata como sección estructural al 80\,\%. Los engranajes se configuran macizos, con relleno nominal del 100\,\%, para evitar un interior de baja densidad bajo los dientes y en el cuerpo que transmite el par.
+
+El momento aumenta con la fuerza y con su distancia perpendicular al eje, $M=F\,d_{\perp}$. Por eso la torre J1--J2 y sus soportes necesitan mayor relleno: reciben el efecto del peso y de las acciones del conjunto situado por encima. El relleno se combina con paredes, orientación de capas y fijaciones; por sí solo no determina una capacidad de carga. Los porcentajes indicados son el criterio de fabricación adoptado y no un resultado de resistencia medida.
+
+Una definición de pieza identifica geometría y una ocurrencia identifica una instancia montada. Las cantidades y masas deben sumarse por ocurrencia. Un disco de paso de engranaje representa una interfaz cinemática, pero no equivale a un perfil de diente listo para fabricar.
+\FloatBarrier

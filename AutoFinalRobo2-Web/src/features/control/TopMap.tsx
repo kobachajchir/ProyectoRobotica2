@@ -1,11 +1,14 @@
-import { useEffect, useId, useRef, useState } from 'react';
-import type { MapSceneProps } from './controlMapTypes';
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { placeMapOverlay, type MapPoint, type MapSceneProps } from './controlMapTypes';
 
-export function TopMap({ pose, trail, zoom, center, fresh, waypoints = [], plannedRoute, onSelectPoint, pickingDisabled }: MapSceneProps) {
+export function TopMap({ pose, trail, zoom, center, fresh, waypoints = [], plannedRoute, onSelectPoint, pickingDisabled, drawing, onDrawStroke, overlayAnchor }: MapSceneProps) {
   const uid = useId().replace(/:/g, '');
   const canvas = useRef<SVGSVGElement>(null);
   const pressed = useRef<{ id: number; x: number; y: number } | null>(null);
   const [size, setSize] = useState({ width: 760, height: 440 });
+  // AFR2-20261112-07: lápiz (un solo puntero, sin levantar).
+  const stroke = useRef<{ id: number; points: MapPoint[] } | null>(null);
+  const [draft, setDraft] = useState<MapPoint[]>([]);
   useEffect(() => {
     const element = canvas.current;
     if (!element) return;
@@ -21,11 +24,40 @@ export function TopMap({ pose, trail, zoom, center, fresh, waypoints = [], plann
   const scaleLength = size.width < 440 ? unit / 2 : unit;
   const scaleEnd = size.width - 24, scaleY = size.height - 24;
   const lines = trail.map((p, index) => { const v = point(p.xMm, p.yMm); return `${index === 0 || p.segmentStart ? 'M' : 'L'}${v.x},${v.y}`; }).join(' ');
+  const toMap = (svg: SVGSVGElement, clientX: number, clientY: number): MapPoint | null => {
+    const matrix = svg.getScreenCTM(); if (!matrix) return null;
+    const pixel = new DOMPoint(clientX, clientY).matrixTransform(matrix.inverse());
+    return { xMm: center.xMm - (pixel.y - cy) * 1000 / unit, yMm: center.yMm - (pixel.x - cx) * 1000 / unit };
+  };
+  useLayoutEffect(() => {
+    const element = overlayAnchor?.ref.current; if (!element || !overlayAnchor) return;
+    const v = point(overlayAnchor.point.xMm, overlayAnchor.point.yMm); placeMapOverlay(element, v.x, v.y, size.width, size.height);
+  });
+  const draftPath = draft.map((p, index) => { const v = point(p.xMm, p.yMm); return `${index ? 'L' : 'M'}${v.x},${v.y}`; }).join(' ');
   const route = (plannedRoute ?? [{ xMm: 0, yMm: 0 }, ...waypoints]).map(p => { const v = point(p.xMm, p.yMm); return `${v.x},${v.y}`; }).join(' ');
   return <svg ref={canvas} className="afr2-control-map__svg" viewBox={`0 0 ${size.width} ${size.height}`} role="img" aria-label={pose ? `Mapa superior de simulación. X ${pose.xMm} milímetros, Y ${pose.yMm} milímetros.` : 'Mapa superior sin posición simulada.'}
-    onPointerDown={event => { if (onSelectPoint && !pickingDisabled && event.button === 0) pressed.current = { id: event.pointerId, x: event.clientX, y: event.clientY }; }}
-    onPointerCancel={() => { pressed.current = null; }}
+    onPointerDown={event => {
+      if (drawing) {
+        if (stroke.current || event.button !== 0) return;
+        const p = toMap(event.currentTarget, event.clientX, event.clientY); if (!p) return;
+        try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* puntero ya liberado */ }
+        stroke.current = { id: event.pointerId, points: [p] }; setDraft(stroke.current.points); return;
+      }
+      if (onSelectPoint && !pickingDisabled && event.button === 0) pressed.current = { id: event.pointerId, x: event.clientX, y: event.clientY }; }}
+    onPointerMove={event => {
+      const current = stroke.current; if (!drawing || !current || current.id !== event.pointerId) return;
+      const p = toMap(event.currentTarget, event.clientX, event.clientY), last = current.points[current.points.length - 1];
+      if (!p || Math.hypot(p.xMm - last.xMm, p.yMm - last.yMm) < 4 * 1000 / unit) return;
+      current.points = [...current.points, p]; setDraft(current.points);
+    }}
+    onPointerCancel={() => { pressed.current = null; stroke.current = null; setDraft([]); }}
     onPointerUp={event => {
+      const current = stroke.current;
+      if (drawing && current && current.id === event.pointerId) {
+        stroke.current = null; setDraft([]);
+        const p = toMap(event.currentTarget, event.clientX, event.clientY);
+        onDrawStroke?.(p ? [...current.points, p] : current.points, 14 * 1000 / unit); return;
+      }
       const initial = pressed.current; pressed.current = null;
       if (!onSelectPoint || pickingDisabled || !initial || initial.id !== event.pointerId || Math.hypot(event.clientX - initial.x, event.clientY - initial.y) > 6) return;
       const matrix = event.currentTarget.getScreenCTM(); if (!matrix) return;
@@ -36,7 +68,10 @@ export function TopMap({ pose, trail, zoom, center, fresh, waypoints = [], plann
     <rect width={size.width} height={size.height} fill="var(--map-floor)" /><rect width={size.width} height={size.height} fill={`url(#${uid}-grid)`} />
     <path d={`M${cx} ${cy - 16}v32m-16-16h32`} stroke="var(--map-grid-strong)" fill="none" />
     {(waypoints.length > 0 || plannedRoute?.length) ? <polyline points={route} fill="none" stroke="var(--text-muted)" strokeDasharray="5 5" strokeWidth="1.5" /> : null}
-    {waypoints.map((p, index) => { const v = point(p.xMm, p.yMm); return <g key={p.id} transform={`translate(${v.x} ${v.y})`}><circle r={p.status === 'active' ? 9 : 6} fill="var(--map-floor)" stroke={p.status === 'active' ? 'var(--action)' : 'var(--text-muted)'} strokeWidth="2" /><text y="-13" textAnchor="middle" fill="var(--text-muted)" fontSize="11">{p.label ?? index + 1}</text></g>; })}
+    {waypoints.map((p, index) => { const v = point(p.xMm, p.yMm);
+      if (p.shape === 'turn') return <g key={p.id} transform={`translate(${v.x} ${v.y})`}><circle r={p.status === 'active' ? 10 : 8} fill="var(--map-floor)" stroke={p.status === 'active' ? 'var(--action)' : 'var(--text-muted)'} strokeWidth="2" /><path d="M0 -5 L5 0 L0 5 L-5 0 Z" fill={p.status === 'active' ? 'var(--action)' : 'var(--text-muted)'} /><text y="-14" textAnchor="middle" fill="var(--text-muted)" fontSize="11">{p.label ?? ''}</text></g>;
+      return <g key={p.id} transform={`translate(${v.x} ${v.y})`}><circle r={p.status === 'active' ? 9 : 6} fill="var(--map-floor)" stroke={p.status === 'active' ? 'var(--action)' : 'var(--text-muted)'} strokeWidth="2" /><text y="-13" textAnchor="middle" fill="var(--text-muted)" fontSize="11">{p.label ?? index + 1}</text></g>; })}
+    {draft.length > 1 && <path d={draftPath} fill="none" stroke="var(--action)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />}
     {pose && <path d={lines} fill="none" stroke="var(--action)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" opacity={fresh ? 1 : .55} />}
     <g transform={`translate(${robot.x} ${robot.y}) rotate(${pose ? -pose.thetaMrad * 180 / Math.PI / 1000 : 0})`}>
       <circle r="43" fill="var(--action-subtle)" stroke={fresh ? 'var(--action-border)' : 'var(--border-strong)'} strokeDasharray={pose ? undefined : '4 5'} />

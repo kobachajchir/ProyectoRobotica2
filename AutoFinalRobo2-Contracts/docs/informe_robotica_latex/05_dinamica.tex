@@ -1,0 +1,195 @@
+\chapter{Manipulación móvil, dinámica y estabilidad}
+\label{cap:dinamica}
+
+\section{Modelo cinemático integrado}
+La configuración de pose reúne tres coordenadas de base y seis de brazo:
+\begin{equation}
+\vct Q=\begin{bmatrix}x&y&\psi&q_1&q_2&q_3&q_4&q_5&q_6\end{bmatrix}^{\trans}.
+\end{equation}
+La apertura de pinza se trata como una coordenada auxiliar. Para un marco mundial $W$, base $B$, montura $M$ y herramienta $E$:
+\begin{equation}
+\mat T_{WE}(\vct Q)=\mat T_{WB}(x,y,\psi)\mat T_{BM}\mat T_{ME}(\vct q),
+\label{eq:integrada}
+\end{equation}
+con
+\begin{equation}
+\mat T_{WB}=\begin{bmatrix}
+\cos\psi&-\sin\psi&0&x\\\sin\psi&\cos\psi&0&y\\0&0&1&0\\0&0&0&1
+\end{bmatrix}.
+\end{equation}
+La ecuación~\eqref{eq:integrada} expresa que desplazar la base cambia la pose mundial de toda la cadena, según la formulación de manipulación móvil~\cite{mobile}. El marco de base se ha elegido a altura constante; cualquier elevación fija adicional debe incluirse en una transformación constante y no duplicarse en la montura.
+
+\subsection{Jacobiano del conjunto}
+Sea $\vct p=[p_x,p_y,p_z]^{\trans}$ la posición del TCP respecto del origen de la base. Las velocidades de cuerpo $(v_x,v_y,\omega)$ generan
+\begin{equation}
+\mat J_{\mathrm{base}}=
+\begin{bmatrix}
+1&0&-p_y\\0&1&p_x\\0&0&0\\0&0&0\\0&0&0\\0&0&1
+\end{bmatrix}.
+\end{equation}
+Si $\mat J_{\mathrm{brazo}}$ se expresa en ejes de la base y con velocidad lineal referida al TCP, la concatenación es
+\begin{equation}
+\begin{bmatrix}\vct v_E\\\vct\omega_E\end{bmatrix}_B
+=\underbrace{\begin{bmatrix}\mat J_{\mathrm{base}}&\mat J_{\mathrm{brazo}}\end{bmatrix}}_{\mat J_{\mathrm{total}}\in\mathbb R^{6\times9}}
+\begin{bmatrix}v_x\\v_y\\\omega\\\dot{\vct q}\end{bmatrix}.
+\end{equation}
+Las tres primeras entradas son velocidades de cuerpo, no directamente $\dot x,\dot y$ de mundo. Si se usa $\dot{\vct Q}$, debe introducirse la rotación planar que vincula ambas parametrizaciones.
+
+Para expresar el Jacobiano del brazo en la base basta rotar sus bloques lineal y angular cuando ambos se refieren al mismo TCP:
+\begin{equation}
+\mat J_{\mathrm{brazo},B}=
+\begin{bmatrix}\mat R_{BM}&\mat0\\\mat0&\mat R_{BM}\end{bmatrix}
+\mat J_{\mathrm{brazo},M}.
+\end{equation}
+La traslación de montura ya interviene al ubicar el TCP y los ejes. Al cambiar también el punto de referencia de una velocidad espacial, se necesita la transformación adjunta correspondiente.
+
+El conjunto puede ser redundante para una tarea de seis componentes, sujeto a rango y restricciones. Repartir movimiento entre brazo y base ofrece alternativas de alcance, pero una solución de mínima velocidad articular puede acercar el centro de masa al borde de apoyo. La coordinación física simultánea debe considerar estabilidad, obstáculos, singularidades y respuesta de actuadores.
+
+\section{Planificación de trayectorias}
+Una transición articular de reposo a reposo se puede modelar con un perfil quíntico. Para $0\le t\le T$ y $\sigma=t/T$:
+\begin{equation}
+q_i(t)=q_{0,i}+\Delta q_i\,s(\sigma),
+\qquad s(\sigma)=10\sigma^3-15\sigma^4+6\sigma^5,
+\end{equation}
+donde $\Delta q_i=q_{f,i}-q_{0,i}$. Sus derivadas son
+\begin{align}
+\dot q_i&=\frac{\Delta q_i}{T}\left(30\sigma^2-60\sigma^3+30\sigma^4\right),\\
+\ddot q_i&=\frac{\Delta q_i}{T^2}\left(60\sigma-180\sigma^2+120\sigma^3\right).
+\end{align}
+En los extremos la velocidad y aceleración son nulas. Las cotas de magnitud son
+\begin{equation}
+\max|\dot q_i|=\frac{15}{8}\frac{|\Delta q_i|}{T},
+\qquad
+\max|\ddot q_i|=\frac{10}{\sqrt3}\frac{|\Delta q_i|}{T^2}.
+\end{equation}
+Por tanto, una duración que respeta límites de velocidad y aceleración debe satisfacer
+\begin{equation}
+T\ge\max_i\left\{
+\frac{15|\Delta q_i|}{8\dot q_{\max,i}},
+\sqrt{\frac{10|\Delta q_i|}{\sqrt3\ddot q_{\max,i}}}
+\right\}.
+\end{equation}
+También se deben respetar par, temperatura, tensión de alimentación y margen de estabilidad. Una interpolación de articulaciones no produce, en general, una línea recta del TCP. Una trayectoria cartesiana requiere interpolar pose y resolver cinemática inversa con continuidad y límites.
+
+Una secuencia de recogida puede organizarse en aproximación de base, detención, posicionamiento de brazo, cierre de pinza, retorno a transporte y continuación. La distancia ultrasónica no demuestra que el objeto esté centrado en la pinza ni que se haya retenido. Cada fase necesita una condición de terminación observable.
+
+\section{Masa, centros e inercias}
+Para cuerpos de masa $m_i$ y centro $\vct r_i$ expresado en un marco común, el centro de masa global es
+\begin{equation}
+\vct r_G=\frac{\sum_i m_i\vct r_i}{\sum_i m_i}.
+\label{eq:cg}
+\end{equation}
+Las posiciones se transforman según la cadena de cada cuerpo. La masa de un actuador comercial se cuenta por instancia y no se divide entre sus ocurrencias geométricas. El motor remoto de J3 acompaña al primer eslabón; ubicarlo en el codo alteraría el cálculo de par.
+
+Si la masa se calcula por CAD:
+\begin{equation}
+m_i=\rho_iV_i.
+\end{equation}
+La densidad debe corresponder al material efectivo. En FDM, el volumen exterior no determina automáticamente la masa laminada ni las propiedades de rigidez. El brazo combina rellenos del 25\,\%, 80\,\% y 100\,\% según la función de cada pieza. La masa no se obtiene multiplicando toda la masa sólida por ese porcentaje: también intervienen las paredes, las capas superiores e inferiores y las zonas macizas. Para actualizar centros de masa e inercias se requieren masas por pieza del laminado o del pesaje y su distribución en el ensamble. Para un cuerpo de inercia central $\mat I_G$ y vector $\vct r$ desde un origen al centro de masa:
+\begin{equation}
+\mat I_O=\mat R\mat I_G\mat R^{\trans}
++m\left[\left(\vct r^{\trans}\vct r\right)\mat I_3-\vct r\vct r^{\trans}\right].
+\end{equation}
+La matriz central se rota al marco de cálculo antes de aplicar ejes paralelos. Distribuir masa de un servo uniformemente sobre su envolvente es una aproximación que no identifica su rotor ni reductor.
+
+\section{Dinámica del manipulador}
+Las energías cinética y potencial son
+\begin{align}
+K&=\frac12\sum_i\left(m_i\vct v_{G_i}^{\trans}\vct v_{G_i}
++\vct\omega_i^{\trans}\mat I_{G_i}\vct\omega_i\right),\\
+U&=\sum_i m_ig_0z_{G_i},\qquad g_0=9{,}80665\unit{m/s^2}.
+\end{align}
+Con $\mathcal L=K-U$, el formalismo de Euler--Lagrange conduce a
+\begin{equation}
+\frac{\dd}{\dd t}\left(\frac{\partial\mathcal L}{\partial\dot q_i}\right)
+-\frac{\partial\mathcal L}{\partial q_i}
+=\tau_{\mathrm{act},i}+\tau_{\mathrm{ext},i}-\tau_{f,i}.
+\end{equation}
+En forma matricial:
+\begin{equation}
+\mat M(\vct q)\ddot{\vct q}+\mat C(\vct q,\dot{\vct q})\dot{\vct q}
++\vct g_q(\vct q)+\vct\tau_f
+=\vct\tau_{\mathrm{act}}+\mat J^{\trans}\vct F_{\mathrm{ext}}.
+\label{eq:dinamica}
+\end{equation}
+$\mat M$ es la matriz de inercia, $\mat C\dot{\vct q}$ agrupa efectos centrífugos y de Coriolis, $\vct g_q$ es compensación gravitatoria y $\vct\tau_f$ representa rozamiento. Con Jacobianos del centro de masa y rotación:
+\begin{equation}
+\mat M=\sum_i\left[m_i\mat J_{v,i}^{\trans}\mat J_{v,i}
++\mat J_{\omega,i}^{\trans}\mat R_i\mat I_{G_i}\mat R_i^{\trans}\mat J_{\omega,i}\right].
+\end{equation}
+Una elección de términos de Coriolis usa los símbolos de Christoffel:
+\begin{equation}
+C_{ij}=\frac12\sum_k\left(
+\frac{\partial M_{ij}}{\partial q_k}+
+\frac{\partial M_{ik}}{\partial q_j}-
+\frac{\partial M_{jk}}{\partial q_i}\right)\dot q_k,
+\qquad g_{q,i}=\frac{\partial U}{\partial q_i}.
+\end{equation}
+Así queda definida la estructura del modelo sin inventar parámetros de inercia o rozamiento no identificados.
+
+\subsection{Gravedad y selección de actuadores}
+Con $\vct g=[0,0,-g_0]^{\trans}$, el par generalizado que ejercen los pesos es
+\begin{equation}
+\vct\tau_{\mathrm{grav}}=\sum_i\mat J_{v,i}^{\trans}m_i\vct g,
+\qquad \vct g_q=-\vct\tau_{\mathrm{grav}}.
+\end{equation}
+En equilibrio, el actuador compensa el peso y la carga externa. El par disponible continuo se evalúa a partir de tensión, velocidad, eficiencia y ciclo de trabajo. Para el STS3250, la ficha utilizada especifica par nominal de 16 kgf\textperiodcentered{}cm a 12 V y par de bloqueo de 50 kgf\textperiodcentered{}cm~\cite{servo}. La conversión es
+\begin{equation}
+1\unit{kgf\,cm}=0{,}0980665\unit{N\,m}.
+\end{equation}
+El par de bloqueo no representa un punto continuo de operación. La comparación nominal no demuestra resistencia de dientes, ejes o fijaciones.
+
+\section{Rigidez y resistencia de los eslabones}
+Para un tubo circular de diámetro exterior $D$ e interior $d_i$:
+\begin{equation}
+A_t=\frac{\pi}{4}(D^2-d_i^2),\qquad
+I=\frac{\pi}{64}(D^4-d_i^4),\qquad
+J_p=\frac{\pi}{32}(D^4-d_i^4).
+\end{equation}
+Las relaciones elementales de flexión, torsión y desplazamiento de una viga ideal son
+\begin{equation}
+\sigma_{\mathrm{flex}}=\frac{M_fc}{I},\qquad
+\tau_{\mathrm{tors}}=\frac{T_tc}{J_p},\qquad
+\delta=\frac{F\ell^3}{3EI}.
+\end{equation}
+La última expresión supone voladizo, carga puntual, pequeñas deformaciones y material lineal. El montaje real incluye abrazaderas, taladros y apoyos que cambian el problema. Las piezas impresas requieren propiedades admisibles por proceso y orientación, junto con análisis de uniones y concentraciones de tensión.
+
+\section{Estabilidad sobre ruedas}
+En condición estática y piso horizontal, la proyección del centro de masa debe quedar dentro del polígono de apoyo. Para un borde $e$ con punto $\vct a_e$ y normal interior unitaria $\vct n_e$:
+\begin{equation}
+h_e(\vct r_G)=\vct n_e^{\trans}\left(\vct r_{G,xy}-\vct a_e\right),
+\qquad h_{\min}=\min_eh_e.
+\end{equation}
+Se requiere $h_{\min}>0$ y un margen que cubra incertidumbre y perturbaciones. El punto de contacto de los rodillos cambia durante la marcha; un rectángulo nominal de ejes no es necesariamente la huella real de apoyo.
+
+La comparación de momentos respecto de un borde es
+\begin{equation}
+M_{\mathrm{est}}-M_{\mathrm{vol}}>0,
+\qquad FS_{\mathrm{vuelco}}=\frac{M_{\mathrm{est}}}{M_{\mathrm{vol}}}.
+\end{equation}
+El factor de vuelco no es un factor resistente del material. En aceleración o pendiente aparecen contribuciones inerciales y cambia el centro de presión. Bajo reparto uniforme y rodadura ideal puede estimarse
+\begin{equation}
+F\simeq M_{\mathrm{tot}}\left(a+g_0\sin\alpha+C_{rr}g_0\cos\alpha\right),
+\qquad\tau_w\simeq\frac{Fr}{4}.
+\end{equation}
+Esta estimación no caracteriza por sí sola tracción lateral Mecanum, frenado, carga normal por rueda ni deslizamiento.
+
+\section{Propagación de incertidumbre}
+Los errores de ángulo $\delta\vct q$ y parámetros geométricos $\delta\vct\ell$ se propagan localmente como
+\begin{equation}
+\delta\vct p_E\simeq\mat J_v\delta\vct q+\mat J_\ell\delta\vct\ell.
+\end{equation}
+Si ambos conjuntos de errores se consideran independientes:
+\begin{equation}
+\mat\Sigma_p\simeq\mat J_v\mat\Sigma_q\mat J_v^{\trans}
++\mat J_\ell\mat\Sigma_\ell\mat J_\ell^{\trans}.
+\end{equation}
+Si hay correlación se agregan los términos cruzados. Holgura, flexión, montaje, TCP y calibración pueden dominar la resolución angular del sensor. Cerca de singularidades la sensibilidad puede aumentar.
+
+Para ultrasonido, con incertidumbres pequeñas e independientes en $c$ y $\Delta t$:
+\begin{equation}
+\sigma_{d_s}^2\simeq\left(\frac{\Delta t}{2}\right)^2\sigma_c^2
++\left(\frac c2\right)^2\sigma_{\Delta t}^2.
+\end{equation}
+Las perturbaciones por superficie y eco espurio pueden superar esa contribución. Antes de atribuir precisión se necesita una referencia externa, condiciones definidas y un registro que separe exactitud, repetibilidad y resolución.
+\FloatBarrier

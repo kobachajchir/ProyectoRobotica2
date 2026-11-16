@@ -1,0 +1,20 @@
+/* AFR2-20261111-01. Lista de requisitos de «Pruebas mínimas»: cada tarjeta pasa a verde al cumplirse. */
+.afr2-readiness { border: 1px solid var(--border-default); border-radius: var(--radius-md); padding: 14px; display: grid; gap: 12px; }
+.afr2-readiness__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.afr2-readiness__title { display: flex; align-items: center; gap: 10px; }
+.afr2-readiness__title strong { display: block; font-size: var(--type-body-size, 1rem); }
+.afr2-readiness__title small { color: var(--text-muted); }
+.afr2-readiness__count { border: 1px solid var(--border-default); border-radius: 999px; padding: 4px 12px; font-size: var(--type-label-size, .8rem); white-space: nowrap; }
+.afr2-readiness__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.afr2-readiness__card { display: flex; gap: 12px; align-items: flex-start; border: 1px solid var(--border-default); border-radius: var(--radius-md); padding: 12px; background: var(--surface-subtle); }
+.afr2-readiness__card strong { display: block; }
+.afr2-readiness__card small { color: var(--text-muted); }
+.afr2-readiness__icon { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--border-default); font-size: .8rem; line-height: 1; }
+.afr2-readiness__card[data-state="ok"] { border-color: var(--success); background: var(--success-subtle); }
+.afr2-readiness__card[data-state="ok"] .afr2-readiness__icon { border-color: var(--success); color: var(--success); }
+.afr2-readiness__card[data-state="ok"] small { color: var(--success); }
+.afr2-readiness__card[data-state="bad"] { border-color: var(--error); background: var(--error-subtle); }
+.afr2-readiness__card[data-state="bad"] .afr2-readiness__icon { border-color: var(--error); color: var(--error); }
+.afr2-readiness__card[data-state="bad"] small { color: var(--error); }
+.afr2-readiness__head[data-ready="true"] .afr2-readiness__icon { border-color: var(--success); color: var(--success); }
+.afr2-readiness__head[data-ready="false"] .afr2-readiness__icon { border-color: var(--error); color: var(--error); }

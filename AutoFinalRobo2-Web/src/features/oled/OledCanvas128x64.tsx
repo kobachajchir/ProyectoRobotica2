@@ -116,10 +116,11 @@ export function OledCanvas128x64({
           width={AFR2_OLED_WIDTH * scale}
           height={AFR2_OLED_HEIGHT * scale}
           aria-label={`Pantalla OLED 128 por 64 píxeles mostrando ${meta.name} (${meta.code})`}
-          className="max-w-full rounded-lg border"
+          className="rounded-lg border afr2-oled-canvas"
           style={{
             borderColor: 'rgba(255, 255, 255, 0.24)',
             imageRendering: 'pixelated',
+            maxWidth: AFR2_OLED_WIDTH * scale,
           }}
         />
       </div>

@@ -1,3 +1,5 @@
+> **AFR2-20261111-06 / 1.27.0:** [Escala de factores por dirección](changes/2026-11-11-06-directional-scale-factors.md): OLED/Web, rango 0.000..2.000, EEPROM v12 y confirmación Sí/No. ATmega/Web fuente; ESP solo versión. Sin nuevas pruebas, builds, generadores ni cargas.
+
 > **AFR2-20261109-11 / 1.12.0:** [Play/Pausa e introducción de Armado](changes/2026-11-09-11-assembly-playback-intro.md). Recorrido20s, capítulos separados y título centrado que se desplaza al lateral. Solo fuente; sin tests, compilaciones ni validaciones.
 
 > **AFR2-20261109-10 / 1.11.0:** [Etapa7: Nuestros agregados](changes/2026-11-09-10-assembly-additions-battery-circuit.md), panel OLED/encoder reutilizado y circuito de batería de cuatro componentes con cableado recto compacto. GLB11.692 B (7.969 B gzip). Acercamiento final desde mitad de etapa12. Fuente Web y asset producidos; sin tests, build, validadores o carga al ESP.

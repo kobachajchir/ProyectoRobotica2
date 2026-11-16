@@ -1,0 +1,110 @@
+\chapter{Electrónica, software e instrumentación}
+\label{cap:electronica}
+
+\section{Distribución de responsabilidades}
+La electrónica diferencia el control de plataforma, la conectividad y la actuación del manipulador. El ATmega2560 atiende motores DC, encoders, línea, ultrasonido, barrido del radar, batería e interfaz local. El ESP8266 sirve la aplicación Web y traduce solicitudes entre WebSocket y UART. El control del brazo debe corresponder al bus TTL serie de los servos STS y a sus tensiones de alimentación.
+
+Los servos de bus no se controlan como servos RC por pulsos individuales desde un PCA9685. La integración requiere definir transmisión semidúplex, referencia eléctrica, alimentación, límites y manejo de fallos. La presencia de un componente en el modelo CAD representa ocupación y montaje, sin demostrar su integración funcional.
+
+\begin{table}[!htbp]\centering\small
+\caption{Asignación principal de señales en el Mega.}
+\begin{tabularx}{\linewidth}{@{}P{38mm}YP{37mm}@{}}
+\toprule\textbf{Elemento} & \textbf{Señales} & \textbf{Función}\\\midrule
+Motor delantero derecho & D22, D24; PWM D9 & Puente H.\\
+Motor delantero izquierdo & D26, D28; PWM D10 & Puente H.\\
+Motor trasero derecho & D5, D6; PWM D11 & Puente H.\\
+Motor trasero izquierdo & D7, D8; PWM D12 & Puente H.\\
+Hall FR / FL & A8/A12; A9/A13 & Canales A/B.\\
+Hall RR / RL & A10/A14; A11/A15 & Canales A/B.\\
+Línea IR1 a IR5 & A4, A3, A2, A1, A0 & Lectura digital configurada.\\
+Batería & A5 & Divisor resistivo.\\
+Ultrasonido & TRIG D30; ECHO D31 & Tiempo de vuelo.\\
+Servo de radar & D13 & Consigna de barrido.\\
+OLED & SDA D20; SCL D21 & Único dispositivo I2C.\\
+Encoder de menú & CLK D2; DT D3; SW D42 & Giro y pulsación.\\
+Enlace ESP & TX1 D18; RX1 D19 & UART de operación.\\
+Servicio ESP & D32 KEY; D33 RESET & Accionamiento mediante NPN.\\\bottomrule
+\end{tabularx}
+\end{table}
+
+Los motores reciben energía desde los puentes H. Los GPIO transportan señales de control y no sustituyen las etapas de potencia. La masa lógica es común; una salida negativa de motor del puente H no se usa como referencia de tierra. El orden físico de los conectores Hall debe convertirse al orden lógico de ruedas antes de aplicar la cinemática.
+
+\section{Alimentación y medida de batería}
+La distribución debe considerar los motores de la base, lógica, radio, radar y servos del brazo. Las referencias nominales usadas en la selección son 12 V para STS3250 y 6 V para STS3032. La potencia debe dimensionarse por simultaneidad, arranque, caída de tensión y disipación. Para ramales de tensión $V_j$, corriente $I_j$ y eficiencia de conversión $\eta_j$:
+\begin{align}
+P_{\mathrm{carga}}&=\sum_j V_j I_j,\\
+I_{\mathrm{bat}}&\simeq\frac{1}{V_{\mathrm{bat}}}\sum_j\frac{V_jI_j}{\eta_j}.
+\end{align}
+La autonomía aproximada se expresa como
+\begin{equation}
+t_{\mathrm{aut}}\simeq\frac{E_{\mathrm{útil}}}{P_{\mathrm{media}}},
+\qquad E_{\mathrm{nom}}=V_{\mathrm{nom}}C_{\mathrm{Ah}}.
+\end{equation}
+La energía se expresa en Wh cuando la capacidad está en Ah. El valor útil depende de corriente, tensión de corte, envejecimiento y conversión; no se asigna una autonomía sin medir esas condiciones.
+
+La batería se adquiere por A5 mediante dos resistencias nominales de $10\unit{k\Omega}$ y un capacitor de $100\unit{nF}$. Para una lectura $a$ de un ADC de $n$ bits:
+\begin{equation}
+V_{\mathrm{bat}}=\frac{a}{2^n-1}V_{\mathrm{ref}}
+\frac{R_{\mathrm{sup}}+R_{\mathrm{inf}}}{R_{\mathrm{inf}}}.
+\label{eq:bateria}
+\end{equation}
+Con resistencias iguales, la escala nominal es dos. La impedancia de Thévenin y la constante de tiempo son
+\begin{equation}
+R_{\mathrm{th}}=\frac{R_{\mathrm{sup}}R_{\mathrm{inf}}}{R_{\mathrm{sup}}+R_{\mathrm{inf}}},
+\qquad \tau_{RC}=R_{\mathrm{th}}C=0{,}5\unit{ms}.
+\end{equation}
+El capacitor filtra ruido, pero no protege de sobretensión. El error de referencia, la tolerancia del divisor y las caídas de masa afectan la lectura. La tensión no equivale a un porcentaje de carga universal.
+
+\section{Modelo de los motores DC}
+El modelo electromecánico equivalente relaciona tensión $v_m$, corriente $i$, velocidad $\omega_m$ y par de carga $\tau_L$. Con resistencia $R_m$, inductancia $L_m$, constante de fuerza contraelectromotriz $K_e$, constante de par $K_t$, inercia $J_m$ y rozamiento viscoso $b_m$:
+\begin{align}
+v_m&=R_mi+L_m\dot i+K_e\omega_m,\label{eq:motor1}\\
+J_m\dot\omega_m&=K_ti-b_m\omega_m-\tau_L.\label{eq:motor2}
+\end{align}
+Si $\vct{x}_m=[i\;\omega_m]^{\trans}$, ambas ecuaciones forman el sistema
+\begin{equation}
+\dot{\vct{x}}_m=
+\underbrace{\begin{bmatrix}
+-R_m/L_m&-K_e/L_m\\
+K_t/J_m&-b_m/J_m
+\end{bmatrix}}_{\mat{A}_m}\vct{x}_m+
+\begin{bmatrix}1/L_m&0\\0&-1/J_m\end{bmatrix}
+\begin{bmatrix}v_m\\\tau_L\end{bmatrix}.
+\end{equation}
+Los parámetros del motor instalado no están identificados; el modelo explica la estructura de su respuesta. En un puente H ideal, el PWM produce una tensión media $\overline v_m\simeq sDV_{\mathrm{bus}}$, con ciclo útil $0\le D\le1$ y sentido $s=\pm1$. Las pérdidas, zona muerta, carga y batería impiden interpretar PWM como velocidad medida.
+
+Para una reducción $i_r=\omega_m/\omega_w$, la velocidad de rueda es $\omega_w=\omega_m/i_r$ y el par de salida se aproxima por $\tau_w=\eta i_r\tau_m$. Una inercia de carga referida al motor se divide por $i_r^2$.
+
+\section{Sensores de entorno}
+\subsection{Ultrasonido y barrido}
+La distancia acústica $d_s$ se calcula a partir del tiempo de ida y vuelta $\Delta t$ y velocidad del sonido $c$:
+\begin{equation}
+d_s=\frac{c\Delta t}{2},
+\qquad c\simeq331{,}3+0{,}606\,T_C\quad[\mathrm{m/s}],
+\end{equation}
+donde $T_C$ está en grados Celsius. A $20\,^{\circ}\mathrm C$, $c\simeq343{,}4\unit{m/s}$. Una cuantización temporal de $25\unit{\mu s}$ produce un incremento nominal de aproximadamente $4{,}29\unit{mm}$; ese incremento no representa exactitud.
+
+Para un ángulo de barrido $\alpha$ y origen del sensor conocido, la proyección ideal en su plano es
+\begin{equation}
+\vct{p}_s=\begin{bmatrix}d_s\cos\alpha\\d_s\sin\alpha\\0\end{bmatrix},
+\qquad \vct{p}_B=\mat{R}_{Bs}\vct{p}_s+\vct{t}_{Bs}.
+\end{equation}
+La consigna de servo no es una medida de su ángulo. El eco depende de superficie, inclinación, haz y tiempo de establecimiento. La muestra debe conservar validez y antigüedad. En el funcionamiento de plataforma considerado, el HC-SR04 se usa para observación y telemetría; no se le atribuye una función física de parada que no esté implementada.
+
+\subsection{Barra de línea}
+Los cinco sensores se interpretan como señales digitales en la configuración de trabajo. Si $b_i\in\{0,1\}$ representa presencia de línea y $x_i$ la posición transversal, el centroide es
+\begin{equation}
+e_{\ell}=\frac{\sum_{i=1}^5 b_i x_i}{\sum_{i=1}^5b_i},
+\qquad \sum_i b_i>0.
+\end{equation}
+La implementación usa posiciones relativas $2,1,0,-1,-2$ y corrección proporcional de rumbo. Cuando no hay sensores activos o la muestra es inválida, el seguimiento se detiene. No se asigna error cero a una línea perdida.
+
+\section{Software, comunicaciones e interfaz}
+La cadena de control remoto se organiza en solicitud Web, transporte por ESP, recepción UART y ejecución supervisada por ATmega. El protocolo de enlace es ROBO2/perfil 2 con extensión EX01. Los mensajes deben conservar versión, unidades, longitud, correlación, resultado y vigencia. Una aceptación de comando confirma su admisión, mientras el fin de una misión se observa por el estado de ejecución.
+
+El control se atiende nominalmente cada 10 ms. Una demora superior a 100 ms durante movimiento provoca corte de salidas; los incumplimientos repetidos tienen tratamiento adicional. Render de OLED, adquisición y tráfico comparten recursos, de modo que la suficiencia de memoria y tiempos debe evaluarse para cada configuración de software y carga.
+
+La interfaz local tiene una OLED de $128\times64$ píxeles y un encoder. El corto confirma o alterna; desde el dashboard abre el menú completo. El largo se ejecuta al soltar después de al menos 800 ms: abre controles rápidos desde el dashboard y vuelve al contexto anterior desde el resto. Si existen cambios pendientes, la elección Sí/No es obligatoria.
+
+La Web distingue datos reales, ausencia de conexión y simulación. Las secuencias locales pueden seguir ejecutándose sin una WebSocket abierta si el modo lo permite; las consignas manuales conservan su propia vigencia. El cargador Windows separa diagnóstico, operación y mantenimiento. El enlace de operación y servicio utiliza D18/D19; KEY y RESET del ESP pueden accionarse mediante NPN en D32/D33, manteniendo RESET del Mega libre en el servicio por software. La compatibilidad eléctrica debe comprobarse en el shield real.
+\FloatBarrier

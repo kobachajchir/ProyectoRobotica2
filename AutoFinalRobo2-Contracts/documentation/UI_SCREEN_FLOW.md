@@ -303,3 +303,7 @@ Ayuda → OLED abre ahora la simulación interactiva con el reductor existente y
 ## AFR2-20261109-03 — Fuentes y recursos
 
 Biblioteca OLED regenerada (75 nodos/26iconos); Wi-Fi OFF/desconocido oculta búsqueda, selector abre en STA si no hay modo activo y política desconocida muestra --. AVR y TS vinculados. PWM local/remoto respeta habilitación/fallo/captura Hall/EEPROM/radar/secuencia. Sin compilación ni aceptación física.
+
+## AFR2-20261111-06 — Escala de factores
+
+Pruebas → Pruebas examen → Escala de factores (030050). Seis direcciones independientes y Guardar EEPROM / Descartar cambios / Volver. Editores 030051..030056: 0.000..2.000, paso 0.001; corto aplica en RAM, largo descarta el editor. Salir de la lista con cambios abre 030038 (Sí/No obligatorio, largo ignorado). Se reutiliza el retorno contextual y se conserva la selección de origen. Biblioteca Web y simulador vinculados, sin ejecución. Detalles y semántica del cero en [contrato](../contracts/DIRECTIONAL_SCALE_FACTORS_20261111.md).

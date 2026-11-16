@@ -1,0 +1,53 @@
+\chapter{Integración, evaluación y conclusiones}
+\label{cap:cierre}
+
+\section{Aportes del desarrollo}
+El proyecto integra un control AVR propio para la plataforma, conectividad ESP8266, visualización Web y una interfaz local OLED/encoder. Las definiciones comunes de comandos, unidades, referencias y estados permiten relacionar las partes del sistema sin depender de convenciones implícitas.
+
+El diseño del brazo combina seis ejes, transmisiones y una pinza simétrica con un modelo que vincula la geometría con la pose de herramienta. La transmisión remota del codo acerca masa al hombro; la reducción de hombro incrementa par de salida a cambio de velocidad. Estas decisiones se evalúan como parte de un conjunto móvil, donde la estabilidad puede limitar el trabajo antes que la capacidad nominal del actuador.
+
+El sensado de batería, el diagnóstico de comunicación y el cargador de mantenimiento facilitan observar condiciones de funcionamiento. La interacción local conserva coherencia de navegación y confirmación de cambios. La Web aporta exploración y simulación, manteniendo identificados los datos del equipo real y los del modelo.
+
+\section{Matriz cualitativa de riesgos técnicos}
+Para priorizar integración se utiliza severidad $S$ y probabilidad cualitativa $P$ de 1 a 5. Severidad 1 representa impacto menor y 5, una consecuencia crítica para la operación; probabilidad 1 representa baja plausibilidad y 5, una condición recurrente o muy plausible. Son juicios de diseño, sin equivaler a frecuencias medidas. La prioridad relativa se expresa como $R=S\,P$.
+
+\begin{table}[!htbp]\centering\small
+\caption{Priorización técnica del trabajo de integración.}
+\begin{tabularx}{\linewidth}{@{}YP{20mm}Y@{}}
+\toprule\textbf{Condición} & \textbf{$S/P/R$} & \textbf{Tratamiento}\\\midrule
+Margen frontal insuficiente frente al vuelco. & 5/4/20 & Restringir posturas y revisar masa y apoyo reales.\\
+Potencia y bus del manipulador sin cierre. & 4/4/16 & Definir distribución, interfaces y protecciones.\\
+Deriva por patinamiento lateral. & 4/3/12 & Referencia externa y calibración por condiciones.\\
+Interferencia o ajuste mecánico no liberado. & 4/3/12 & Tolerancias funcionales e inspección del montaje.\\
+Cero o signo incorrecto de motor y Hall. & 4/3/12 & Identificación por rueda/eje y parámetros registrados.\\
+Insuficiencia de tiempo o memoria. & 4/3/12 & Evaluar presupuesto y respuesta con la carga real.\\
+Interpretar simulación como capacidad medida. & 3/3/9 & Mantener identificadas las condiciones y naturaleza del resultado.\\\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Secuencia de cierre}
+La integración debe comenzar con interfaces mecánicas y eléctricas definidas. A continuación se calibran ceros, sentidos, cuentas y factores de odometría. La base y el brazo se caracterizan separadamente antes de evaluar una recogida completa. Esa secuencia permite atribuir un fallo al subsistema correspondiente.
+
+\begin{table}[!htbp]\centering\small
+\caption{Hitos y resultados esperados de la integración.}
+\begin{tabularx}{\linewidth}{@{}P{29mm}YY@{}}
+\toprule\textbf{Hito} & \textbf{Condición} & \textbf{Resultado esperado}\\\midrule
+Diseño liberable & Materiales, componentes y ajustes elegidos. & Planos y lista de materiales coherentes.\\
+Potencia y bus & Tensiones, corriente, conexión y fallos definidos. & Esquema funcional y distribución dimensionada.\\
+Calibración & Signos, ceros, CPR y masas registrados. & Parámetros identificados por equipo y versión.\\
+Caracterización & Instrumentos y protocolo establecidos. & Mediciones con condiciones e incertidumbre.\\
+Manipulación móvil & Envolvente y pasos anteriores resueltos. & Éxito de recogida, tiempo de ciclo y causas de fallo medidos.\\\bottomrule
+\end{tabularx}
+\end{table}
+
+El espacio alcanzable se obtiene de geometría y límites articulares. El espacio libre de colisiones agrega restricciones de interferencia. La región operativa agrega estabilidad, par, velocidad, cableado y carga. Esas tres regiones deben representarse por separado; una esfera de radio igual a la suma de longitudes no describe una capacidad operativa segura.
+
+\section{Conclusiones}
+AutoFinalRobo2 permite estudiar la robótica como una integración entre mecánica, electrónica, control y comunicación. La base Mecanum incorpora tres velocidades de cuerpo relacionadas con cuatro ruedas por un modelo matricial explícito. La medición Hall permite estimar movimiento y regular velocidad, mientras los factores direccionales y el análisis de llegada muestran la necesidad de separar calibración, estimación y control.
+
+El manipulador queda descrito por una cadena de seis articulaciones, una solución de posición y orientación y un Jacobiano para velocidades, fuerzas e incertidumbre. La transformación mundial del TCP integra la pose de base, montura y brazo. La formulación dinámica organiza la contribución de cada masa e inercia, en lugar de concentrar toda la carga en la punta.
+
+Las mediciones de base identifican errores de llegada y diferencias angulares bajo condiciones sin carga. Los ajustes de software pendientes no se consideran resultados experimentales. La geometría CAD del brazo tampoco equivale a capacidad física aprobada: faltan fabricación, potencia, bus, calibración y pruebas de manipulación.
+
+La estabilidad es la limitación decisiva del conjunto de referencia. El margen frontal calculado es inferior al criterio adoptado, por lo que no se puede afirmar trabajo cargado en todo el alcance. El cierre del proyecto debe convertir los modelos en mediciones de un montaje definido y establecer una región de operación compatible con sus restricciones.
+\FloatBarrier

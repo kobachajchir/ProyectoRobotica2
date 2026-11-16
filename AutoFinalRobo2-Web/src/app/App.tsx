@@ -4,6 +4,7 @@ import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router-d
 import { ThemeProvider } from './providers/ThemeProvider';
 import { ConnectionProvider } from '../features/connection/ConnectionContext';
 import { Afr2Toaster } from '../components/notifications/notify';
+import { ModelPrefetcher } from '../components/three/ModelPrefetcher';
 import { AppShell } from '../components/navigation/RouteNav';
 import { HomePage } from '../features/home/HomePage';
 import { ControlPage } from '../features/control/ControlPage';
@@ -53,6 +54,8 @@ export function App() {
         <StartupWelcome>
           {/* Un único Toaster raíz fuera de contenedores con transform/overflow (VIS-007) */}
           <Afr2Toaster />
+          {/* AFR2-20261111-03: descarga los modelos 3D en cuanto la conexión queda estable. */}
+          <ModelPrefetcher />
           <WifiDraftModal />
           <HashRouter>
             <AppShell>

@@ -28,12 +28,14 @@ export function SimulatorPage() {
   const model = MODEL_PAGES[MODEL_FOR[tipo]];
   return <div className="afr2-route-view afr2-page-stack">
     <PageHeader eyebrow="Modelos y simulación" title="Simulador" description="Simulación local con datos ficticios: no mueve el robot real."
-      actions={<Link className="afr2-developer-back" to={`/modelos/${model.id}`}><UiIcon name="cube" />Ver modelo 3D</Link>}>
-      <SegmentedControl variant="tabs" idPrefix={uid} ariaLabel="Elegir simulador" items={SIMULATORS} value={tipo}
+      actions={<Link className="afr2-developer-back" to={`/modelos/${model.id}`}><UiIcon name="cube" />Ver modelo 3D</Link>} />
+    {/* AFR2-20261113-05: el selector de simulador va debajo del encabezado, igual que las secciones de las demás páginas. */}
+    <div className="afr2-workspace">
+      <SegmentedControl className="afr2-task-nav" variant="tabs" idPrefix={uid} ariaLabel="Elegir simulador" items={SIMULATORS} value={tipo}
         onChange={next => navigate(`/simulacion/${next}`)} />
-    </PageHeader>
-    <div role="tabpanel" id={`${uid}-panel-${tipo}`} aria-labelledby={`${uid}-tab-${tipo}`} className="afr2-collector">
-      <CollectorProvider kind={tipo}><SimulationWorkspace key={tipo} /></CollectorProvider>
+      <div role="tabpanel" id={`${uid}-panel-${tipo}`} aria-labelledby={`${uid}-tab-${tipo}`} className="afr2-collector">
+        <CollectorProvider kind={tipo}><SimulationWorkspace key={tipo} /></CollectorProvider>
+      </div>
     </div>
   </div>;
 }

@@ -2,7 +2,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Afr2CommandError } from '../../protocol/afr2Client';
 import { formatAgeLabel } from '../../protocol/wsEnvelope';
-import { StatusNotice } from '../../components/ui/StatusNotice';
 import { useConnection } from '../connection/ConnectionContext';
 import { OledWorkbench } from './OledWorkbench';
 import { OledCanvas128x64 } from './OledCanvas128x64';
@@ -21,7 +20,7 @@ type RefreshMode = 'periodic' | 'change';
 const REFRESH_MODE_KEY = 'afr2-oled-refresh-mode';
 const REFRESH_ITEMS = [
   { value: 'periodic', label: 'Periódica', icon: 'refresh', title: 'Pide la pantalla cada 1,2 s, aunque no cambie.' },
-  { value: 'change', label: 'Al cambiar', icon: 'screen', title: 'Pide la pantalla solo cuando el auto informa otra pantalla o selección.' },
+  { value: 'change', label: 'Al cambiar', icon: 'screen', title: 'Pide la pantalla solo cuando el auto cambia de pantalla; mover la selección o el scroll no la vuelve a pedir.' },
 ] as const;
 const BLANK_OLED = new Afr2OledBuffer();
 function readRefreshMode(): RefreshMode {
@@ -52,7 +51,8 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
   };
   const refreshModeRef = useRef(refreshMode); refreshModeRef.current = refreshMode;
   // Status key observed when the shown capture was requested; in change mode a different key means "ask again".
-  const statusKey = screenStatus ? `${screenStatus.screenCode}:${screenStatus.navigationRevision}:${screenStatus.selection}:${screenStatus.firstVisible}` : null;
+  // AFR2-20261112-03: only the screen (code + navigation revision) counts; selection or scroll moves do not re-render.
+  const statusKey = screenStatus ? `${screenStatus.screenCode}:${screenStatus.navigationRevision}` : null;
   const statusKeyRef = useRef(statusKey); statusKeyRef.current = statusKey;
   const [fetchedKey, setFetchedKey] = useState<string | null>(null);
   const validatedAtRef = useRef(0);
@@ -234,6 +234,13 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
     });
 
     try {
+      // AFR2-20261112-03: «Al cambiar» no sigue la selección; antes de operar se toma una captura con la selección real.
+      const current = latestSnapshot.current;
+      if (refreshModeRef.current === 'change' && current && screenStatus && (screenStatus.selection !== current.selection || screenStatus.firstVisible !== current.firstVisible)) {
+        await fetchSnapshot(false, true);
+        if (currentSession !== sessionRef.current || epoch !== inputEpoch.current) return;
+        throw new Error('La selección había cambiado en el auto; la captura se actualizó. Repetí la entrada.');
+      }
       const initial = latestSnapshot.current;
       if (!initial || !observed || initial.revision !== observed.revision || initial.screenCode !== observed.screenCode || initial.selection !== observed.selection || initial.firstVisible !== observed.firstVisible) throw new Error('La captura cambió antes de la entrada. Revisala antes de continuar.');
       for (let step = 0; step < Math.min(3, steps); step++) {
@@ -291,6 +298,14 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
                 : null;
 
   const controlsAvailable = active && linksReady && remoteEncoderImplemented && fresh;
+  // AFR2-20261112-03: un único aviso en un lugar fijo (antes varios avisos que aparecían y empujaban la pantalla).
+  const liveNotice: { tone: 'warning' | 'info' | 'error'; title: string; text: string } | null = !linksReady
+    ? { tone: 'warning', title: 'Sin enlace completo.', text: `Hace falta Web↔ESP y ESP↔ATmega listos (ESP: ${wsState}, Mega: ${megaLinkState}). La última captura queda dibujada.` }
+    : !remoteOledImplemented
+      ? { tone: 'info', title: 'Sin captura remota.', text: oledCap.reason || 'El firmware no publica robot.screen.get. No se dibuja una pantalla simulada.' }
+      : errorMessage ? { tone: 'error', title: 'No se pudo actualizar u operar la OLED.', text: errorMessage }
+        : snapshot && staleView ? { tone: 'warning', title: 'Captura caducada.', text: `Última muestra ${formatAgeLabel(ageMs)}; el encoder queda bloqueado hasta una captura nueva.` }
+          : null;
   const controlsBusy = loading || actionPending;
 
   const sourceLabel = snapshot ? (refreshMode === 'change' ? 'Captura vigente' : 'Framebuffer recibido') : '';
@@ -314,7 +329,7 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
         disabled={!linksReady || !remoteOledImplemented || loading || actionPending}
         title="Sincronizar pantalla manualmente con el controlador">
         <UiIcon name="refresh" size={16} className={loading ? 'animate-spin' : undefined} />
-        <span>{loading ? 'Sincronizando…' : <>Actualizar<span className="afr2-oled-bench__sync-long"> pantalla</span></>}</span>
+        <span>Actualizar<span className="afr2-oled-bench__sync-long"> pantalla</span></span>
       </button>}
       statusBar={<>
         <div className="flex flex-wrap items-center gap-2 text-xs font-mono afr2-oled-bench__links">
@@ -326,38 +341,18 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
             <span className="afr2-status-dot" aria-hidden="true" />
             Mega: {megaLinkState}
           </span>
-          {snapshot && (
-            <span className="afr2-status-pill" data-state={staleView ? 'stale' : 'ready'}>
-              <span className="afr2-status-dot" aria-hidden="true" />
-              {loading || statusChanged ? 'Actualizando…' : `${sourceLabel} · ${formatAgeLabel(ageMs)}`}
-            </span>
-          )}
+          {/* AFR2-20261112-03: la pill siempre ocupa su lugar, con o sin captura. */}
+          <span className="afr2-status-pill afr2-oled-live__capture" data-state={!snapshot ? 'idle' : staleView ? 'stale' : 'ready'}>
+            <span className="afr2-status-dot" aria-hidden="true" />
+            {!snapshot ? (loading ? 'Consultando…' : 'Sin captura') : loading || statusChanged ? 'Actualizando…' : `${sourceLabel} · ${formatAgeLabel(ageMs)}`}
+          </span>
         </div>
         <SegmentedControl items={REFRESH_ITEMS} value={refreshMode} onChange={setRefreshMode}
           ariaLabel="Actualización de la pantalla en vivo" size="sm" fill="never" className="afr2-oled-bench__refresh" />
       </>}
-      notices={<>
-        {!linksReady && (
-          <StatusNotice tone="warning" title="Sin enlace completo para OLED en vivo">
-            Se requiere sesión Web↔ESP (`ready`) y enlace UART ESP↔ATmega2560 (`ready`) para consultar `robot.screen.get`. Los controles permanecen visibles y deshabilitados abajo.
-          </StatusNotice>
-        )}
-        {linksReady && !remoteOledImplemented && (
-          <StatusNotice tone="info" title="Servicio OLED remoto pendiente en firmware" badge="Sin captura remota">
-            {oledCap.reason || 'El ATmega2560 y el ESP8266 aún no exponen robot.screen.get en vivo.'} No se dibuja una pantalla simulada como si proviniera del auto.
-          </StatusNotice>
-        )}
-        {errorMessage && (
-          <StatusNotice tone="error" title="No se pudo actualizar u operar la OLED remota">
-            {errorMessage}
-          </StatusNotice>
-        )}
-        {snapshot && staleView && (
-          <StatusNotice tone="warning" title="Captura retenida caducada o con fallo posterior">
-            Última muestra recibida {formatAgeLabel(ageMs)}. Las acciones de encoder quedan bloqueadas hasta recibir una captura fresca.
-          </StatusNotice>
-        )}
-      </>}
+      notices={<p className="afr2-oled-live__notice" data-tone={liveNotice?.tone ?? 'none'} role="status" aria-live="polite" title={liveNotice?.text}>
+        {liveNotice ? <><strong>{liveNotice.title}</strong> {liveNotice.text}</> : null}
+      </p>}
       screen={snapshot
         ? <OledCanvas128x64 compact oledBuffer={snapshot.buffer} screenCode={snapshot.screenCode} sourceMode="remote-snapshot" showGrid={false} scale={4} />
         // Mismo marco y tamaño que una captura real, para que el primer cuadro no mueva la interfaz.
@@ -367,10 +362,9 @@ export function LiveOledViewer({ active = true }: { active?: boolean }) {
       busy={loading || statusChanged}
       placeholderText={snapshot ? undefined : loading ? 'Consultando la primera captura…' : 'Sin captura remota disponible.'}
       side={sideProps}
-      caption={snapshot && <p className="afr2-help">
-        {staleView ? 'Última captura caducada · ' : ''}
-        {sourceLabel} · Captura {formatAgeLabel(ageMs)} · Selección {snapshot.selection} · Ventana{' '}
-        {snapshot.firstVisible}
+      reserveSide
+      caption={<p className="afr2-help afr2-oled-live__caption">
+        {snapshot ? <>{staleView ? 'Última captura caducada · ' : ''}{sourceLabel} · Captura {formatAgeLabel(ageMs)} · Selección {snapshot.selection} · Ventana {snapshot.firstVisible}</> : 'Sin captura todavía.'}
       </p>}
       encoder={{
         keyboardCapture: active,

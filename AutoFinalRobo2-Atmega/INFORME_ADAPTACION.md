@@ -1,3 +1,5 @@
+> **AFR2-20261111-06 / 1.27.0:** factores de odometría por dirección (0.000–2.000), menú de examen y editores OLED/Web vinculados, con Guardar/Descartar. EEPROM v12 migra v1..11 sin autoguardar. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-11-06-directional-scale-factors.md). Solo fuente, sin pruebas, compilaciones, generadores ni cargas.
+
 > **AFR2-20261110-15 / 1.22.1, solo fuente:** [guarda de ruido IRQ y F1 no enclavante](../AutoFinalRobo2-Contracts/changes/2026-11-10-15-f1-noise-guard-non-latching.md): afr2_board.c/h (presupuesto IRQ Hall/encoder por ms), afr2_product.c/h (3 cortes en 2 s enclavan F1), afr2_debug.c (FAULT/LOOP/NOISE en TAP). Sin tests, compilaciones, validaciones ni cargas.
 
 > **AFR2-20261110-14 / 1.22.0, solo fuente:** [limpieza Web y diagnóstico temporal F1](../AutoFinalRobo2-Contracts/changes/2026-11-10-14-fault-clear-loop-diagnostics.md), CMD0x56 registrado en catálogos. Umbral100ms conservado; causa física sin determinar. Sin tests, compilaciones, validaciones ni cargas.

@@ -1,3 +1,5 @@
+> **AFR2-20261111-06 / 1.27.0:** factores de odometría por dirección (0.000–2.000), menú de examen y editores OLED/Web vinculados, con Guardar/Descartar. EEPROM v12 migra v1..11 sin autoguardar. [Ficha](../AutoFinalRobo2-Contracts/changes/2026-11-11-06-directional-scale-factors.md). Solo fuente, sin pruebas, compilaciones, generadores ni cargas.
+
 > **AFR2-20261110-18 / 1.23.2, solo fuente:** [logo de bienvenida a 768 px, paquete ESP dentro del presupuesto](../AutoFinalRobo2-Contracts/changes/2026-11-10-18-esp-package-logo-768.md). Typecheck OK; sin build ni empaquetado.
 
 > **AFR2-20261110-16 / 1.23.0, solo fuente:** [envío GOTO, giros 90°, barra táctil, blur y pill de modo](../AutoFinalRobo2-Contracts/changes/2026-11-10-16-goto-envio-giros-rail-tactil.md). Sin tests, typecheck, build, navegador ni cargas.

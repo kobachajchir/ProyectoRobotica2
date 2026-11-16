@@ -30,6 +30,7 @@ static void encode(const Afr2Config *c,uint8_t *b) {
     for(uint8_t i=0;i<4;i++){afr2_put_u32(b+n,c->counts_per_rev[i]);n+=4;}
     B(radar_range);B(radar_trace);W(long_press_ms);B(servo_inverted);B(hall_cw_mask);
     W(wifi_retry_s); /* AFR2-20261108-06: v11 */
+    for(uint8_t i=0;i<6;i++){afr2_put_u16(b+n,c->odom_scale[i]);n+=2;} /* v12 */
 #undef B
 #undef W
 }
@@ -48,6 +49,8 @@ static void decode(Afr2Config *c,const uint8_t *b,uint8_t version) {
     if(version>=8u){W(long_press_ms);B(servo_inverted);}
     c->hall_cw_mask=0;if(version>=10u){B(hall_cw_mask);}
     c->wifi_retry_s=AFR2_WIFI_RETRY_DEFAULT_S;if(version>=11u){W(wifi_retry_s);} /* AFR2-20261108-06 */
+    for(uint8_t i=0;i<6;i++){c->odom_scale[i]=(i==2 || i==3)?AFR2_LATERAL_ODOM_PERMILLE:(i>=4)?AFR2_TURN_ODOM_PERMILLE:1000u;
+        if(version>=12u){c->odom_scale[i]=afr2_get_u16(b+n);n+=2;}} /* migration without auto-save */
     c->wheel_mm=AFR2_FIXED_WHEEL_MM;c->radius_sum_mm=AFR2_FIXED_RADIUS_SUM_MM;c->geometry_ready=1;c->hall_wired=1;
 #undef B
 #undef W
@@ -55,7 +58,7 @@ static void decode(Afr2Config *c,const uint8_t *b,uint8_t version) {
 static uint8_t load_slot(uint8_t slot,Afr2Config *c,uint32_t *seq) {
     eeprom_read_block(image,(const void *)(uintptr_t)((uint16_t)slot*128u),128);
     if(memcmp(image,"AFR2",4) || image[4]<1u || image[4]>AFR2_CONFIG_VERSION ||
-        afr2_get_u16(image+6)!=(image[4]>=11u?66u:image[4]>=10u?64u:image[4]>=8u?63u:image[4]>=5u?60u:58u) || image[127]!=0xa5 || crc(image)!=afr2_get_u16(image+14))return 0;
+        afr2_get_u16(image+6)!=(image[4]>=12u?78u:image[4]>=11u?66u:image[4]>=10u?64u:image[4]>=8u?63u:image[4]>=5u?60u:58u) || image[127]!=0xa5 || crc(image)!=afr2_get_u16(image+14))return 0;
     decode(c,image+16,image[4]);
     /* v9 product is digital only; migrate before validating the old enum. */
     if(image[4]<9u && c->line_kind==2u){c->line_kind=1;c->line_calibrated=0;}
@@ -80,6 +83,9 @@ static uint8_t load_slot(uint8_t slot,Afr2Config *c,uint32_t *seq) {
      * Preserve other configured limits and all calibration. No auto-save;
      * v7 records respect any subsequent explicit user limit, including80. */
     if(image[4]<7u && c->pwm_limit==80u)c->pwm_limit=255u;
+    /* AFR2-20261112-01: los registros v12 guardados con 1.27.0 quedaron con giro CW/CCW = 1000 y el 1028 medido nunca se aplico
+     * (Pruebas minimas: 91 grados reales con 88,9 de odometria). En RAM, sin autoguardar; un v13 respeta cualquier valor. */
+    if(image[4]<13u)for(uint8_t i=4;i<6;i++)if(c->odom_scale[i]==1000u)c->odom_scale[i]=AFR2_TURN_ODOM_PERMILLE;
     *seq=afr2_get_u32(image+8); return 1;
 }
 void Afr2Prefs_Load(Afr2Config *c,uint8_t *loaded) {
@@ -93,7 +99,7 @@ void Afr2Prefs_Load(Afr2Config *c,uint8_t *loaded) {
 uint8_t Afr2Prefs_Save(const Afr2Config *c) {
     if(writing || !Afr2Product_ConfigValid(c))return 0;
     memset(image,0,sizeof(image));memcpy(image,"AFR2",4);image[4]=AFR2_CONFIG_VERSION;
-    afr2_put_u16(image+6,66);afr2_put_u32(image+8,sequence+1u);encode(c,image+16);
+    afr2_put_u16(image+6,78);afr2_put_u32(image+8,sequence+1u);encode(c,image+16);
     afr2_put_u16(image+14,crc(image));image[127]=0xa5;
     cursor=0;writing=1;state=1;return 1;
 }

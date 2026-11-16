@@ -45,7 +45,8 @@ export function RobotModePill({ open, origin, onOpen, onClose }: Props) {
         <SegmentedControl ariaLabel="Modo operativo del robot" activation="manual" reselect fill="always"
           value={current ?? 'idle'} onChange={value => void choose(value)}
           items={OPTIONS.map(item => ({ ...item,
-            disabled: !!blocked || sending || (item.value === 'manual' && !capabilities.manual_pwm?.implemented) || (item.value === 'line-follow' && !capabilities.line_follow.implemented) }))} />
+            // AFR2-20261111-04: Manual no depende de la capacidad PWM: elegirlo es lo que habilita motores y salta los permisos.
+            disabled: !!blocked || sending || (item.value === 'line-follow' && !capabilities.line_follow.implemented) }))} />
         <p className="afr2-help">Reposo detiene las salidas. Manual habilita la conducción desde Conducir. Línea inicia el seguimiento con los sensores IR.{current === null && mode !== 'none' ? ` El robot está en ${label}; elegir un modo lo reemplaza.` : ''}</p>
       </div>
     </FloatingModal>

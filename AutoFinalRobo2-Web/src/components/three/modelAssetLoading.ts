@@ -1,5 +1,7 @@
 // AFR2-20261030-16. Shared download state; no second fetch, HEAD request or global manager override.
 import { GLTFLoader, type GLTF } from 'three/addons/loaders/GLTFLoader.js';
+import { LoaderUtils } from 'three';
+import { pendingModel, prefetchedModel } from './modelPrefetch';
 import sizes from './modelAssetSizes.json';
 
 export const ROBOT_MODEL_URL = '/models/AutoFinalRobo2.glb';
@@ -35,12 +37,32 @@ function update(url: string, patch: Partial<ModelAssetState>) {
     queueMicrotask(() => { notificationPending = false; listeners.forEach(listener => listener()); });
   }
 }
+/** AFR2-20261111-03: the prefetcher reports the same per-asset progress the viewers already show. */
+export function reportModelAsset(url: string, patch: Partial<ModelAssetState>) { update(url, patch); }
 export function resetModelAsset(url: string) {
   update(url, { phase: 'idle', loadedBytes: 0, remainingSeconds: null, error: null });
 }
 /** Same loader/cache shared by every camera and inspection view. */
 export class ProgressGLTFLoader extends GLTFLoader {
   override load(url: string, onLoad: (data: GLTF) => void, onProgress?: (event: ProgressEvent) => void, onError?: (error: unknown) => void): void {
+    // AFR2-20261111-03: use the model the prefetcher already downloaded (or is downloading) instead of a second request.
+    const fromPrefetch = (data: ArrayBuffer) => {
+      update(url, { phase: 'preparing', loadedBytes: data.byteLength, totalBytes: assetBytes(url) ?? data.byteLength, remainingSeconds: null, error: null });
+      this.parse(data.slice(0), this.path || LoaderUtils.extractUrlBase(url), gltf => {
+        update(url, { phase: 'ready', loadedBytes: data.byteLength, totalBytes: data.byteLength, remainingSeconds: null });
+        onLoad(gltf);
+      }, error => {
+        update(url, { phase: 'error', error: error instanceof Error ? error.message : 'No se pudo preparar el modelo.', remainingSeconds: null });
+        onError?.(error);
+      });
+    };
+    const ready = prefetchedModel(url);
+    if (ready) { fromPrefetch(ready); return; }
+    const pending = pendingModel(url);
+    if (pending) { void pending.then(data => data.byteLength ? fromPrefetch(data) : this.network(url, onLoad, onProgress, onError)); return; }
+    this.network(url, onLoad, onProgress, onError);
+  }
+  private network(url: string, onLoad: (data: GLTF) => void, onProgress?: (event: ProgressEvent) => void, onError?: (error: unknown) => void): void {
     const started = performance.now();
     update(url, { phase: 'downloading', loadedBytes: 0, remainingSeconds: null, error: null });
     super.load(url, data => {
