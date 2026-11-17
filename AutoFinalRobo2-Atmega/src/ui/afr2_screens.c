@@ -491,7 +491,7 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
         /* Long cannot bypass a required Yes/No decision. */
         if(in.click){
             uint8_t r=invoke(u,u->selection?u->confirm_discard:u->confirm_save,(u->selection && u->confirm_save==AFR2_A_HALL_SAVE)?2:0,0);
-            AFR2_DBG("CONFIRM %s result=%u",u->selection?"discard":"save",(unsigned)r);
+            AFR2_DBG("CONFIRM %S result=%u",u->selection?PSTR("discard"):PSTR("save"),(unsigned)r);
             if(r){Afr2Ui_NotifyFlash(u,1,PSTR("No completado"),PSTR("Reintentar"),2500);return;}
             if(!u->selection){u->confirm_wait=1;u->confirm_wait_ms=u->clock_ms;u->redraw=true;}
             else {leave_confirm(u);Afr2Ui_NotifyFlash(u,0,PSTR("Cambios"),PSTR("Descartados"),2500);}
@@ -627,7 +627,7 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
         Afr2MenuItem i;Afr2Ui_MenuItem(u,u->selection,&i);
         if(i.action && u->ops.available){uint8_t r=u->ops.available(u->ops.ctx,i.action,i.arg);if(r){result(u,r);return;}}
         if(!i.action) {
-            if(!strncmp(i.label,"Volver",6)){go_back(u);}
+            if(!strncmp_P(i.label,PSTR("Volver"),6)){go_back(u);}
             else {
                 if(i.target==AFR2_N_SERVO_ANGLE){uint8_t r=invoke(u,AFR2_A_SERVO_EDIT_BEGIN,0,0);if(r){action_result(u,r,AFR2_A_SERVO_EDIT_BEGIN);return;}}
                 Afr2Ui_Open(u,i.target);
@@ -704,7 +704,7 @@ static void render_hall(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s){
         TXT(o,0,0,"Estado Hall");
         for(uint8_t i=0;i<4;i++){
             wheel_name(name,i);
-            if(s->hall_cpr[i])snprintf_P(text,sizeof(text),PSTR("%s:%lu %s"),name,(unsigned long)s->hall_cpr[i],(s->hall_pending&(1u<<i))?"*":"OK");
+            if(s->hall_cpr[i])snprintf_P(text,sizeof(text),PSTR("%s:%lu %S"),name,(unsigned long)s->hall_cpr[i],(s->hall_pending&(1u<<i))?PSTR("*"):PSTR("OK"));
             else snprintf_P(text,sizeof(text),PSTR("%s:Sin calibrar"),name);
             Afr2Oled_Text(o,0,12+i*10,text,AFR2_WHITE);
         }
@@ -885,9 +885,9 @@ static void render_screen(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s) {
     } else {
         if(!partial) {
             char title[18];strncpy(title,n.title,17);title[17]=0;
-            if(u->node==AFR2_N_WIFI)snprintf_P(title,sizeof(title),PSTR("Wi-Fi %s"),s->network_mode==1?"STA":s->network_mode==2?"AP":s->network_mode==3?"AP-STA":"--");
+            if(u->node==AFR2_N_WIFI)snprintf_P(title,sizeof(title),PSTR("Wi-Fi %S"),s->network_mode==1?PSTR("STA"):s->network_mode==2?PSTR("AP"):s->network_mode==3?PSTR("AP-STA"):PSTR("--"));
             if(u->node==AFR2_N_WIFI_SEARCH)strcpy_P(title,s->network_scan_state==1?PSTR("Buscando redes"):s->network_scan_state==3?PSTR("Busqueda fallo"):s->network_scan_state==0?PSTR("Buscar redes"):s->network_total?PSTR("Redes listas"):PSTR("Sin redes"));
-            if(u->node==AFR2_N_WIFI_NETWORKS)snprintf_P(title,sizeof(title),PSTR("Redes %u/%u%s"),s->network_page+1,s->network_total>8?2:1,s->network_truncated?"+":"");
+            if(u->node==AFR2_N_WIFI_NETWORKS)snprintf_P(title,sizeof(title),PSTR("Redes %u/%u%S"),s->network_page+1,s->network_total>8?2:1,s->network_truncated?PSTR("+"):PSTR(""));
             Afr2Component_Header(o,Afr2Menu_Icon(u->node,u->node,0,title),u->node==AFR2_N_WIFI_VIEW && s->lines[0][0]?s->lines[0]:title,0,0);
             if(n.view){for(uint8_t j=0;j<3;j++)Afr2Oled_TextWindow(o,0,j==2?104:128,16+j*12,s->lines[j],j==2?Afr2Ui_TextOffset(s->lines[j],104,u->clock_ms-u->scroll_started_ms):0,AFR2_WHITE);}
         }
@@ -901,7 +901,7 @@ static void render_screen(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s) {
             if(!partial) {
                 Afr2Icon_Draw(o,Afr2Menu_Icon(u->node,item.target,item.action,item.label),n.view?0:3,n.view?51:y,n.view?12:16);
                 
-                if(row!=2 && !(u->node==AFR2_N_WIFI_NETWORKS && s->row_security[row]>=2))Afr2Oled_Text(o,120,top,selected?(s->disabled[row]?"!":(!strncmp(item.label,"Volver",6)?" ":">")):(s->disabled[row]?"!":" "),AFR2_WHITE);
+                if(row!=2 && !(u->node==AFR2_N_WIFI_NETWORKS && s->row_security[row]>=2))Afr2Oled_TextFlash(o,120,top,selected?(s->disabled[row]?PSTR("!"):(!strncmp_P(item.label,PSTR("Volver"),6)?PSTR(" "):PSTR(">"))):(s->disabled[row]?PSTR("!"):PSTR(" ")),AFR2_WHITE);
             }
             uint8_t right=(u->node==AFR2_N_WIFI_NETWORKS && s->row_security[row]>=2)?108:118;if(row==2 && right>104)right=104;
             if(u->node==AFR2_N_WIFI_NETWORKS && s->row_security[row]>=2){

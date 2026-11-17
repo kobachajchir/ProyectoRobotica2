@@ -62,7 +62,7 @@ uint8_t Afr2Dashboard_Render(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s){
     const char *ip=connected?(s->network_sta?s->network_ip:s->network_ap_ip):NULL;
     char fallback[12];strcpy_P(fallback,s->network_valid?PSTR("Sin Wi-Fi"):PSTR("Red: --"));
     if(!ssid || !*ssid){if(connected)strcpy_P(fallback,s->network_sta?PSTR("Wi-Fi"):PSTR("AP"));ssid=fallback;}
-    if(!ip || !*ip)ip="IP: --";
+    char ip_fallback[8];if(!ip || !*ip){strcpy_P(ip_fallback,PSTR("IP: --"));ip=ip_fallback;}
     uint16_t ss=offset(ssid,u->clock_ms-u->scroll_started_ms),is=offset(ip,u->clock_ms-u->scroll_started_ms);
     uint8_t flags=(!!s->network_valid) | (!!s->network_sta<<1) | (!!s->network_ap<<2) | (!!s->battery_valid<<3) | ((s->network_mode==2)<<4) | (!!s->sync_online<<5);
     uint8_t header=full || d->header_flags!=flags || d->network_boot!=s->network_boot || d->network_revision!=s->network_revision || d->battery_mv!=s->battery_mv;

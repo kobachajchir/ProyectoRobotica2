@@ -126,7 +126,7 @@ void Afr2Icon_Draw(Afr2Oled *o,uint8_t id,int16_t x,int16_t y,uint8_t size) {
 }
 uint8_t Afr2Menu_Icon(uint8_t node,uint8_t target,uint8_t action,const char *label) {
     if(action==AFR2_A_WIFI_SCAN)return AFR2_ICON_REFRESH;
-    if(!strncmp(label,"Volver",6))return AFR2_ICON_BACK;
+    if(!strncmp_P(label,PSTR("Volver"),6))return AFR2_ICON_BACK;
     if(target==AFR2_N_QR_AP || target==AFR2_N_WIFI_AP)return AFR2_ICON_AP;
     if(target==AFR2_N_QR_WEB)return AFR2_ICON_LINK;
     if(target==AFR2_N_BATTERY || target==AFR2_N_BATTERY_VIEW || action==AFR2_A_BATTERY_MEASURE)return AFR2_ICON_BATTERY_UNKNOWN;

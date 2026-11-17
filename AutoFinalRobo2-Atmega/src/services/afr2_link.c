@@ -4,6 +4,7 @@
  */
 #include "afr2_link.h"
 #include <string.h>
+#include <avr/pgmspace.h>
 void Afr2Link_Init(Afr2Link *l,const Afr2LinkOps *ops) {
     memset(l,0,sizeof(*l)); if (ops) l->ops=*ops;
 }
@@ -44,7 +45,7 @@ static void handle(Afr2Link *l,uint32_t now) {
     uint32_t session, transaction;
     Afr2LinkSnapshot s;
     if (!afr2_route_matches(p->route,AFR2_NODE_ESP,AFR2_NODE_MEGA) || p->length<8u) return;
-    if(p->command==AFR2_EXT_BOOT && p->length==14 && !memcmp(p->payload,"BT01",4) && p->payload[4]==AFR2_NODE_ESP) {
+    if(p->command==AFR2_EXT_BOOT && p->length==14 && !memcmp_P(p->payload,PSTR("BT01"),4) && p->payload[4]==AFR2_NODE_ESP) {
         notify(l,AFR2_LINK_EVT_PEER_BOOT,p->command,0,p->payload,14,0);
         if(l->ops.halt_motion)l->ops.halt_motion(l->ops.ctx);else if(l->ops.stop)l->ops.stop(l->ops.ctx);
         if(l->ops.revoke)l->ops.revoke(l->ops.ctx);
@@ -56,7 +57,7 @@ static void handle(Afr2Link *l,uint32_t now) {
     else if (session==l->session && transaction<=l->last_transaction)
         out[8]=AFR2_RESULT_BAD_REQUEST; /* Never execute a duplicate/older request. */
     else if (p->command==AFR2_CMD_HELLO) {
-        if (p->length!=13u || memcmp(p->payload+8,"AFR2",4) || p->payload[12]!=AFR2_WIRE_PROFILE)
+        if (p->length!=13u || memcmp_P(p->payload+8,PSTR("AFR2"),4) || p->payload[12]!=AFR2_WIRE_PROFILE)
             out[8]=AFR2_RESULT_BAD_REQUEST;
         else {
             if (l->session!=session) {
@@ -66,7 +67,7 @@ static void handle(Afr2Link *l,uint32_t now) {
             }
             l->session=session; l->last_transaction=transaction; l->negotiated=1;
             l->supervised=0; l->last_request_ms=now;
-            memcpy(out+9,"AFR2",4); out[13]=AFR2_WIRE_PROFILE;
+            memcpy_P(out+9,PSTR("AFR2"),4); out[13]=AFR2_WIRE_PROFILE;
             out[14]=0; out[15]=4; out[16]=0;
             afr2_put_u16(out+17,caps); afr2_put_u32(out+19,now); n=23;
         }

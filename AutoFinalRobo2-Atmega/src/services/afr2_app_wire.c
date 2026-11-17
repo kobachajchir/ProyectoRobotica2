@@ -47,8 +47,8 @@ static uint8_t calibration_action(uint8_t action) {
 uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t *out,uint8_t *length) {
     Afr2App *a=ctx;Afr2Product *p=a->product;*length=0;
     if(cmd==AFR2_EXT_HELLO) {
-        if(n!=4 || memcmp(d,"EX01",4))return AFR2_RESULT_BAD_REQUEST;
-        p->extension_ready=1;p->session=a->link->session;memcpy(out,"EX01",4);afr2_put_u16(out+4,AFR2_EXT_VERSION);
+        if(n!=4 || memcmp_P(d,PSTR("EX01"),4))return AFR2_RESULT_BAD_REQUEST;
+        p->extension_ready=1;p->session=a->link->session;memcpy_P(out,PSTR("EX01"),4);afr2_put_u16(out+4,AFR2_EXT_VERSION);
         afr2_put_u32(out+6,features(p));*length=10;return AFR2_RESULT_OK;
     }
     if(!p->extension_ready)return AFR2_RESULT_UNAVAILABLE;

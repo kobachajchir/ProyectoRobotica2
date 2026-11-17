@@ -8,6 +8,7 @@
 #include <avr/eeprom.h>
 #include <avr/io.h>
 #include <string.h>
+#include <avr/pgmspace.h>
 static uint8_t image[128], active_slot=1, writing, state;
 static uint16_t cursor;
 static uint32_t sequence;
@@ -60,7 +61,7 @@ static void decode(Afr2Config *c,const uint8_t *b,uint8_t version) {
 }
 static uint8_t load_slot(uint8_t slot,Afr2Config *c,uint32_t *seq) {
     eeprom_read_block(image,(const void *)(uintptr_t)((uint16_t)slot*128u),128);
-    if(memcmp(image,"AFR2",4) || image[4]<1u || image[4]>AFR2_CONFIG_VERSION ||
+    if(memcmp_P(image,PSTR("AFR2"),4) || image[4]<1u || image[4]>AFR2_CONFIG_VERSION ||
         afr2_get_u16(image+6)!=(image[4]>=14u?86u:image[4]>=12u?78u:image[4]>=11u?66u:image[4]>=10u?64u:image[4]>=8u?63u:image[4]>=5u?60u:58u) || image[127]!=0xa5 || crc(image)!=afr2_get_u16(image+14))return 0;
     decode(c,image+16,image[4]);
     /* v9 product is digital only; migrate before validating the old enum. */
@@ -101,7 +102,7 @@ void Afr2Prefs_Load(Afr2Config *c,uint8_t *loaded) {
 }
 uint8_t Afr2Prefs_Save(const Afr2Config *c) {
     if(writing || !Afr2Product_ConfigValid(c))return 0;
-    memset(image,0,sizeof(image));memcpy(image,"AFR2",4);image[4]=AFR2_CONFIG_VERSION;
+    memset(image,0,sizeof(image));memcpy_P(image,PSTR("AFR2"),4);image[4]=AFR2_CONFIG_VERSION;
     afr2_put_u16(image+6,86);afr2_put_u32(image+8,sequence+1u);encode(c,image+16);
     afr2_put_u16(image+14,crc(image));image[127]=0xa5;
     cursor=0;writing=1;state=1;return 1;

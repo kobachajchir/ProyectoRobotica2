@@ -104,7 +104,7 @@ void Afr2SensorScreen_Render(Afr2Oled *o,uint8_t node,const Afr2UiSnapshot *s){
         }else if(h){
             /* AFR2-20261109-01: value refreshes with each echo and shows -- when older than 1 s. */
             uint8_t fresh=h->latest.id && h->latest.error==AFR2_ECHO_OK && (uint32_t)(s->sensor_now_ms-h->latest.ms)<=1000u;
-            if(fresh)snprintf_P(text,sizeof(text),PSTR("%03u %4umm%s"),h->angle,h->latest.distance_mm,h->latest.distance_mm>range_mm(s)?" >esc":"");
+            if(fresh)snprintf_P(text,sizeof(text),PSTR("%03u %4umm%S"),h->angle,h->latest.distance_mm,h->latest.distance_mm>range_mm(s)?PSTR(" >esc"):PSTR(""));
             else snprintf_P(text,sizeof(text),PSTR("%03u -- mm"),h->angle);
             txt(o,0,53,text);
         }else {TXT(0,53,"Sin datos");}return;

@@ -10,6 +10,7 @@
 #include "afr2_app.h"
 #include "afr2_debug.h"
 #include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 #ifndef AFR2_OLED_ADDRESS7
 #define AFR2_OLED_ADDRESS7 0x3c
 #endif
@@ -58,7 +59,7 @@ int main(void) {
         Afr2App_Task(&app,now);
         timing.app_ms=(uint16_t)(Afr2Board_Millis()-stage_started);stage_started=Afr2Board_Millis();
         if(boot_pending && !link.reply_length) {
-            uint8_t body[14]={0},frame[AFR2_WIRE_OVERHEAD+14];memcpy(body,"BT01",4);body[4]=AFR2_NODE_MEGA;
+            uint8_t body[14]={0},frame[AFR2_WIRE_OVERHEAD+14];memcpy_P(body,PSTR("BT01"),4);body[4]=AFR2_NODE_MEGA;
             afr2_put_u32(body+5,Afr2Boot_Id());body[9]=product.reset_cause;body[10]=AFR2_FIRMWARE_MAJOR;
             body[11]=AFR2_FIRMWARE_MINOR;body[12]=AFR2_FIRMWARE_PATCH;body[13]=AFR2_EXT_VERSION;
             uint8_t length=afr2_wire_build(frame,sizeof(frame),AFR2_ROUTE_RESPONSE,AFR2_EXT_BOOT,body,14);

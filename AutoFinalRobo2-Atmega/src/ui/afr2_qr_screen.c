@@ -15,6 +15,11 @@ static uint8_t append(uint8_t *data,size_t *len,const char *text,uint8_t escape)
         data[(*len)++]=c;
     }return 1;
 }
+/* AFR2-20261117-07: texto fijo en flash (sin escape). */
+static uint8_t append_P(uint8_t *data,size_t *len,const char *text){
+    for(char c;(c=(char)pgm_read_byte(text))!=0;++text){if(*len>=QR_BYTES-1)return 0;data[(*len)++]=(uint8_t)c;}
+    return 1;
+}
 static void labels(Afr2Oled *o,uint8_t ap){
     Afr2Icon_Draw(o,ap?AFR2_ICON_AP:AFR2_ICON_LINK,67,1,14);
     Afr2Oled_TextFlash(o,67,19,ap?PSTR("Conectar"):PSTR("Abrir"),AFR2_WHITE);
@@ -44,7 +49,7 @@ uint8_t Afr2Qr_DrawPayload(Afr2Oled *o,const uint8_t *payload,uint16_t length){
 }
 void Afr2Qr_Render(Afr2Oled *o,const Afr2UiSnapshot *s,uint8_t ap,uint32_t revision){
     const char *ip=s->network_sta?s->network_ip:s->network_ap_ip;
-    uint8_t status=!s->qr_allowed?1:!s->network_valid?2:ap?(!s->network_ap || !s->network_ap_ssid || !*s->network_ap_ssid?3:0):(!s->network_server || !ip || !*ip || !strcmp(ip,"0.0.0.0") || (!s->network_sta && !s->network_ap)?4:0);
+    uint8_t status=!s->qr_allowed?1:!s->network_valid?2:ap?(!s->network_ap || !s->network_ap_ssid || !*s->network_ap_ssid?3:0):(!s->network_server || !ip || !*ip || !strcmp_P(ip,PSTR("0.0.0.0")) || (!s->network_sta && !s->network_ap)?4:0);
     uint8_t key=ap | (s->network_sta<<1) | (s->network_ap<<2) | (s->network_server<<3);
     uint32_t next=revision+1;if(!next)++next;
     if(cache_valid && last_frame==revision && last_boot==s->network_boot && last_network==s->network_revision && last_ap==key && last_status==status){last_frame=next;return;}
@@ -52,8 +57,8 @@ void Afr2Qr_Render(Afr2Oled *o,const Afr2UiSnapshot *s,uint8_t ap,uint32_t revis
     if(!status){
         size_t len=0;uint8_t *data=o->buffer,*qr=o->buffer+QR_BYTES;uint8_t ok;
         if(ap){const char *password=s->network_password?s->network_password:"";
-            ok=append(data,&len,*password?"WIFI:T:WPA;S:":"WIFI:T:nopass;S:",0) && append(data,&len,s->network_ap_ssid,1) && append(data,&len,";P:",0) && append(data,&len,password,1) && append(data,&len,";;",0);
-        }else ok=append(data,&len,"http://",0) && append(data,&len,ip,0) && append(data,&len,"/",0);
+            ok=append_P(data,&len,*password?PSTR("WIFI:T:WPA;S:"):PSTR("WIFI:T:nopass;S:")) && append(data,&len,s->network_ap_ssid,1) && append_P(data,&len,PSTR(";P:")) && append(data,&len,password,1) && append_P(data,&len,PSTR(";;"));
+        }else ok=append_P(data,&len,PSTR("http://")) && append(data,&len,ip,0) && append_P(data,&len,PSTR("/"));
         if(ok && qrcodegen_encodeBinary(data,len,qr,qrcodegen_Ecc_LOW,1,9,qrcodegen_Mask_0,true)){finish(o,qr);labels(o,ap);return;}
         status=5;
     }

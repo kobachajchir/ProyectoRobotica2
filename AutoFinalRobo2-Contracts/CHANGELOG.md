@@ -1,3 +1,13 @@
+## AFR2-20261117-07 — 17/11/2026
+
+ATmega: textos y tablas constantes de RAM a flash. Firmas `BT01`, `AFR2` y `EX01`, argumentos `%S` con `PSTR`, `strcpy_P`/`strncmp_P`, prefijos del QR, textos de los avisos de red, tablas de `qrcodegen` en `PROGMEM` y `-fno-tree-switch-conversion` (sin tablas CSWTCH).
+
+Resultado: `.data` pasa de 354 B a 10 B. La RAM estática baja de 7 202 B a 6 858 B y quedan unos 1 334 B para la pila. La flash sube 714 B.
+
+Sin cambio de comportamiento. La ficha explica cómo detectar falta de memoria (`avr-size` y la línea `STAT … stack>=` del log USB).
+
+Versión: 1.35.2 (subversión mínima). ATmega compilado sin cargar; ESP y Web solo versión. [Ficha](changes/2026-11-17-07-atmega-ram-a-flash.md).
+
 ## AFR2-20261117-06 — 17/11/2026
 
 Ajustes de la Web.

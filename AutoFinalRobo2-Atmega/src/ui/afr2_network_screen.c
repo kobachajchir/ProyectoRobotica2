@@ -19,6 +19,12 @@ static void labeled(Afr2Oled *o,uint8_t y,const char *label,uint8_t left,const c
     Afr2Oled_TextFlash(o,0,y,label,AFR2_WHITE);
     uint8_t right=y>=40?104:128;Afr2Oled_TextWindow(o,left,right,y,text,Afr2Ui_TextOffset(text,right-left,elapsed),AFR2_WHITE);
 }
+/* AFR2-20261117-07: igual que labeled, con el texto en flash. */
+static void labeled_flash(Afr2Oled *o,uint8_t y,const char *label,uint8_t left,const char *text,uint32_t elapsed) {
+    Afr2Oled_FillRect(o,0,y,128,10,AFR2_BLACK);
+    Afr2Oled_TextFlash(o,0,y,label,AFR2_WHITE);
+    uint8_t right=y>=40?104:128;Afr2Oled_TextWindowFlash(o,left,right,y,text,Afr2Ui_TextOffsetFlash(text,right-left,elapsed),AFR2_WHITE);
+}
 static void back(Afr2Oled *o) {
     Afr2Ui_GestureHint(o,94,52,1,PSTR("Volver"));
 }
@@ -33,7 +39,7 @@ void Afr2NetworkScreen_Render(Afr2Oled *o,const Afr2Ui *u,const Afr2UiSnapshot *
     if(!s->network_valid){line_flash(o,17,PSTR("Sin datos actuales"),elapsed);line_flash(o,32,PSTR("Actualizar Wi-Fi"),elapsed);}
     else if(ap) {
         if(!s->network_ap){line_flash(o,17,PSTR("AP no esta activo"),elapsed);line_flash(o,32,PSTR("IP: --"),elapsed);}
-        else {labeled(o,16,PSTR("SSID:"),35,s->network_ap_ssid,elapsed);labeled(o,28,PSTR("Clave:"),42,s->network_password[0]?s->network_password:"Sin clave",elapsed);labeled(o,40,PSTR("IP:"),21,s->network_ap_ip,elapsed);}
+        else {labeled(o,16,PSTR("SSID:"),35,s->network_ap_ssid,elapsed);if(s->network_password[0])labeled(o,28,PSTR("Clave:"),42,s->network_password,elapsed);else labeled_flash(o,28,PSTR("Clave:"),42,PSTR("Sin clave"),elapsed);labeled(o,40,PSTR("IP:"),21,s->network_ap_ip,elapsed);}
     } else if(s->network_sta) {
         labeled(o,16,PSTR("SSID:"),35,s->network_ssid,elapsed);labeled(o,29,PSTR("IP:"),21,s->network_ip,elapsed);line_flash(o,41,PSTR("STA / abrir en Web"),elapsed);
     } else if(s->network_ap) {
@@ -53,10 +59,10 @@ void Afr2NetworkNotice_Render(Afr2Oled *o,const Afr2Ui *u,const Afr2UiSnapshot *
     switch(kind) {
     case AFR2_NET_BOOT:TXT(o,24,9,"ESP iniciada");line_flash(o,31,PSTR("Firmware propio"),elapsed);break;
     case AFR2_NET_WEB_READY:TXT(o,24,9,"Servidor listo");line_flash(o,31,PSTR("HTTP disponible"),elapsed);break;
-    case AFR2_NET_GOT_IP:TXT(o,24,9,"IP adquirida");line(o,28,s->network_valid?s->network_ssid:"Wi-Fi",elapsed);line(o,41,n->text,elapsed);break;
+    case AFR2_NET_GOT_IP:TXT(o,24,9,"IP adquirida");if(s->network_valid)line(o,28,s->network_ssid,elapsed);else line_flash(o,28,PSTR("Wi-Fi"),elapsed);line(o,41,n->text,elapsed);break;
     case AFR2_NET_AP_READY:
         TXT(o,24,8,"Red AP creada");
-        if(s->network_valid && s->network_ap){labeled(o,23,PSTR("SSID:"),35,s->network_ap_ssid,elapsed);labeled(o,34,PSTR("Clave:"),42,s->network_password[0]?s->network_password:"Sin clave",elapsed);labeled(o,45,PSTR("IP:"),21,s->network_ap_ip,elapsed);}
+        if(s->network_valid && s->network_ap){labeled(o,23,PSTR("SSID:"),35,s->network_ap_ssid,elapsed);if(s->network_password[0])labeled(o,34,PSTR("Clave:"),42,s->network_password,elapsed);else labeled_flash(o,34,PSTR("Clave:"),42,PSTR("Sin clave"),elapsed);labeled(o,45,PSTR("IP:"),21,s->network_ap_ip,elapsed);}
         else line_flash(o,31,PSTR("Consultar datos AP"),elapsed);
         break;
     case AFR2_NET_CLIENT_JOIN:TXT(o,24,9,"Cliente entro");line(o,32,n->text,elapsed);break;

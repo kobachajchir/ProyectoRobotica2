@@ -867,7 +867,7 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
             default:LINE(0,"Fallo %u",p->fault);LINE(2,"Revisar log USB");break;
             }
         }
-        LINE(1,"Salidas: %s",p->stopped?"OFF":"activas");break;
+        LINE(1,"Salidas: %S",p->stopped?PSTR("OFF"):PSTR("activas"));break;
     case AFR2_N_DIAG:
         LINE(0,"Fallo:%u Reset:%u",p->fault,p->reset_cause);LINE(1,"OLED err:%lu",(unsigned long)a->oled->errors);
         LINE(2,"RX gaps:%u",a->link->parser.stats.gap);break;
@@ -949,12 +949,12 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
         if(!p->pose_valid){LINE(0,"Sin odometria");if(p->sensors.hall_available)LINE(1,"Hall habilitado");else LINE(1,"Habilitar Hall");LINE(2,"Calibrar CPR Hall");}
         else {LINE(0,"X:%ld Y:%ld",(long)p->x_mm,(long)p->y_mm);LINE(1,"Yaw:%ld mrad",(long)p->yaw_mrad);LINE(2,"Estimacion ruedas");}break;
     case AFR2_N_WIFI_VIEW:
-        if(!p->wifi.available)LINE(0,"Sin datos actuales");else LINE(0,"%s",p->wifi.sta_connected?"Conectado":"Desconectado");break;
+        if(!p->wifi.available)LINE(0,"Sin datos actuales");else LINE(0,"%S",p->wifi.sta_connected?PSTR("Conectado"):PSTR("Desconectado"));break;
     case AFR2_N_NETWORK:
         if(!p->wifi.available){LINE(0,"Sin datos actuales");break;}
         if(!u->selection){
-            LINE(0,"Modo: %s",p->wifi.mode==1?"STA":p->wifi.mode==2?"AP":p->wifi.mode==3?"AP-STA":"--");
-            LINE(1,"IP %s:",p->wifi.sta_connected?"STA":"AP");LINE(2,"%.18s",p->wifi.sta_connected?p->wifi.ip:p->wifi.ap_active?p->wifi.ap_ip:"--");
+            LINE(0,"Modo: %S",p->wifi.mode==1?PSTR("STA"):p->wifi.mode==2?PSTR("AP"):p->wifi.mode==3?PSTR("AP-STA"):PSTR("--"));
+            LINE(1,"IP %S:",p->wifi.sta_connected?PSTR("STA"):PSTR("AP"));if(p->wifi.sta_connected || p->wifi.ap_active)LINE(2,"%.18s",p->wifi.sta_connected?p->wifi.ip:p->wifi.ap_ip);else LINE(2,"--");
         }else if(p->wifi.details_valid && (uint32_t)(p->now-p->wifi.details_ms)<=5000u){
             const uint8_t *m=p->wifi.mask,*g=p->wifi.gateway;
             LINE(0,"Mascara:");if(m[0]|m[1]|m[2]|m[3])LINE(1,"%u.%u.%u.%u",m[0],m[1],m[2],m[3]);else LINE(1,"--");
@@ -964,17 +964,17 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
         if(p->wifi.credentials_visible){strncpy(s->labels[0],p->wifi.draft_ssid,32);strncpy(s->labels[1],p->wifi.password,32);strncpy(s->labels[2],p->wifi.password+32,31);break;}
         uint8_t sta=p->wifi.sta_connected,auth=sta?p->wifi.security:p->wifi.ap_security;
         if(!p->wifi.available){LINE(0,"Sin datos actuales");break;}
-        strncpy(s->labels[0],sta?p->wifi.ssid:p->wifi.ap_active?p->wifi.ap_ssid:"Sin red",32);
+        if(sta || p->wifi.ap_active)strncpy(s->labels[0],sta?p->wifi.ssid:p->wifi.ap_ssid,32);else strncpy_P(s->labels[0],PSTR("Sin red"),32);
         if(sta && s->network_rssi_valid)LINE(1,"Senal: %d dBm",p->wifi.rssi);else LINE(1,"Senal: --");
         if(!p->wifi.details_valid || (uint32_t)(p->now-p->wifi.details_ms)>5000u)auth=0;
-        LINE(2,"%s",auth==1?"Abierta":auth==2?"WEP":auth==3?"WPA":auth==4?"WPA2":auth==5?"WPA/WPA2":auth==6?"Protegida":"Seguridad: --");s->row_security[0]=auth;break;
+        LINE(2,"%S",auth==1?PSTR("Abierta"):auth==2?PSTR("WEP"):auth==3?PSTR("WPA"):auth==4?PSTR("WPA2"):auth==5?PSTR("WPA/WPA2"):auth==6?PSTR("Protegida"):PSTR("Seguridad: --"));s->row_security[0]=auth;break;
     }
     case AFR2_N_WIFI_REVIEW:
         LINE(0,"%.17s",p->wifi.draft_ssid);LINE(1,"Modo:%u Listo:%u",p->wifi.requested_mode,p->wifi.draft_ready);LINE(2,"Opciones");break;
     case AFR2_N_WIFI_NETWORKS:
-        for(uint8_t row=0;row<3;row++){uint8_t i=u->firstVisible+row;if(!p->wifi.pending && i<8 && i<p->wifi.network_count){strncpy(s->labels[row],p->wifi.networks[i][0]?p->wifi.networks[i]:"Red oculta",32);s->row_security[row]=p->wifi.network_security[i];}}break;
-    case AFR2_N_VERSIONS:LINE(0,"Mega " AFR2_FIRMWARE_VERSION);LINE(1,"ESP:%.13s",p->wifi.esp_version[0]?p->wifi.esp_version:"--");
-        LINE(2,"Web:%.13s",p->wifi.web_version[0]?p->wifi.web_version:"--");break;
+        for(uint8_t row=0;row<3;row++){uint8_t i=u->firstVisible+row;if(!p->wifi.pending && i<8 && i<p->wifi.network_count){if(p->wifi.networks[i][0])strncpy(s->labels[row],p->wifi.networks[i],32);else strncpy_P(s->labels[row],PSTR("Red oculta"),32);s->row_security[row]=p->wifi.network_security[i];}}break;
+    case AFR2_N_VERSIONS:LINE(0,"Mega " AFR2_FIRMWARE_VERSION);if(p->wifi.esp_version[0])LINE(1,"ESP:%.13s",p->wifi.esp_version);else LINE(1,"ESP:--");
+        if(p->wifi.web_version[0])LINE(2,"Web:%.13s",p->wifi.web_version);else LINE(2,"Web:--");break;
     case AFR2_N_CAPS:
         switch(u->selection){
         case 0:LINE(0,"UI: encoder/OLED");LINE(1,"Dibujo por TWI");LINE(2,"OLED listo:%u",s->oled_ready);break;
@@ -992,6 +992,6 @@ void Afr2App_UiSnapshot(Afr2App *a,Afr2UiSnapshot *s) {
         Afr2MenuItem item;Afr2Ui_MenuItem(u,u->firstVisible+row,&item);
         s->disabled[row]=item.action && available(a,item.action,item.arg)!=AFR2_OK;
         if(item.action==AFR2_A_RADAR_TOGGLE || item.action==AFR2_A_LINE_TOGGLE || item.action==AFR2_A_WHEEL_TOGGLE || item.action==AFR2_A_GOTO_TOGGLE || item.action==AFR2_A_ODOM_TOGGLE)strncpy(s->labels[row],item.label,32);
-        if(item.action==AFR2_A_ESP_TEST && a->diag_state==1)strcpy(s->labels[row],"Enviando...");
+        if(item.action==AFR2_A_ESP_TEST && a->diag_state==1)strcpy_P(s->labels[row],PSTR("Enviando..."));
     }
 }

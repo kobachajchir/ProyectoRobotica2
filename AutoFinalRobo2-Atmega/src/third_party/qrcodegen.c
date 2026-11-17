@@ -528,8 +528,8 @@ static void drawLightFunctionModules(uint8_t qrcode[], int version) {
 static void drawFormatBits(enum qrcodegen_Ecc ecl, enum qrcodegen_Mask mask, uint8_t qrcode[]) {
 	// Calculate error correction code and pack bits
 	assert(0 <= (int)mask && (int)mask <= 7);
-	static const int table[] = {1, 0, 3, 2};
-	int data = table[(int)ecl] << 3 | (int)mask;  // errCorrLvl is uint2, mask is uint3
+	static const int table[] PROGMEM = {1, 0, 3, 2};  /* AFR2-20261117-07: en flash */
+	int data = (int)pgm_read_word(&table[(int)ecl]) << 3 | (int)mask;  // errCorrLvl is uint2, mask is uint3
 	int rem = data;
 	for (int i = 0; i < 10; i++)
 		rem = (rem << 1) ^ ((rem >> 9) * 0x537);
@@ -1023,10 +1023,10 @@ static int numCharCountBits(enum qrcodegen_Mode mode, int version) {
 	assert(qrcodegen_VERSION_MIN <= version && version <= qrcodegen_VERSION_MAX);
 	int i = (version + 7) / 17;
 	switch (mode) {
-		case qrcodegen_Mode_NUMERIC     : { static const int temp[] = {10, 12, 14}; return temp[i]; }
-		case qrcodegen_Mode_ALPHANUMERIC: { static const int temp[] = { 9, 11, 13}; return temp[i]; }
-		case qrcodegen_Mode_BYTE        : { static const int temp[] = { 8, 16, 16}; return temp[i]; }
-		case qrcodegen_Mode_KANJI       : { static const int temp[] = { 8, 10, 12}; return temp[i]; }
+		case qrcodegen_Mode_NUMERIC     : { static const int temp[] PROGMEM = {10, 12, 14}; return (int)pgm_read_word(&temp[i]); }
+		case qrcodegen_Mode_ALPHANUMERIC: { static const int temp[] PROGMEM = { 9, 11, 13}; return (int)pgm_read_word(&temp[i]); }
+		case qrcodegen_Mode_BYTE        : { static const int temp[] PROGMEM = { 8, 16, 16}; return (int)pgm_read_word(&temp[i]); }
+		case qrcodegen_Mode_KANJI       : { static const int temp[] PROGMEM = { 8, 10, 12}; return (int)pgm_read_word(&temp[i]); }
 		case qrcodegen_Mode_ECI         : return 0;
 		default:  assert(false);  return -1;  // Dummy value
 	}

@@ -512,7 +512,7 @@ void Afr2Menu_Item(uint8_t node,uint8_t index,Afr2MenuItem *out) {
         if(index==4)out->target=n.parent;
         return;
     }
-    if(node==AFR2_N_WIFI_SETUP){if(!index){memset(out,0,sizeof(*out));strcpy(out->label,"Traer credenciales ESP");out->target=255;out->action=AFR2_A_WIFI_READ_CREDENTIALS;return;}--index;}
+    if(node==AFR2_N_WIFI_SETUP){if(!index){memset(out,0,sizeof(*out));strcpy_P(out->label,PSTR("Traer credenciales ESP"));out->target=255;out->action=AFR2_A_WIFI_READ_CREDENTIALS;return;}--index;}
     if(node==AFR2_N_WIFI && index>=4){
         if(index<6){memset(out,0,sizeof(*out));strcpy_P(out->label,index==4?PSTR("QR conectar AP"):PSTR("QR abrir Web"));out->target=index==4?AFR2_N_QR_AP:AFR2_N_QR_WEB;return;}index-=2;
     }
