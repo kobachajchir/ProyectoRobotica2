@@ -18,7 +18,8 @@ import time
 CTL_MAGIC = b"\xa5AFR2CTL"
 RSP_MAGIC = b"\xa5AFR2RSP"
 CMD_QUERY, CMD_ENTER_BOOT, CMD_RUN = 0x01, 0x10, 0x11
-CMD_AUTO_OFF, CMD_AUTO_ON = 0x20, 0x21
+CMD_BOOT_TEST, CMD_BOOT_HOLD = 0x14, 0x15
+CMD_AUTO_OFF, CMD_AUTO_ON, CMD_END_AUTO = 0x20, 0x21, 0x22
 # AFR2-20261108-08. OLED feedback of the flasher: operation title, image names by offset and how
 # esptool ended. Sent only when the flasher announces support (reply flags bit4); display only,
 # never touches KEY/RST nor the ESP stream.
@@ -47,7 +48,7 @@ def configure(port, enable):
 
 def control(port, cmd, timeout, payload=b""):
     """Send one control frame; return (status, key_held, rst_held, auto_enabled, boot_test_supported,
-    oled_feedback) or None. A payload (CMD_LABEL) goes after ~cmd with its length byte."""
+    oled_feedback, session_safe) or None. A payload (CMD_LABEL) goes after ~cmd with its length byte."""
     previous = port.timeout
     port.timeout = 0.1  # esptool opens with no timeout; never block waiting for a reply
     try:
@@ -63,11 +64,26 @@ def control(port, cmd, timeout, payload=b""):
                 reply = buffer[at + 8:at + 11]
                 if reply[0] == cmd:
                     return (reply[1], bool(reply[2] & 1), bool(reply[2] & 2), bool(reply[2] & 4), bool(reply[2] & 8),
-                            bool(reply[2] & 16))
+                            bool(reply[2] & 16), bool(reply[2] & 32))
                 buffer = buffer[at + 1:]
         return None
     finally:
         port.timeout = previous
+
+
+def query_flasher(port, startup_seconds, pulse_dtr_on_miss=False):
+    """Identify the AFR2 flasher; in auto mode recover with a controlled Mega DTR reset if a prior session left it halted."""
+    found = control(port, CMD_QUERY, 1.5)
+    if found is not None or not pulse_dtr_on_miss:
+        return found
+    print("AFR2-KEYRST: sin respuesta inicial tras apertura sin DTR; pulsando DTR para reiniciar el flasher ATmega...",
+          file=sys.stderr, flush=True)
+    port.dtr = True
+    time.sleep(0.05)
+    port.dtr = False
+    time.sleep(startup_seconds)
+    port.reset_input_buffer()
+    return control(port, CMD_QUERY, 1.5)
 
 
 def oled_text(text):
@@ -113,7 +129,19 @@ def flasher_keyrst(options, parser):
               (options.bridge_baud, options.startup_seconds), file=sys.stderr, flush=True)
         time.sleep(options.startup_seconds)
         port.reset_input_buffer()
-        reply = control(port, CMD_QUERY, 1.5)
+        reply = query_flasher(port, options.startup_seconds, pulse_dtr_on_miss=True)
+        if options.flasher_keyrst == "probe":
+            if reply is None:
+                print("AFR2-FLASHER: present=no baud=%d" % options.bridge_baud, file=sys.stderr, flush=True)
+                return 0
+            print("AFR2-KEYRST: flasher AFR2 identificado; %s" % describe(reply), file=sys.stderr, flush=True)
+            print(
+                "AFR2-FLASHER: present=yes baud=%d status=%d key=%d rst=%d auto=%d boot_test=%d oled=%d session_safe=%d" %
+                (options.bridge_baud, reply[0], int(reply[1]), int(reply[2]), int(reply[3]),
+                 int(reply[4]), int(reply[5]), int(reply[6])),
+                file=sys.stderr, flush=True
+            )
+            return 0
         if reply is None:
             raise RuntimeError("AFR2: el ATmega no responde como flasher AFR2 con KEY/RST. Cargá el flasher actual.")
         print("AFR2-KEYRST: flasher AFR2 identificado; %s" % describe(reply), file=sys.stderr, flush=True)
@@ -127,19 +155,19 @@ def flasher_keyrst(options, parser):
 
 
 # AFR2-20261106-17. No esptool or flash I/O; framed capture from UART1.
-CMD_BOOT_TEST = 0x14
 BOOT_MAGIC = b"\xa5AFR2BOOT"
 
 def parse_boot_mode(payload):
     match = re.search(rb"boot\s+mode:\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)", payload)
     return (int(match[1]), int(match[2])) if match else None
 
-def capture_programming_boot(port):
+def capture_programming_boot(port, hold_key=False):
+    cmd = CMD_BOOT_HOLD if hold_key else CMD_BOOT_TEST
     previous_timeout = port.timeout
     port.timeout = 0.1
     try:
         port.reset_input_buffer()
-        port.write(CTL_MAGIC + bytes([CMD_BOOT_TEST, CMD_BOOT_TEST ^ 0xFF]))
+        port.write(CTL_MAGIC + bytes([cmd, cmd ^ 0xFF]))
         port.flush()
         data, deadline, payload = b"", time.monotonic() + 5.0, None
         capture_status = None
@@ -150,13 +178,19 @@ def capture_programming_boot(port):
             at = data.find(RSP_MAGIC)
             if at < 0 or len(data) < at + 11:
                 continue
-            if data[at + 8] != CMD_BOOT_TEST:
+            if data[at + 8] != cmd:
                 raise RuntimeError("Respuesta de diagnóstico inesperada.")
             capture_status = data[at + 9]
             if capture_status not in (0, 3):
                 raise RuntimeError("El flasher rechazó la prueba (status=%s). Sin boot acreditado." % capture_status)
-            if data[at + 10] & 3:
-                raise RuntimeError("El flasher no confirmó KEY/RST sueltos al terminar.")
+            key_held = bool(data[at + 10] & 1)
+            rst_held = bool(data[at + 10] & 2)
+            if rst_held or key_held != bool(hold_key):
+                raise RuntimeError(
+                    "El flasher no confirmó el estado esperado de KEY/RST tras la captura."
+                    if hold_key else
+                    "El flasher no confirmó KEY/RST sueltos al terminar."
+                )
             header = at + 11
             if len(data) < header + len(BOOT_MAGIC) + 2:
                 continue
@@ -201,14 +235,16 @@ def boot_test(options, parser):
     port.open()
     try:
         time.sleep(options.startup_seconds)
-        found = control(port, CMD_QUERY, 1.5)
+        found = query_flasher(port, options.startup_seconds, pulse_dtr_on_miss=True)
         if found is None or found[0] != 0:
             raise RuntimeError("No responde el flasher AFR2; no se accionó KEY/RST.")
         if not found[4]:
             raise RuntimeError("El flasher instalado no admite captura boot a 74880. Cargá la nueva versión del flasher; no se accionó KEY/RST.")
         configured = True  # cleanup even if enabling is sent but its reply is lost
+        if found[3]:
+            configure(port, False)
         configure(port, True)
-        capture_programming_boot(port)
+        capture_programming_boot(port, hold_key=False)
     finally:
         try:
             if configured:
@@ -237,12 +273,45 @@ def retry_unsupported_sync():
     loader.ESPLoader.sync = sync
 
 
+def install_auto_reboot_connect_hook():
+    """AFR2-20261116-02. When --auto-key-rst is active, a failed ESP boot never recovers across 150
+    SYNC attempts without pulsing KEY/RST again. Limit attempts per boot and trigger up to 2 clean
+    KEY/RST re-entries using the active bridge handle instead of looping blindly."""
+    try:
+        from esptool import loader, util
+    except ImportError:
+        return
+    original_connect = loader.ESPLoader.connect
+    default_attempts = getattr(loader, "DEFAULT_CONNECT_ATTEMPTS", 7)
+
+    def connect(self, mode="default_reset", attempts=default_attempts, detecting=False, warnings=True):
+        reenter = getattr(getattr(self, "_port", None), "_afr2_reenter_boot", None)
+        if reenter is None or attempts <= 3:
+            return original_connect(self, mode=mode, attempts=attempts, detecting=detecting, warnings=warnings)
+        per_boot = min(attempts, 3)
+        last_error = None
+        for boot_try in range(3):
+            if boot_try > 0:
+                print("AFR2-AUTO: la ROM no sincronizó en este arranque (%s); repitiendo secuencia KEY/RST (%d/2)..." %
+                      (last_error, boot_try), file=sys.stderr, flush=True)
+                reenter()
+                time.sleep(0.05)
+            try:
+                return original_connect(self, mode=mode, attempts=per_boot, detecting=detecting,
+                                        warnings=(warnings and boot_try == 0))
+            except util.FatalError as error:
+                last_error = error
+        raise last_error
+
+    loader.ESPLoader.connect = connect
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--test-keyrst-boot", action="store_true")
     parser.add_argument("--esptool")
     parser.add_argument("--auto-key-rst", action="store_true")
-    parser.add_argument("--flasher-keyrst", choices=("query", "on", "off"),
+    parser.add_argument("--flasher-keyrst", choices=("query", "probe", "on", "off"),
                         help="Solo consulta/configura el flasher y termina; no ejecuta esptool.")
     parser.add_argument("--port")
     parser.add_argument("--oled-title", help="AFR2-20261108-08: título de la operación en la OLED del flasher.")
@@ -282,7 +351,24 @@ def main():
         original_open = port.open
 
         original_close = port.close
-        state = {"entered": False, "configured": False, "display": False}
+        state = {"entered": False, "configured": False, "display": False, "session_safe": False, "boot_test": False}
+
+        def enter_auto_boot():
+            if state["session_safe"]:
+                print("AFR2-AUTO: iniciando KEY/RST (reteniendo KEY) y captura boot en esta misma sesión COM.", file=sys.stderr, flush=True)
+                capture_programming_boot(port, hold_key=True)
+                print("AFR2-AUTO: boot_mode=1", file=sys.stderr, flush=True)
+                print("AFR2: boot UART confirmado; KEY mantenido hasta cerrar y RST suelto.", file=sys.stderr, flush=True)
+            elif state["boot_test"]:
+                print("AFR2-AUTO: iniciando KEY/RST y captura boot en esta misma sesión COM.", file=sys.stderr, flush=True)
+                capture_programming_boot(port, hold_key=False)
+                print("AFR2-AUTO: boot_mode=1", file=sys.stderr, flush=True)
+                print("AFR2: boot UART confirmado; KEY/RST sueltos. La ROM conserva modo programación hasta otro reset.", file=sys.stderr, flush=True)
+            else:
+                started = control(port, CMD_ENTER_BOOT, 3.0)
+                if started is None or started[0] != 0 or not started[1] or started[2] or not started[3]:
+                    raise RuntimeError("AFR2: el flasher no confirmó la secuencia KEY/RST automática.")
+                print("AFR2-AUTO: entry_confirmed; flasher anterior sin captura boot. KEY mantenido; falta respuesta ROM.", file=sys.stderr, flush=True)
 
         def delayed_open():
             try:
@@ -293,35 +379,31 @@ def main():
                 port.reset_input_buffer()
                 if not options.auto_key_rst and (options.oled_title or options.oled_image):
                     # AFR2-20261108-08: QUERY touches no pin; an older flasher without OLED is just skipped.
-                    found = control(port, CMD_QUERY, 1.5)
+                    found = query_flasher(port, options.startup_seconds, pulse_dtr_on_miss=False)
                     if found is not None and found[0] == 0 and found[5]:
                         state["display"] = True
                         send_labels(port, options)
                 if options.auto_key_rst:
                     # Identify the AFR2 service image before any control byte matters.
-                    found = control(port, CMD_QUERY, 1.5)
+                    found = query_flasher(port, options.startup_seconds, pulse_dtr_on_miss=True)
                     if found is None:
                         raise RuntimeError("AFR2: el ATmega no responde como flasher AFR2 con KEY/RST automáticos. "
                                            "No se envió ninguna orden de arranque. Cargá el flasher actual o usá el modo manual.")
                     print("AFR2-KEYRST: flasher AFR2 identificado; %s" % describe(found), file=sys.stderr, flush=True)
                     if found[0] != 0:
                         raise RuntimeError("AFR2: el flasher rechazó la identificación; no se acciona KEY/RST.")
+                    if found[3]:
+                        configure(port, False)
+                    state["boot_test"] = bool(found[4])
+                    state["session_safe"] = bool(found[6])
                     if found[5]:
                         state["display"] = True
                         send_labels(port, options)
                     state["configured"] = True
                     configure(port, True)
                     state["entered"] = True  # cleanup even if entry reply is lost
-                    if found[4]:
-                        print("AFR2-AUTO: iniciando KEY/RST y captura boot en esta misma sesión COM.", file=sys.stderr, flush=True)
-                        capture_programming_boot(port)
-                        print("AFR2-AUTO: boot_mode=1", file=sys.stderr, flush=True)
-                        print("AFR2: boot UART confirmado; KEY/RST sueltos. La ROM conserva modo programación hasta otro reset.", file=sys.stderr, flush=True)
-                    else:
-                        started = control(port, CMD_ENTER_BOOT, 3.0)
-                        if started is None or started[0] != 0 or not started[1] or started[2] or not started[3]:
-                            raise RuntimeError("AFR2: el flasher no confirmó la secuencia KEY/RST automática.")
-                        print("AFR2-AUTO: entry_confirmed; flasher anterior sin captura boot. KEY mantenido; falta respuesta ROM.", file=sys.stderr, flush=True)
+                    enter_auto_boot()
+                    port._afr2_reenter_boot = enter_auto_boot
                 print("AFR2: espera terminada; esptool usará este mismo puerto abierto.", file=sys.stderr, flush=True)
             except BaseException:
                 close_bridge()
@@ -341,20 +423,29 @@ def main():
                 pass
 
         def close_bridge():
-            # AFR2-20261106-18. One owner/COM; cleanup is confirmed, never inferred.
+            # AFR2-20261106-18 / AFR2-20261116-02. One owner/COM; cleanup is confirmed, never inferred.
             report_result()
             if port.is_open and options.auto_key_rst and state["configured"]:
                 configured, entered = state["configured"], state["entered"]
+                session_safe = state["session_safe"]
                 state["configured"] = state["entered"] = False
                 try:
-                    if entered:
-                        reply = control(port, CMD_RUN, 2.0)
-                        if reply is None or reply[0] != 0 or reply[1] or reply[2]:
-                            print("AFR2: reinicio normal o pines sueltos SIN confirmar; no se afirma arranque desde flash.", file=sys.stderr, flush=True)
+                    if entered and session_safe:
+                        reply = control(port, CMD_END_AUTO, 2.0)
+                        if reply is None or reply[0] != 0 or reply[1] or reply[2] or reply[3]:
+                            print("AFR2: cierre atómico KEY/RST SIN confirmar; intentando desactivar modo automático.", file=sys.stderr, flush=True)
+                            configure(port, False)
                         else:
-                            print("AFR2: KEY/RST sueltos y pulso RST normal confirmados por el flasher; firmware de aplicación no comprobado.", file=sys.stderr, flush=True)
-                    if configured:
-                        configure(port, False)
+                            print("AFR2: KEY/RST sueltos, modo automático desactivado y pulso RST normal confirmados por el flasher; firmware de aplicación no comprobado.", file=sys.stderr, flush=True)
+                    else:
+                        if entered:
+                            reply = control(port, CMD_RUN, 2.0)
+                            if reply is None or reply[0] != 0 or reply[1] or reply[2]:
+                                print("AFR2: reinicio normal o pines sueltos SIN confirmar; no se afirma arranque desde flash.", file=sys.stderr, flush=True)
+                            else:
+                                print("AFR2: KEY/RST sueltos y pulso RST normal confirmados por el flasher; firmware de aplicación no comprobado.", file=sys.stderr, flush=True)
+                        if configured:
+                            configure(port, False)
                 except Exception as error:
                     print("AFR2: limpieza KEY/RST sin confirmar (%s). Revisá el estado del flasher." % error, file=sys.stderr, flush=True)
                 finally:
@@ -376,6 +467,8 @@ def main():
     entry = os.path.abspath(options.esptool)
     sys.path.insert(0, os.path.dirname(entry))
     retry_unsupported_sync()
+    if options.auto_key_rst:
+        install_auto_reboot_connect_hook()
     sys.argv = [entry] + command
     try:
         runpy.run_path(entry, run_name="__main__")

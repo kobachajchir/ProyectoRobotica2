@@ -47,11 +47,12 @@ export function renderDashboard(o:Afr2OledBuffer,u:FirmwareUiState,s:FirmwareSna
   const ssid=(connected?(s.networkSta?s.networkSsid:s.networkApSsid):'') || (connected?s.networkSta?'Wi-Fi':'AP':s.networkValid?'Sin Wi-Fi':'Red: --');
   const ip=(connected?(s.networkSta?s.networkIp:s.networkApIp):'') || 'IP: --';
   const ss=offset(ssid,age(u.clockMs,u.scrollStartedMs)),is=offset(ip,age(u.clockMs,u.scrollStartedMs));
-  const key=JSON.stringify([s.networkMode,s.networkValid,s.networkSta,s.networkAp,s.batteryValid,s.batteryMv,ssid,ip]);
+  const key=JSON.stringify([s.networkMode,s.networkValid,s.networkSta,s.networkAp,s.syncOnline,s.batteryValid,s.batteryMv,ssid,ip]);
   const header=full || key!==d.header;
   if(full)o.clear();
   if(header){
     o.fillRect(0,0,128,26,'black');icon(o,!s.networkValid?S.AFR2_ICON_WIFI:s.networkMode===2?S.AFR2_ICON_AP:!connected?S.AFR2_ICON_WIFI_OFF:s.networkSta?S.AFR2_ICON_WIFI:S.AFR2_ICON_AP,0,3,18);
+    if(s.syncOnline)icon(o,S.AFR2_ICON_LINK,93,1,12);
     const mv=s.batteryMv??0,battery=s.batteryValid?S.AFR2_ICON_BATTERY_EMPTY+(mv===0?0:mv<6000?1:mv<7000?2:mv<8000?3:4):S.AFR2_ICON_BATTERY_UNKNOWN;
     const voltage=s.batteryValid?`${Math.trunc(mv/1000)}.${Math.trunc(mv%1000/100)}V`:'--V';
     icon(o,battery,110,0,16);o.drawText(128-voltage.length*7,15,voltage);o.fillRect(0,0,128,26,'invert');changed=true;

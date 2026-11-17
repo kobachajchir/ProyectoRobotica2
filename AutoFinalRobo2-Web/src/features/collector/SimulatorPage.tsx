@@ -6,6 +6,7 @@ import { UiIcon } from '../../components/ui/UiIcon';
 import { CollectorProvider, type SimulationKind } from './CollectorContext';
 import { SimulationWorkspace } from './CollectorPage';
 import { MODEL_PAGES } from '../models/modelCatalog';
+import { SyncSimulatorButton } from '../sync/CloudSyncController';
 
 const SIMULATORS: readonly SegmentedItem<SimulationKind>[] = [
   { value: 'auto', label: 'Auto', icon: 'control' },
@@ -27,8 +28,8 @@ export function SimulatorPage() {
   if (!isKind(tipo)) return <Navigate to="/simulacion/conjunta" replace />;
   const model = MODEL_PAGES[MODEL_FOR[tipo]];
   return <div className="afr2-route-view afr2-page-stack">
-    <PageHeader eyebrow="Modelos y simulación" title="Simulador" description="Simulación local con datos ficticios: no mueve el robot real."
-      actions={<Link className="afr2-developer-back" to={`/modelos/${model.id}`}><UiIcon name="cube" />Ver modelo 3D</Link>} />
+    <PageHeader eyebrow="Modelos y simulación" title="Simulador" description="Simulación local con datos ficticios: no mueve el robot real. Usá «Sincronizar a web» para enviar este estado explícitamente."
+      actions={<div className="afr2-action-row"><SyncSimulatorButton simulator="3d" data={{ kind: tipo, modelId: model.id }} /><Link className="afr2-developer-back" to={`/modelos/${model.id}`}><UiIcon name="cube" />Ver modelo 3D</Link></div>} />
     {/* AFR2-20261113-05: el selector de simulador va debajo del encabezado, igual que las secciones de las demás páginas. */}
     <div className="afr2-workspace">
       <SegmentedControl className="afr2-task-nav" variant="tabs" idPrefix={uid} ariaLabel="Elegir simulador" items={SIMULATORS} value={tipo}

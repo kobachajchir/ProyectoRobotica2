@@ -18,11 +18,26 @@ uint8_t Afr2App_UiPrivate(const Afr2App *a) {
 }
 uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t *out,uint8_t *length) {
     Afr2Wifi *w=&a->product->wifi;
+    /* AFR2-20261117-05: codigo de vinculacion de la copia web (Firebase). Se muestra como aviso informativo
+     * generico (titulo + texto, mismo renderer y copia Web) durante ttl_s; la validez real (5 min) la controla
+     * Firebase. Ocupado (teclado o cola llena) => UNAVAILABLE y el ESP reintenta. */
+    if(cmd==AFR2_EXT_SYNC_PAIR) {
+        if(n!=AFR2_SYNC_PAIR_BYTES || !afr2_get_u32(d) || d[4]<1 || d[4]>60 || d[8]!='-')return AFR2_RESULT_BAD_REQUEST;
+        for(uint8_t i=0;i<AFR2_SYNC_PAIR_CODE_LEN;i++) {
+            uint8_t c=d[5+i];
+            if(i!=3 && !((c>='0' && c<='9') || (c>='A' && c<='Z')))return AFR2_RESULT_BAD_REQUEST;
+        }
+        if(!w->display_ready || afr2_get_u32(d)!=w->display_boot)return AFR2_RESULT_UNAVAILABLE;
+        if(a->ui->keyboard || a->ui->notices>=3)return AFR2_RESULT_UNAVAILABLE;
+        char code[AFR2_SYNC_PAIR_CODE_LEN+1];memcpy(code,d+5,AFR2_SYNC_PAIR_CODE_LEN);code[AFR2_SYNC_PAIR_CODE_LEN]=0;
+        Afr2Ui_NotifyFlashTitle(a->ui,0,PSTR("Codigo web"),code,(uint16_t)d[4]*1000u);
+        a->snapshot_active=0;*length=0;return AFR2_RESULT_OK;
+    }
     if(cmd==AFR2_EXT_NETWORK_STATE) {
         if(n<8 || !afr2_get_u32(d) || !afr2_get_u16(d+4) || d[6]>=AFR2_NETWORK_PAGES || d[7]>32 || n!=8+d[7])return AFR2_RESULT_BAD_REQUEST;
         uint32_t boot=afr2_get_u32(d);uint16_t revision=afr2_get_u16(d+4);uint8_t page=d[6],size=d[7];const uint8_t *text=d+8;
         if(page==0) {
-            if(size!=15 || text[0]>3 || text[1]>1 || text[2]>1 || text[4]>1)return AFR2_RESULT_BAD_REQUEST;
+            if(size!=15 || text[0]>3 || text[1]>1 || text[2]>1 || text[4]>3)return AFR2_RESULT_BAD_REQUEST;
             if((text[1] && (!(text[0]&1u) || !(text[7]|text[8]|text[9]|text[10]))) ||
                (text[2] && (!(text[0]&2u) || !(text[11]|text[12]|text[13]|text[14]))) || (!text[2] && text[3]))return AFR2_RESULT_BAD_REQUEST;
             if(boot!=w->display_boot || revision!=w->display_revision) {
@@ -31,9 +46,10 @@ uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n
                 if(boot!=w->display_boot){if(w->display_boot){w->pending=w->draft_ready=w->network_count=w->scan_total=w->mode_draft=0;w->policy_valid=0;w->scan_id=0;memset(w->password,0,sizeof(w->password));w->credentials_visible=0;Afr2Ui_NetworkRestart(a->ui);}w->display_event=0;}
             }
             w->display_boot=boot;w->display_revision=revision;w->display_page=0;
-            w->mode=text[0];w->sta_connected=text[1];w->ap_active=text[2];w->ap_clients=text[3];w->web_ready=text[4];
+            w->mode=text[0];w->sta_connected=text[1];w->ap_active=text[2];w->ap_clients=text[3];
+            w->web_ready=text[4]&1u;w->sync_online=(text[4]>>1u)&1u;
             w->rssi=(int16_t)afr2_get_u16(text+5);
-            Afr2Debug_NetState(text[0],text[1],text[2],text[3],text[4],boot); /* logs only changes */
+            Afr2Debug_NetState(text[0],text[1],text[2],text[3],w->web_ready,boot); /* logs only changes */
             snprintf_P(w->ip,sizeof(w->ip),PSTR("%u.%u.%u.%u"),text[7],text[8],text[9],text[10]);
             snprintf_P(w->ap_ip,sizeof(w->ap_ip),PSTR("%u.%u.%u.%u"),text[11],text[12],text[13],text[14]);
         } else {
@@ -89,12 +105,14 @@ uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n
             }
             /* AFR2-20261108-06: motivo informado por el ESP (subject 1..3). */
             else if(kind==AFR2_NET_STA_NOT_FOUND)strcpy_P(detail,d[9]==2?PSTR("Clave incorrecta"):d[9]==3?PSTR("No se pudo unir"):PSTR("Red no visible"));
+            else if(kind==AFR2_NET_SYNC_FAIL_5)strcpy_P(detail,PSTR("5 intentos fallos"));
             detail[17]=0;
-            Afr2Ui_NotifyFlashTitle(a->ui,AFR2_NOTICE_NETWORK+kind,PSTR("Conectividad"),detail,kind==AFR2_NET_AP_READY?20000:kind==AFR2_NET_STA_NOT_FOUND?3000:4000);
+            Afr2Ui_NotifyFlashTitle(a->ui,AFR2_NOTICE_NETWORK+kind,PSTR("Conectividad"),detail,kind==AFR2_NET_AP_READY?20000:(kind==AFR2_NET_STA_NOT_FOUND || kind==AFR2_NET_SYNC_FAIL_5)?3000:4000);
             a->snapshot_active=0;
         }
         /* AFR2-20261108-06: despues del aviso "Wi-Fi no encontrado" la app abre el selector Iniciar AP / Seguir esperando. */
         if(kind==AFR2_NET_STA_NOT_FOUND && w->mode==3 && !in_wifi_flow && (!w->policy_valid || w->ask_fallback) && !w->sta_connected && !w->ap_active && !a->wifi_ask)a->wifi_ask=1;
+        if(kind==AFR2_NET_SYNC_FAIL_5 && !in_wifi_flow && !a->sync_ask)a->sync_ask=1;
         if(kind==AFR2_NET_BOOT){
             if(!duplicate_boot){w->pending=w->draft_ready=w->network_count=w->scan_total=w->mode_draft=0;w->policy_valid=0;w->scan_id=0;memset(w->password,0,sizeof(w->password));w->credentials_visible=0;Afr2Ui_NetworkRestart(a->ui);}
             a->esp_boot_notified=w->display_boot;

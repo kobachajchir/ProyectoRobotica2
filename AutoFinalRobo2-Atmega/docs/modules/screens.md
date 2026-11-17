@@ -1,3 +1,5 @@
+> **AFR2-20261117-04 / 1.34.0:** Modo de robot sincroniza Estado y la tarjeta rápida Modo: Reposo, Manual, Seguidor de linea, Ir y Volver contextual. Línea e Ir abren sus controles existentes; navegación sin inicio automático. ATmega/Web en fuente; sin generadores, tests, compilación, validaciones ni cargas.
+
 > **AFR2-20261024-08:** IP/AP y avisos con iconos F4, scroll seleccionado y reinicio local por Sistema → Reinicio, compilados. [EX01v5](../../../AutoFinalRobo2-Contracts/contracts/EX01_NETWORK_UI_5.md) · [Estado real](../../../AutoFinalRobo2-Contracts/docs/ESTADO_IMPLEMENTACION.md). APIs nuevas FillRect/TextWindow, iconos y snapshot de red separados del transporte/I2C. Sin prueba de placa ni flasheo; estados inferiores históricos.
 
 # Wrappers, menús y pantallas

@@ -112,3 +112,28 @@ void Storage::health(JsonObject out) const {
     out["buildProfile"]=webReady_ && profile_[0]?profile_:nullptr;
     out["indexSha256"]=webReady_ && indexSha256_[0]?indexSha256_:nullptr;
 }
+/* AFR2-20261117-05: clave de escritura de la copia web. /config no se sirve por HTTP. Escritura temporal y
+ * rename atomico, como wifi.json; una clave vacia borra el archivo. Nunca se registra en logs. */
+bool Storage::loadSyncKey(char *out,size_t size) {
+    if(!size)return false;
+    out[0]=0;
+    if(!mounted_)return false;
+    File f=LittleFS.open("/config/sync.key","r");
+    if(!f)return true;
+    size_t n=f.size();
+    if(!n || n>=size){f.close();return false;}
+    size_t got=f.read((uint8_t *)out,n);f.close();
+    out[got<size?got:size-1]=0;
+    return got==n;
+}
+bool Storage::saveSyncKey(const char *key) {
+    if(!mounted_)return false;
+    if(!key[0]){LittleFS.remove("/config/sync.key");return !LittleFS.exists("/config/sync.key");}
+    if(!LittleFS.mkdir("/config") && !LittleFS.exists("/config"))return false;
+    File f=LittleFS.open("/config/sync.tmp","w");
+    if(!f)return false;
+    size_t n=strlen(key),written=f.write((const uint8_t *)key,n);
+    f.flush();f.close();
+    if(written!=n || !LittleFS.rename("/config/sync.tmp","/config/sync.key")){LittleFS.remove("/config/sync.tmp");return false;}
+    return true;
+}

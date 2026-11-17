@@ -1,3 +1,61 @@
+## AFR2-20261117-05 — 17/11/2026
+
+Copia de la sincronización en Firebase, con vinculación por código en el OLED.
+
+Recursos creados en el proyecto nuevo `autofinalrobo2`:
+
+- Cloud Firestore en `southamerica-east1`, plan Spark.
+- Auth anónimo.
+- App web.
+- Reglas por rol, publicadas.
+
+Funcionamiento, con un solo auto:
+
+- **Escritor:** el navegador conectado al auto. Demuestra la clave de escritura que guarda el ESP en LittleFS (`sync.key.get/set`) y escribe `car/state`. Envía un snapshot o un delta por capa con `updateMask`, sin SSID y con los simuladores aparte. Sin cambios, como mucho un latido por minuto.
+- **Lector:** «Vincular una compu» crea un código `K7M-4QX` de 5 minutos y un solo uso. Aparece en el OLED con el CMD nuevo **`0x57 SYNC_PAIR`** (ESP → ATmega, sensible, 12 bytes, aviso genérico de hasta 60 s) y en el modal. En la compu, `#/remoto` canjea el código en un commit atómico: queda solo para leer, con la opción «Desvincular». El auto lista las compus vinculadas y puede quitarlas.
+
+Contrato actualizado: `afr2_network_wire.h`, `wire_catalog.json`, `commands.json` (con `sync.key.get`, `sync.key.set` y `sync.pair.show`), Protocol Studio y la lista de comandos sensibles del TAP.
+
+Para que el paquete entre en el ESP, las ilustraciones de Inicio se incrustan en el bundle (eran 26 activos y el límite es 24) y el ícono de iOS pasa a 256 colores (de 29,5 KB a 8,2 KB). El paquete queda en 2 859 008 de 2 867 200 B.
+
+Versión: 1.35.0 (subversión). [Ficha](changes/2026-11-17-05-firebase-sync-acceso-web.md).
+
+Estado: compilado el 17/11/2026 a pedido del usuario.
+
+- ATmega: exit 0; flash 169 064 B; SRAM 7 202 B.
+- ESP: firmware al 45,9 % de flash, más LittleFS.
+- Web: `tsc`, perfiles esp y completo; publicada en https://autofinalrobo2.web.app
+
+Sin cargar ni probar con el auto.
+
+## AFR2-20261117-04 — 17/11/2026
+
+Inicio: ajuste aislado de **Ir**, con imagen interior `object-fit: cover`, velo oscuro, crossfade reversible de 400 ms, zoom 1.04→1 y borde azul/violeta superpuesto de 2 px. Conserva posiciones, dimensiones, icono y navegación; las tarjetas vecinas no reciben estados por su hover. Foco por teclado, hover limitado a puntero fino y movimiento reducido sin zoom. La referencia adjunta contiene tarjetas y textos; se mantiene `quick-goto.svg` hasta disponer de la imagen limpia del mapa. Versión: 1.33.2 (subversión mínima). Web en fuente; ATmega/ESP solo versión. [Ficha](changes/2026-11-17-04-inicio-ir-hover.md). Sin tests, compilaciones, validaciones, navegador ni cargas.
+
+## AFR2-20261117-04 — 17/11/2026
+
+OLED: «Modos y misiones» pasa a «Modo de robot». El acceso desde Estado (`0x03000A`) y la tarjeta rápida Modo (`0x03003D`) comparten las cuatro opciones Reposo, Manual, Seguidor de linea e Ir, más Volver contextual. Reposo/Manual solicitan el modo existente; Seguidor de linea e Ir abren sus controles actuales para configurar e iniciar. Copia Web vinculada en fuente y huellas de revisión actualizadas; no se duplica la tarjeta Modo. Versión: 1.34.0 (subversión). ATmega/Web en fuente; ESP solo versión. [Ficha](changes/2026-11-17-04-oled-modo-de-robot.md). Sin generadores, tests, compilaciones, validaciones ni cargas.
+
+## AFR2-20261117-03 — 17/11/2026
+
+Corregido TS2339 en `CloudSyncController.tsx`: al existir `robotState.pose`, la copia de sincronización usa `valid: true`, porque `parseRobotState` solo entrega una `RobotPose` cuando el dato recibido tiene `valid === true` y los campos admitidos; en caso contrario conserva `pose: null`. Se elimina la lectura de `RobotPose.valid`, propiedad ausente del modelo interno, sin cambiar su tipo ni el formato de sincronización. Versión: 1.33.1 (subversión mínima). Web en fuente; ATmega/ESP solo versión. [Ficha](changes/2026-11-17-03-cloud-sync-robot-pose.md). Sin tests, compilaciones, validaciones ni cargas por el agente.
+
+## AFR2-20261117-02 — 17/11/2026
+
+Corregido el registro de revisión OLED que bloqueaba `npm run dev` y `build:esp` con `AVR renderer changed`: actualizadas las huellas de pantallas, avisos de red, catálogo, dashboard y `afr2_screens.h` después de leer sus adaptaciones Web existentes. El header agrega `sync_online`, ya representado por `FirmwareSnapshot.syncOnline`; se incluyó tras el segundo error aportado desde el Loader. Se mantiene la protección estricta del generador. Versión: 1.33.0 conservada (solo metadatos de revisión, sin código cargable nuevo). ATmega/ESP sin cambios; sin ejecutar generadores, tests, compilaciones, validaciones ni flasheos. [Ficha](changes/2026-11-17-02-oled-reviewed-source-hashes.md).
+
+## AFR2-20261117-01 — 17/11/2026
+
+Sección nueva **Seguidor de línea** (`#/seguidor-linea`): escenario grande en vista cenital del modelo 3D, como el control táctil, con la cinta fija en el centro con el ancho configurado (5–60 mm, compartido con Sensores → Línea IR) y en escala real; el auto se desplaza de lado a lado y gira sobre la cinta según IR1…IR5 (interpolado de forma suave), el piso corre mientras sigue la línea, se dibuja el cruce transversal y, sin auto, una vista previa local zigzaguea sobre la cinta sin enviar comandos. Debajo, el mismo panel de marcha y ajuste; Programas → Seguidor de línea usa la nueva vista y enlaza a la sección. Inicio: tres accesos rápidos bajo el banner (**Ir** → GOTO, **Controlar** → Conducir, **Seguidor de línea**) con el estilo de las tarjetas, que al pasar el cursor o enfocar muestran de fondo una imagen de la interfaz con transición animada (ilustraciones SVG en `Web/public/home/`, reemplazables por capturas). Sincronización online: las capas sucias se detectan por hash FNV-1a de 32 bits sobre JSON canónico (`computeLayerHashes`, `CLOUD_SYNC_AUTO_LAYERS`); solo se guardan los hashes del último envío confirmado. Intervalo por defecto sin cambio (5000 ms). Barra superior: pill **Sync web** con el mismo material que Red y Batería, que abre el modal «Sincronización web» (activar, intervalo 5–10 s, endpoint, estado y envío manual); sin endpoint ni auto muestra «Sin destino» en vez de «Online» y no cuenta fallas. En el seguidor, el piso tiene una trama que corre en sentido contrario al avance. Versión: 1.33.0 (subversión). Web en fuente; ATmega y ESP solo versión, sin CMD nuevo. [Ficha](changes/2026-11-17-01-seccion-seguidor-linea-accesos-inicio.md). Sin compilar, probar ni cargar.
+
+## AFR2-20261116-02 — 16/11/2026
+
+Corrección de sincronización ESP en el puente ATmega y flujo previo a escritura del Loader: `esp_uart_bridge.c` mantiene `PE1` (`TX0`) y `PD3` (`TX1`/D18→E_RX) como salida en alto incluso con `UCSR1B = 0` o desborde, realiza los cambios de baud en `capture_boot` bajo `cli/sei` para eliminar el glitch a baja/alta impedancia cuando el ESP8266 ya está escuchando, agrupa `reply()` de forma atómica, reinicia el parser ante error UART0 e incorpora `CMD_BOOT_HOLD` (`0x15`, retiene `KEY` en sesiones reales bajo watchdog Timer1) y `CMD_END_AUTO` (`0x22`, suelta pines, pasa `auto=0` y envía `RSP` antes del pulso `RST`), anunciados por `bit5`. En el Loader: `esp_bridge_esptool.py` usa `CMD_BOOT_HOLD`/`CMD_END_AUTO` con respaldo para flashers previos, recupera puertos trabados mediante pulso `DTR` al fallar `CMD_QUERY`, normaliza `auto=sí` residual, reintenta hasta 2 secuencias limpias `KEY/RST` en `ESPLoader.connect` si la ROM no sincroniza y suma `--flasher-keyrst probe`; `Operations.FlashEsp` y `FlashAtPackage` invocan `PrepareEspBootForWrite` tras confirmar escritura en modos manuales/`usb-ttl`; `Operations.ProbeMega` (`Detectar ATmega`) detecta si el ATmega ejecuta el flasher mostrando condicionalmente `"Flasher encontrado"` / `"Flasher no encontrado"` en *Operación*; y se agrega autodetección opcional de puerto COM al iniciar (`AutoDetectComOnStartup`, inactiva por defecto, casilla en *Configuración -> General* y leyenda condicional amarilla/clicable junto a *Puerto* que sondea cada COM con `CMD_QUERY` y `#AFR2 TAP ?` sin DTR/RTS). Sin cambio de versión de producto (`1.32.0`, [VERSIONADO.md](docs/VERSIONADO.md)); Loader `2.4.1` (parche). [Ficha](changes/2026-11-16-02-loader-esp-bridge-boot-fix.md). En fuente sin compilar esta adición, sin probar ni abrir puertos.
+
+## AFR2-20261116-01 — 16/11/2026
+
+QR en el modal de Configuración (URL online o IP actual del auto + QR Wi-Fi); SoftAP limitado a 4 clientes Wi-Fi y protección de cliente Web único que redirige cualquier otra petición a `/busy` (embebida `PROGMEM` y `#/busy` en Web) mostrando el estado de ocupación hasta que se libera; icono de estado online/sincronizando en barra superior Web y cabecera del dashboard OLED (`AFR2_ICON_LINK`), con notificación persistente cada 5 intentos fallidos (`AFR2_NET_SYNC_FAIL_5`, pantalla `0x04000D` / selector `0x03005B` y modal Web) con «Cerrar» como opción por defecto y «Desactivar sincronización» (`AFR2_WIFI_OP_SYNC_DISABLE`); aplicación online con modelo JSON clave-valor por capas y envío parcial (deltas) cada 5–10 s, excluyendo los simuladores salvo al pulsar explícitamente «Sincronizar a web»; panel dedicado de Seguidor de línea en Programas y recuperación de pérdida breve (250 ms) + parada en cruce de 5 sensores (150 ms) en ATmega; compensación por software de motor más lento de fábrica (`motor_trim[4]` FL/FR/RL/RR, `0.500..1.500`, EEPROM v14) con normalización anti-saturación en lazo abierto y cerrado, editable en OLED y Web. Versión: 1.32.0 (subversión). ATmega, ESP y Web en fuente. [Ficha](changes/2026-11-16-01-qr-busy-cloud-sync-line-motor-trim.md). Sin compilar, probar ni cargar.
+
 ## AFR2-20261110-19 — 10/11/2026
 
 Informe D2: reescritura completa con estructura de trabajo integrador, aplicación de recolección, control real del firmware, protocolo ROBO2, verificación numérica propia de los modelos (coincidencia a precisión de máquina en 20 000 configuraciones), simulación de la ley GOTO y 116 citas enlazadas a las hojas del libro de planos. Corrige en D1 la ausencia declarada de un solucionador numérico general (existe en la Web). PDF 30 páginas y DOCX editable en Revision/R02_20261110. Documentación: sin cambio de versión (1.23.2); atmega/esp/web, CAD y Loader sin cambios. [Ficha](changes/2026-11-10-19-informe-d2.md). Sin tests, compilaciones, validaciones ni cargas.

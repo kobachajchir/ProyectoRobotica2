@@ -2,6 +2,15 @@
   "schema": "afr2-connections-1",
   "connections": [
     {
+      "id": "shared:flow/oled-robot-mode-selector",
+      "path": ["shared:screen/030004", "shared:screen/03000A", "shared:screen/03000B", "shared:screen/03000D"],
+      "alternate_entry": ["shared:screen/010003", "shared:screen/03003d"],
+      "options": ["Reposo", "Manual", "Seguidor de linea", "Ir", "Volver"],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "changeId": "AFR2-20261117-04",
+      "note": "Same AVR robotModes table and Web resolver; contextual return; line/GOTO open controls without starting motion."
+    },
+    {
       "id": "shared:flow/web-local-ui-simulator",
       "path": [
         "web:help-oled",

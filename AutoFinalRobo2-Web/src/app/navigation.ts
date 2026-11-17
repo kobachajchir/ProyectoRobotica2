@@ -46,7 +46,8 @@ export const MORE_DESTINATIONS = DESTINATIONS.filter(item => !BOTTOM_NAV.include
 /** Rutas que pertenecen a un destino además de su prefijo propio (el simulador es parte de Modelos). */
 export function belongsTo(to: string, pathname: string) {
   if (to === '/') return pathname === '/';
-  return pathname === to || pathname.startsWith(`${to}/`) || (to === '/modelos' && pathname.startsWith('/simulacion'));
+  return pathname === to || pathname.startsWith(`${to}/`) || (to === '/modelos' && pathname.startsWith('/simulacion'))
+    || (to === '/programas' && pathname.startsWith('/seguidor-linea'));
 }
 
 export function destination(to: string): NavDestination | undefined {
@@ -55,6 +56,9 @@ export function destination(to: string): NavDestination | undefined {
 
 /** Título de la barra superior según la ruta actual. */
 export function titleForPath(pathname: string): string {
+  if (pathname.startsWith('/busy')) return 'Auto ocupado';
+  if (pathname.startsWith('/seguidor-linea')) return 'Seguidor de línea';
+  if (pathname.startsWith('/remoto')) return 'Vista remota';
   if (pathname.startsWith('/desarrollador/protocol-studio')) return 'Protocol Studio';
   if (pathname.startsWith('/desarrollador')) return 'Desarrollador';
   if (pathname.startsWith('/simulacion')) return 'Modelos y simulación';

@@ -54,7 +54,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
     if(!p->extension_ready)return AFR2_RESULT_UNAVAILABLE;
     if(a->reboot_pending && cmd!=AFR2_EXT_INFO)return AFR2_RESULT_UNAVAILABLE;
     if(cmd>=AFR2_EXT_US_GET && cmd<=AFR2_EXT_MOTION_HALT)return Afr2App_SensorCommand(a,cmd,d,n,out,length);
-    if(cmd==AFR2_EXT_NETWORK_STATE || cmd==AFR2_EXT_NETWORK_EVENT)return Afr2App_NetworkCommand(a,cmd,d,n,out,length);
+    if(cmd==AFR2_EXT_NETWORK_STATE || cmd==AFR2_EXT_NETWORK_EVENT || cmd==AFR2_EXT_SYNC_PAIR)return Afr2App_NetworkCommand(a,cmd,d,n,out,length);
     if(cmd>=AFR2_EXT_SEQ_BEGIN && cmd<=AFR2_EXT_SEQ_STATUS) {
         if(cmd==AFR2_EXT_SEQ_START && (a->ui->touch_active || a->ui->keyboard || a->reboot_pending))return AFR2_RESULT_UNAVAILABLE;
         return Afr2Sequence_Command(p,cmd,d,n,out,length);
@@ -282,7 +282,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
     case AFR2_EXT_UI_ACTION: {
         /* Hall wizard and mandatory save choice are local actions. A remote
          * synthetic click must not invoke callbacks hidden behind a view. */
-        if(a->ui->node==AFR2_N_ENCODER_TEST || a->ui->node==AFR2_N_ODOM_ASK || a->ui->node==AFR2_N_EXAM_RUN || a->ui->node==AFR2_N_HALL_PICK || a->ui->node==AFR2_N_HALL_COUNT || a->ui->node==AFR2_N_SERVO_ANGLE ||
+        if(a->ui->node==AFR2_N_ENCODER_TEST || a->ui->node==AFR2_N_ODOM_ASK || a->ui->node==AFR2_N_EXAM_RUN || a->ui->node==AFR2_N_HALL_PICK || a->ui->node==AFR2_N_HALL_COUNT || a->ui->node==AFR2_N_SERVO_ANGLE || a->ui->node==AFR2_N_SYNC_ASK ||
            (a->ui->node==AFR2_N_SAVE_CONFIRM && !(a->ui->confirm_save==AFR2_A_SAVE && a->ui->confirm_discard==AFR2_A_RADAR_DISCARD)))return AFR2_RESULT_UNAVAILABLE;
         if(n!=6 || d[4]>3 || (d[4]==0 && (int8_t)d[5]!=1 && (int8_t)d[5]!=-1) ||
            (d[4]!=0 && d[5]!=0))return AFR2_RESULT_BAD_REQUEST;
@@ -389,7 +389,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
                 if((w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE) && w->state>=4)w->network_count=0;
                 /* AFR2-20261108-06: la respuesta al selector sin Wi-Fi no agrega aviso propio si salio bien: Iniciar AP
                  * muestra el aviso "Red AP creada" del ESP y Seguir esperando ya aviso al elegir. */
-                if((w->op==AFR2_WIFI_AP_START || w->op==AFR2_WIFI_WAIT || w->op==AFR2_WIFI_AP_STOP) && w->state==3){}
+                if((w->op==AFR2_WIFI_AP_START || w->op==AFR2_WIFI_WAIT || w->op==AFR2_WIFI_AP_STOP || w->op==AFR2_WIFI_SYNC_DISABLE) && w->state==3){}
                 else if(w->state==6){
                     Afr2Ui_NotifyFlash(a->ui,1,PSTR("No hay clientes"),PSTR("Conectados"),3000);
                 }else {

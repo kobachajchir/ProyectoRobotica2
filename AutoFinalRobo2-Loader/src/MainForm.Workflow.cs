@@ -176,6 +176,14 @@ namespace AFR2Loader
             else if (code == "wiring_confirmed") ShowStep("wiring", CheckState.Checked, notice.Message);
             else if (code == "checking_flasher") { activeStep = "flasher_check"; ShowStep("flasher_check", CheckState.Indeterminate, notice.Message); }
             else if (code == "flasher_checked") { ShowStep("flasher_check", CheckState.Checked, notice.Message); activeStep = null; }
+            else if (code == "flasher_found" || code == "flasher_absent")
+            {
+                ShowStep("flasher_check", CheckState.Checked, notice.Message);
+                workflowChecks["flasher_check"].Text = code == "flasher_found" ? "Flasher encontrado" : "Flasher no encontrado";
+                workflowChecks["flasher_check"].ForeColor = code == "flasher_found" ? LoaderAppearance.SuccessInk : LoaderAppearance.WarningInk;
+                activeStep = null;
+                FitOperationRows();
+            }
             else if (code == "backup_reading") { activeStep = "backup"; ShowStep("backup", CheckState.Indeterminate, notice.Message); }
             else if (code == "backup_completed") { ShowStep("backup", CheckState.Checked, notice.Message); activeStep = null; }
             else if (code == "reviewing_package") { activeStep = "package"; ShowStep("package", CheckState.Indeterminate, notice.Message); }

@@ -21,6 +21,13 @@ void Broker::networkServerReady() {
     if(!++networkRevision_)++networkRevision_;
 }
 bool Broker::finishNetwork(const BrokerRequest &req,const MegaResult &r) {
+    /* AFR2-20261117-05: codigo de vinculacion. Timeout o UNAVAILABLE (teclado/cola llena) => se reintenta hasta
+     * pairUntil_; OK o rechazo (ATmega anterior sin 0x57) => se descarta, sin reintentos infinitos. */
+    if(r.command==AFR2_EXT_SYNC_PAIR) {
+        bool retry=r.timeout || r.transportFault || r.length<9 || r.payload[8]==AFR2_RESULT_UNAVAILABLE;
+        if(!retry && !memcmp(req.body+5,pairCode_,7))pairPending_=false;
+        networkTxAt_=millis();return true;
+    }
     if(r.command!=AFR2_EXT_NETWORK_STATE && r.command!=AFR2_EXT_NETWORK_EVENT)return false;
     if(r.timeout || r.transportFault || r.length<9 || r.payload[8]!=AFR2_RESULT_OK) {
         if(r.command==AFR2_EXT_NETWORK_STATE){networkPage_=0;networkPending_=true;}
@@ -68,11 +75,19 @@ void Broker::tickNetwork(uint32_t now) {
     if(!networkPending_ && (uint32_t)(now-networkSyncAt_)>=3000u){networkPending_=true;networkPage_=0;}
     uint8_t body[40]={},length=0,command;
     afr2_put_u32(body,mega_.ownBootId());
-    if(networkPending_) {
+    if(pairPending_ && (int32_t)(now-pairUntil_)>=0)pairPending_=false;
+    if(pairPending_ && (!networkPending_ || networkPage_==0)) {
+        // AFR2-20261117-05: el codigo va antes que el estado periodico, sin cortar una transferencia de paginas.
+        command=AFR2_EXT_SYNC_PAIR;
+        uint32_t left=(pairUntil_-now+999u)/1000u;
+        body[4]=left<1u?1u:left>60u?60u:(uint8_t)left;
+        memcpy(body+5,pairCode_,AFR2_SYNC_PAIR_CODE_LEN);length=AFR2_SYNC_PAIR_BYTES;
+    } else if(networkPending_) {
         command=AFR2_EXT_NETWORK_STATE;afr2_put_u16(body+4,networkRevision_);body[6]=networkPage_;
         if(networkPage_==0) {
             uint8_t *p=body+8;p[0]=networkInfo_.mode;p[1]=networkInfo_.staConnected;p[2]=networkInfo_.apReady;
-            p[3]=networkInfo_.clients;p[4]=networkServer_;afr2_put_u16(p+5,(uint16_t)networkInfo_.rssi);
+            p[3]=networkInfo_.clients;p[4]=(networkServer_?1u:0u)|((syncEnabled_ && syncOnline_)?2u:0u);
+            afr2_put_u16(p+5,(uint16_t)networkInfo_.rssi);
             memcpy(p+7,networkInfo_.staIp,4);memcpy(p+11,networkInfo_.apIp,4);body[7]=15;
         } else {
             const char *text=networkPage_==1?networkInfo_.staSsid:networkPage_==2?networkInfo_.apSsid:networkInfo_.apPassword;
@@ -86,7 +101,7 @@ void Broker::tickNetwork(uint32_t now) {
         afr2_put_u32(body+4,event.sequence);body[8]=event.kind;body[9]=event.subject;length=10;
     } else return;
     if(productRequest(command,body,length)) {
-        pending_=BrokerRequest{};strlcpy(pending_.command,command==AFR2_EXT_NETWORK_STATE?"_network_state":"_network_event",33);
+        pending_=BrokerRequest{};strlcpy(pending_.command,command==AFR2_EXT_NETWORK_STATE?"_network_state":command==AFR2_EXT_SYNC_PAIR?"_sync_pair":"_network_event",33);
         memcpy(pending_.body,body,length);pending_.bodyLength=length;waiting_=true;networkTxAt_=now;
     }
 }

@@ -36,6 +36,8 @@ namespace AFR2Loader
         public string BridgeToolPath;
         public string CompletionMessage;
         public bool InstalledMegaFlasher, MegaFirmwareFlashed;
+        public bool MegaFlasherChecked, MegaFlasherFound, MegaFlasherSessionSafe;
+        public string MegaFlasherBaud;
         public static bool UsesMegaBridge(Profile p) { return p.Get("EspTransport") == "mega_bridge"; }
         // AFR2-20261106-11: opt-in; solo con el flasher ATmega y el circuito de transistores armado.
         public static bool AutoKeyRst(Profile p) { return UsesMegaBridge(p) && p.Get("EspKeyRst") == "auto"; }
@@ -127,6 +129,17 @@ namespace AFR2Loader
             CheckBridge(p);
             MegaServiceRecord record = MegaServiceRecord.Read(port);
             if (record != null && (record.Status != "bridge_verified" || record.Baud != p.Get("BridgeBaud"))) throw new ArgumentException("El registro de este COM no acredita flasher verificado a ese baud. Usá Cargar flasher en ATmega antes de consultar ESP. Estado: " + record.Status);
+            GuideMegaBridgeBoot(p, false, token);
+        }
+        public async Task PrepareEspBootForWrite(Profile p, string port, bool listen, CancellationToken token)
+        {
+            if (AutoKeyRst(p)) return;
+            if (!UsesMegaBridge(p))
+            {
+                if (listen) await ListenBoot(p, port, token);
+                else RequirePhysicalEsp("Reingresar a modo programación antes de escribir · KEY y RST del ESP", "Para evitar que un cierre/apertura de puerto o una pausa previa dejen el ESP fuera del cargador ROM:\r\n\r\n1. Mantené KEY del shield.\r\n2. Pulsá y soltá SOLO RST del ESP.\r\n3. Seguí manteniendo KEY y confirmá abajo para iniciar la escritura.", token);
+                return;
+            }
             GuideMegaBridgeBoot(p, false, token);
         }
         void GuideMegaBridgeBoot(Profile p, bool forVerification, CancellationToken token)

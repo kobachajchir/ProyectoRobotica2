@@ -1,7 +1,7 @@
 {
   "schema": "afr2-command-3",
   "envelope_schema": "afr2-ws-1",
-  "updated_by": "AFR2-20261110-14",
+  "updated_by": "AFR2-20261117-05",
   "commands": [
     {
       "name": "system.hello",
@@ -1930,6 +1930,74 @@
       "notes": "Read op00 expected00; clear op01 expected nonzero and equal to current fault. Clear denied if moving, nonzero PWM, Hall capture or sequence active. Current fault and diagnostics come from AVR, no optimistic Web clear.",
       "current_source_change": "AFR2-20261110-14",
       "contract": "FAULT_RECOVERY_TIMING_20261110.md"
+    },
+    {
+      "name": "sync.key.get",
+      "owner": "esp",
+      "wire_id": null,
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "no-wire-change-version-only",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
+      },
+      "timeout_ms": 2000,
+      "idempotent": true,
+      "sensitive": true,
+      "payload_schema": {
+        "req": {},
+        "res": {
+          "key": "string 32..64 [A-Za-z0-9_-] o ''"
+        }
+      },
+      "notes": "AFR2-20261117-05. Clave de escritura de la copia web en Firebase, guardada por el ESP en LittleFS /config/sync.key (no servida por HTTP). Solo para la Web conectada al auto."
+    },
+    {
+      "name": "sync.key.set",
+      "owner": "esp",
+      "wire_id": null,
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "no-wire-change-version-only",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
+      },
+      "timeout_ms": 3000,
+      "idempotent": true,
+      "sensitive": true,
+      "payload_schema": {
+        "req": {
+          "key": "string 32..64 [A-Za-z0-9_-] o '' para borrar"
+        },
+        "res": {
+          "saved": "boolean"
+        }
+      },
+      "notes": "AFR2-20261117-05. Persiste o borra la clave en LittleFS (escritura temporal + rename)."
+    },
+    {
+      "name": "sync.pair.show",
+      "owner": "esp",
+      "wire_id": "0x57",
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "source-uncompiled-unverified",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
+      },
+      "timeout_ms": 2000,
+      "idempotent": true,
+      "sensitive": true,
+      "payload_schema": {
+        "req": {
+          "code": "string 7 'XXX-XXX' (0-9, A-Z sin I/L/O/U)",
+          "ttlS": "1..60"
+        },
+        "res": {
+          "queued": "boolean"
+        }
+      },
+      "notes": "AFR2-20261117-05. El ESP encola el codigo y lo envia al ATmega con SYNC_PAIR (0x57); el OLED lo muestra ttlS segundos como aviso. La validez de 5 min la controla Firebase."
     }
   ],
   "uart_profile": "UART_PROFILE_2.md",

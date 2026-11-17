@@ -62,6 +62,8 @@ export const COMMANDS: StudioCommand[] = [
   { id: 0x52, name: 'BOOT', description: 'Evento BT01 de arranque, sin sesión/transacción; solo lectura.', readOnly: true },
   { id: 0x53, name: 'NETWORK_STATE', description: 'Estado de red ESP → ATmega para la interfaz local.' },
   { id: 0x54, name: 'NETWORK_EVENT', description: 'Aviso de red ESP → ATmega para la interfaz local.' },
+  // AFR2-20261117-05: sensible; el TAP lo redacta y el estudio no lo arma (lo envía el ESP).
+  { id: 0x57, name: 'SYNC_PAIR', description: 'Código de vinculación de la copia web ESP → ATmega: boot u32, ttl_s u8, código ascii:7. Se muestra en el OLED.' },
   { id: 0x55, name: 'BATTERY', description: 'Lee (0) o mide (1) la batería por ADC5.', requestBytes: 1, replyBytes: 23, example: '00' },
   { id: 0x60, name: 'US_GET', description: 'Muestra ultrasónica y estado frontal.', requestBytes: 0, replyBytes: 35 },
   { id: 0x61, name: 'US_CONFIG', description: 'Intervalo ultrasónico 70..1000 ms, u16 LE.', requestBytes: 2, replyBytes: 2, example: '46 00' },

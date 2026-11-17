@@ -96,7 +96,7 @@ void WifiService::startFallback() {
     apSsid_="AutoFinalRobo2-"+String(ESP.getChipId(),HEX);
     fallbackActive_=true;apStopped_=false;askState_=0;askEvent_=false;
     bool modeOk=WiFi.mode(staWanted_?WIFI_AP_STA:WIFI_AP);
-    apOn_=modeOk && WiFi.softAP(apSsid_.c_str());
+    apOn_=modeOk && WiFi.softAP(apSsid_.c_str(),nullptr,1,false,4);
     if (!apOn_) configError_="AP_START_FAILED"; // Explicit open provisioning AP, no embedded credential.
 }
 void WifiService::apply(const WifiConfig &c) {
@@ -112,10 +112,10 @@ void WifiService::apply(const WifiConfig &c) {
     if (strcmp(c.mode,"AP")==0) {
         WiFi.disconnect(false);
         apSsid_=c.ssid;
-        apOn_=WiFi.softAP(c.ssid,c.password[0]?c.password:nullptr);
+        apOn_=WiFi.softAP(c.ssid,c.password[0]?c.password:nullptr,1,false,4);
         if(apOn_)strlcpy(apPassword_,c.password,sizeof(apPassword_));
     } else {
-        if (wantAp) apOn_=WiFi.softAP(apSsid_.c_str(),apPassword_[0]?apPassword_:nullptr);
+        if (wantAp) apOn_=WiFi.softAP(apSsid_.c_str(),apPassword_[0]?apPassword_:nullptr,1,false,4);
         if (WiFi.begin(c.ssid,c.password)==WL_CONNECT_FAILED) configError_="STA_START_FAILED";
     }
     if (wantAp && !apOn_) { configError_="AP_START_FAILED"; startFallback(); }
@@ -260,7 +260,7 @@ bool WifiService::startAp(){
     if(applyPending_ || scanPending_)return false;
     if(apOn_)return true;
     if(!WiFi.mode(staWanted_?WIFI_AP_STA:WIFI_AP))return false;
-    apOn_=WiFi.softAP(apSsid_.c_str(),apPassword_[0]?apPassword_:nullptr);
+    apOn_=WiFi.softAP(apSsid_.c_str(),apPassword_[0]?apPassword_:nullptr,1,false,4);
     if(apOn_){apStopped_=false;askState_=0;askEvent_=false;}
     return apOn_;
 }
@@ -345,7 +345,7 @@ void WifiService::status(JsonObject out) const {
     out["ageMs"]=0; out["applying"]=applyPending_;out["restartScheduled"]=applyPending_;
     out["configuredMode"]=applyPending_?pending_.mode:"";
     out["fallbackActive"]=fallbackActive_ && apOn_;
-    out["askFallback"]=askFallback_;out["apReady"]=apOn_;
+    out["askFallback"]=askFallback_;out["apReady"]=apOn_;out["apMaxClients"]=4;
     out["apDecision"]=askState_==1?"asking":askState_==2?"waiting":"none"; // AFR2-20261108-06
     if(askState_==2)out["apDecisionInMs"]=(int32_t)(askUntil_-millis())>0?(uint32_t)(askUntil_-millis()):0u;
     out["scanRunning"]=scanPending_;

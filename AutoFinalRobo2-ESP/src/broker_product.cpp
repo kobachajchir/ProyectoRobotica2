@@ -64,7 +64,8 @@ bool Broker::encodeProduct(BrokerRequest &q,JsonObjectConst p) {
     } else if(!strcmp(c,"robot.calibrate") || !strcmp(c,"robot.config.get")) {
         /* AFR2-20261108-04: 102 propone la prueba de odometria y 103 consulta su estado; el ATmega valida cada accion. */
         /* AFR2-20261108-06: 106 = Preferencias > Reintento Wi-Fi s (105 queda solo local; lo rechaza el ATmega). */
-        if(!number(p["action"],0,106) || (!strcmp(c,"robot.calibrate") && !p["value"].is<int32_t>()))return fail();
+        /* AFR2-20261116-01: 121..124 = Calibrar motores > Escala motor FL..RR (500..1500, paso 5). */
+        if(!number(p["action"],0,124) || (!strcmp(c,"robot.calibrate") && !p["value"].is<int32_t>()))return fail();
         if(!strcmp(c,"robot.calibrate") && p["action"]==25 && (!number(p["value"],0,1)))return fail();
         if(!strcmp(c,"robot.calibrate") && (p["action"]==27 || p["action"]==28))return fail();
         q.wireCommand=AFR2_EXT_CONFIG;q.bodyLength=10;q.body[4]=!strcmp(c,"robot.calibrate");q.body[5]=p["action"].as<uint8_t>();
@@ -261,9 +262,14 @@ bool Broker::finishProduct(const BrokerRequest &q,const MegaResult &r) {
             pose["frameId"]=String("mega-")+String(afr2_get_u32(p+26));pose["sequence"]=afr2_get_u32(p+30);
             pose["xMm"]=(int32_t)afr2_get_u32(p+10);pose["yMm"]=(int32_t)afr2_get_u32(p+14);pose["thetaMrad"]=(int32_t)afr2_get_u32(p+18);pose["ageMs"]=afr2_get_u32(p+22);
         }
-    } else if(q.wireCommand==AFR2_EXT_CONFIG) {out["action"]=q.body[5];out["value"]=(int32_t)afr2_get_u32(p+9);out["persisted"]=false;limitsAt_=0;
-    } else if(q.wireCommand==AFR2_EXT_PREFS) {f["status"]=q.body[4]?"completed":"accepted";out["state"]=q.body[4]?"discarded":"writing";out["persisted"]=false;
-    } else if(q.wireCommand==AFR2_EXT_LINE_CAL) {out["calibrated"]=p[9]!=0;
+    } else if(q.wireCommand==AFR2_EXT_CONFIG) {
+        out["action"]=q.body[5];out["value"]=(int32_t)afr2_get_u32(p+9);out["persisted"]=false;limitsAt_=0;
+        if(q.body[4]){syncDirtyMask_|=0x01f8u;if(!++syncRev_)++syncRev_;}
+    } else if(q.wireCommand==AFR2_EXT_PREFS) {
+        f["status"]=q.body[4]?"completed":"accepted";out["state"]=q.body[4]?"discarded":"writing";out["persisted"]=false;
+        syncDirtyMask_|=0x01ffu;if(!++syncRev_)++syncRev_;
+    } else if(q.wireCommand==AFR2_EXT_LINE_CAL) {
+        out["calibrated"]=p[9]!=0;syncDirtyMask_|=0x0040u;if(!++syncRev_)++syncRev_;
     } else if(q.wireCommand==AFR2_EXT_CANCEL) {out["gotoState"]="cancelled";out["stopped"]=true;productOrigin_=0;publishStatus();
     } else if(q.wireCommand==AFR2_EXT_UI_META) {
         oledRevision_=afr2_get_u32(p+9);oledScreen_=afr2_get_u32(p+13);oledSelection_=p[17];oledFirst_=p[18];oledCount_=p[22];oledOffset_=0;

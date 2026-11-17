@@ -1,0 +1,90 @@
+rules_version = '2';
+
+// AFR2-20261117-05 — Copia online de la sincronización Web (proyecto Firebase autofinalrobo2, un solo auto).
+//
+// Roles (todos con sesión anónima de Firebase Auth):
+//  - Escritor: navegador conectado al auto. Se registra en writers/{uid} demostrando la clave de escritura que
+//    guarda el ESP (car/secret, que ningún cliente puede leer; solo la comparan estas reglas).
+//  - Lector: compu vinculada con un código de 6 caracteres que muestra el OLED. Canjea pairings/{código}
+//    (5 min, un solo uso) y queda en viewers/{uid}. Solo lee car/state.
+// El primer escritor reclama car/secret. Si alguien lo reclamara antes, el auto no podrá registrarse:
+// borrar car/secret desde la consola de Firebase y volver a activar la copia desde la Web del auto.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isWriter() { return signedIn() && exists(/databases/$(database)/documents/writers/$(request.auth.uid)); }
+    function isViewer() { return signedIn() && exists(/databases/$(database)/documents/viewers/$(request.auth.uid)); }
+    function nowMs() { return request.time.toMillis(); }
+    function validKey(k) { return k is string && k.matches('^[A-Za-z0-9_-]{32,48}$'); }
+    function validCode(c) { return c is string && c.matches('^[0-9A-HJKMNP-TV-Z]{3}-[0-9A-HJKMNP-TV-Z]{3}$'); }
+
+    function validState(d) {
+      return d.keys().hasOnly(['schema', 'deviceId', 'rev', 'ackRev', 'ts', 'webVersion', 'hashes', 'layers', 'simulators'])
+        && d.schema == 'afr2-cloud-sync-1'
+        && d.deviceId is string && d.deviceId.size() <= 48
+        && d.rev is int && d.rev >= 0
+        && d.ts is int
+        && (!('layers' in d) || d.layers is map)
+        && (!('hashes' in d) || d.hashes is map)
+        && (!('simulators' in d) || d.simulators is map);
+    }
+
+    // Estado del auto.
+    match /car/state {
+      allow get: if isWriter() || isViewer();
+      allow create, update: if isWriter() && validState(request.resource.data);
+      allow delete, list: if false;
+    }
+
+    // Clave de escritura. Nadie la lee; un escritor puede rotarla.
+    match /car/secret {
+      allow read: if false;
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['w', 'at']) && validKey(request.resource.data.w);
+      allow update: if isWriter() && request.resource.data.keys().hasOnly(['w', 'at']) && validKey(request.resource.data.w);
+      allow delete: if false;
+    }
+
+    match /writers/{uid} {
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['w', 'at'])
+        && validKey(request.resource.data.w)
+        && request.resource.data.w == getAfter(/databases/$(database)/documents/car/secret).data.w;
+      allow get, delete: if signedIn() && request.auth.uid == uid;
+      allow update, list: if false;
+    }
+
+    // Códigos de vinculación: los crea un escritor, valen 5 minutos y se consumen al canjearlos.
+    match /pairings/{code} {
+      allow create: if isWriter() && validCode(code)
+        && request.resource.data.keys().hasOnly(['expiresAt', 'by'])
+        && request.resource.data.by == request.auth.uid
+        && request.resource.data.expiresAt is int
+        && request.resource.data.expiresAt > nowMs()
+        && request.resource.data.expiresAt <= nowMs() + 330000;
+      allow get: if isWriter();
+      allow delete: if isWriter()
+        || (signedIn() && getAfter(/databases/$(database)/documents/viewers/$(request.auth.uid)).data.code == code);
+      allow update, list: if false;
+    }
+
+    // Compus vinculadas (solo lectura del estado). El canje es un commit que crea viewers/{uid} y borra el código.
+    match /viewers/{uid} {
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['code', 'at', 'label'])
+        && validCode(request.resource.data.code)
+        && request.resource.data.at is int
+        && request.resource.data.label is string && request.resource.data.label.size() <= 40
+        && exists(/databases/$(database)/documents/pairings/$(request.resource.data.code))
+        && get(/databases/$(database)/documents/pairings/$(request.resource.data.code)).data.expiresAt > nowMs()
+        && !existsAfter(/databases/$(database)/documents/pairings/$(request.resource.data.code));
+      allow get, delete: if signedIn() && (request.auth.uid == uid || isWriter());
+      allow list: if isWriter();
+      allow update: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

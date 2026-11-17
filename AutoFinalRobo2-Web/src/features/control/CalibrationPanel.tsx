@@ -44,7 +44,9 @@ export function CalibrationPanel({preferences=false}:{preferences?:boolean}={}) 
       const res = await requestCommand<{ value: number }>('robot.config.get', { action });
       if (!current(ticket)) return;
       if (res.status !== 'completed' || !Number.isInteger(res.payload.value)) throw new Error('El controlador no entregó un valor válido.');
-      setValue(res.payload.value);setReceivedValue(res.payload.value);setLoadedAction(action);setFeedback(`Valor recibido: ${res.payload.value} ${selected.unit ?? ''}`);
+      setValue(res.payload.value);setReceivedValue(res.payload.value);setLoadedAction(action);
+      const formatted = action >= 121 && action <= 124 ? `${res.payload.value} (${(res.payload.value / 1000).toFixed(3)}×)` : `${res.payload.value} ${selected.unit ?? ''}`;
+      setFeedback(`Valor recibido: ${formatted}`);
     } catch(e) {if (current(ticket)) setFeedback(e instanceof Error ? e.message : 'No se pudo consultar.');}
     finally {locked.current = false; if (mounted.current) setBusy(false);}
   };
@@ -74,7 +76,7 @@ export function CalibrationPanel({preferences=false}:{preferences?:boolean}={}) 
         </select><Chevron /></span>
       </label>
       {action===12?<MotorSelector value={MOTOR_IDS[value&3] as MotorId} onChange={motor=>setValue(MOTOR_IDS.indexOf(motor))} disabled={busy} />:<>      <label className="block">Valor ({selected.min}…{selected.max})
-        <input disabled={busy} className="afr2-glass-field w-full min-h-11 px-3" type="number" required min={selected.min} max={selected.max} step={action === 41 ? 2 : action===81?100:1} value={value} onChange={e => setValue(Number(e.target.value))} />
+        <input disabled={busy} className="afr2-glass-field w-full min-h-11 px-3" type="number" required min={selected.min} max={selected.max} step={action === 41 ? 2 : action===81?100 : (action>=121 && action<=124)?5 : 1} value={value} onChange={e => setValue(Number(e.target.value))} />
       </label></>}
       <div className="afr2-action-row">
         <Button type="button" disabled={!ready || busy} onClick={() => void read()}>Consultar</Button>

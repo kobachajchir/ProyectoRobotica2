@@ -50,7 +50,7 @@ namespace AFR2Loader
             if (capacityRow != null) { capacityRow.Visible = esp; PlaceCapacityRow(fsSection); }
             if (prepCard != null) prepCard.Visible = fsSection;
             espMemoryRow.Visible = fsSection && CapacityConfirmed;
-            megaOptionsRow.Visible = !esp; if (preparationHeading != null) preparationHeading.Visible = esp && !fsSection; if (resultHeading != null) resultHeading.Text = esp ? "3 · Ejecución y resultado" : "2 · Ejecución y resultado";
+            megaOptionsRow.Visible = !esp; UpdateMegaFlasherBadgeVisibility(); if (preparationHeading != null) preparationHeading.Visible = esp && !fsSection; if (resultHeading != null) resultHeading.Text = esp ? "3 · Ejecución y resultado" : "2 · Ejecución y resultado";
             if (filesystemLayout != null) filesystemLayout.Visible = esp && !at && target.SelectedIndex >= 2 && CapacityConfirmed;
             if (compileTarget != null) UpdateTargetActions();
         }

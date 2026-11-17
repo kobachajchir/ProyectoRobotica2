@@ -32,7 +32,7 @@ function TopCamera({ z }: { z: number }) {
 }
 
 /** Barra de sensores en el marco del auto (X izquierda −, Z frente −), con el mismo desplazamiento que SimulationRobot. */
-function useSensorBar() {
+export function useSensorBar() {
   const { scene, offset, size } = useRobotModel();
   return useMemo(() => {
     scene.updateMatrixWorld(true);

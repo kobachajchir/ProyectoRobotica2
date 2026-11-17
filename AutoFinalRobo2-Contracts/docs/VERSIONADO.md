@@ -37,6 +37,12 @@ Reglas:
 
 | Versión | Tipo | Cambio |
 |---|---|---|
+| 1.35.0 | subversión | AFR2-20261117-05: copia de la sincronización en Firebase (`autofinalrobo2`, Auth anónimo, escritor con clave guardada en el ESP), vinculación de una compu con código en el OLED (CMD `0x57 SYNC_PAIR`) y vista remota `#/remoto` de solo lectura. ATmega, ESP y Web en fuente. |
+| 1.34.0 | subversión | AFR2-20261117-04: Modo de robot sincroniza el menú OLED y la tarjeta rápida con Reposo, Manual, Seguidor de linea e Ir, más Volver contextual. ATmega/Web en fuente; ESP solo versión. |
+| 1.33.2 | subversión mínima | AFR2-20261117-04: Ir con imagen interior cover, crossfade reversible de 400 ms, escala 1.04→1 y marco azul/violeta de 2 px, sin desplazar tarjeta ni contenido. Web en fuente; ATmega/ESP solo versión. Se conserva SVG hasta recibir imagen limpia. |
+| 1.33.1 | subversión mínima | AFR2-20261117-03: corrige TS2339 en la sincronización online; `RobotPose` presente ya pasó el filtro `valid === true` de `parseRobotState`. Web en fuente; ATmega/ESP solo versión. |
+| 1.33.0 | subversión | AFR2-20261117-01: sección Seguidor de línea (cinta fija a escala y auto en movimiento), accesos rápidos Ir/Controlar/Seguidor en Inicio con fondo al pasar, y deltas de sincronización por hash FNV-1a por capa. Web en fuente; ATmega y ESP solo versión. |
+| 1.32.0 | subversión | AFR2-20261116-01: QR en Configuración (URL/IP + Wi-Fi), SoftAP máx. 4 clientes y redirección `/busy` con 1 cliente Web activo, icono online/sincronizando y aviso tras 5 fallos (Cerrar por defecto / Desactivar), sincronización online por capas (deltas 5–10 s y botón explícito en simuladores), panel y mejoras de seguidor de línea, y compensación por rueda `motor_trim` (EEPROM v14). ATmega, ESP y Web en fuente. |
 | 1.31.4 | subversión mínima | AFR2-20261113-05: selector de secciones (pills) con la misma separación en todas las páginas; el del Simulador sale del encabezado. Web en fuente. |
 | 1.31.3 | subversión mínima | AFR2-20261113-04: Simulador GOTO con el mismo margen y padding de encabezado y selector de vista que el de secuencias. Web en fuente. |
 | 1.31.2 | subversión mínima | AFR2-20261113-03: Línea IR con cinta negra bajo el modelo 3D y ancho de cinta configurable (18 mm por defecto). Web en fuente. |

@@ -13,6 +13,7 @@ import { GotoCommandList } from './GotoCommandList';
 import { gotoRouteLegs, ROUTE_MAX_LEGS, useGotoRouteRunner } from './useGotoRouteRunner';
 import { formatMetres, GOTO_DIRECTIONS, GOTO_MAX_COMMANDS, GOTO_POINT_STEP_MM, gotoCommandLabel, gotoPathFromStroke, headingOnGotoSegment, nearestOnGotoSegment, planGotoCommands, sampleGotoPlan, type GotoCommand, type GotoDirection, type GotoOrientation } from './gotoSimulation';
 import { GotoTurnPopover } from './GotoTurnPopover';
+import { SyncSimulatorButton } from '../../sync/CloudSyncController';
 
 type MapTool = 'point' | 'arc' | 'curve' | 'pencil' | 'turn' | 'edit' | 'erase';
 type Handle = { id: string; part: 'end' | 'via' | 'control' };
@@ -333,7 +334,8 @@ export function GotoSimulatorPanel({ commands, onCommandsChange, speedMmS, onSpe
     <p role="status" aria-live="polite" aria-atomic="true">{activeLabel}</p>
     <p className="afr2-help">Recorrido: {formatMetres(plan.distanceMm)} m</p>
     <div className="afr2-action-row"><Button variant="primary" disabled={!commands.length || !!plan.error} onClick={playing ? pause : play}>{playing ? 'Pausar' : cursorMs >= plan.totalDurationMs && commands.length ? 'Repetir recorrido' : started ? 'Continuar' : 'Simular recorrido'}</Button>
-      <Button disabled={playing || !started} onClick={reset}>Reiniciar</Button><Button variant="subtle" disabled={playing || robotRunning || !commands.length} onClick={() => commit([])}>Vaciar lista</Button></div>
+      <Button disabled={playing || !started} onClick={reset}>Reiniciar</Button><Button variant="subtle" disabled={playing || robotRunning || !commands.length} onClick={() => commit([])}>Vaciar lista</Button>
+      <SyncSimulatorButton simulator="goto" data={{ commands, speedMmS, orientation }} disabled={playing} /></div>
     {sendPanel}
   </div>;
   return <div className="afr2-goto-workspace">

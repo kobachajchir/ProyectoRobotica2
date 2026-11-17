@@ -43,7 +43,7 @@ namespace AFR2Loader
             lastResult.AutoEllipsis = false; status.AutoEllipsis = false;
             box.Controls.Add(evidence, 0, 3);
             target.SelectedIndexChanged += (s, e) => UpdateConnectionEvidence("");
-            ports.SelectedIndexChanged += (s, e) => { bootEvidence = "sin observar"; romEvidence = "sin consultar"; evidencePort = ports.Text; UpdateConnectionEvidence(""); };
+            ports.SelectedIndexChanged += (s, e) => { bootEvidence = "sin observar"; romEvidence = "sin consultar"; evidencePort = ports.Text; ClearMegaFlasherDetection(); };
             UpdateConnectionEvidence("");
 
             mcpTab = new TabPage("Servidor MCP") { Padding = new Padding(16) }; tabs.TabPages.Add(mcpTab);
@@ -170,18 +170,70 @@ namespace AFR2Loader
             { dialog.Controls.Add(new TextBox { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, WordWrap = false, Text = text.ToString() }); ShowStyledDialog(dialog); }
         }
 
+        string megaEvidence = "sin consultar", megaFlasherPort = "", megaFlasherBaud = "";
+        bool? megaFlasherFound;
+        bool megaFlasherSessionSafe;
+
+        void UpdateMegaFlasherBadgeVisibility()
+        {
+            if (megaFlasherBadge == null) return;
+            bool show = target != null && target.SelectedIndex == 0 && megaFlasherFound.HasValue &&
+                String.Equals(megaFlasherPort, ports.Text, StringComparison.OrdinalIgnoreCase);
+            if (megaFlasherBadge.Visible != show) { megaFlasherBadge.Visible = show; FitOperationRows(); }
+        }
+        void SetMegaFlasherDetection(string port, bool found, string baud, bool sessionSafe)
+        {
+            megaFlasherPort = port ?? "";
+            megaFlasherFound = found;
+            megaFlasherBaud = baud ?? "";
+            megaFlasherSessionSafe = sessionSafe;
+            if (found)
+            {
+                megaFlasherBadge.Text = "Flasher encontrado (" + megaFlasherBaud + (sessionSafe ? " · actual)" : " · versión anterior)");
+                megaFlasherBadge.ForeColor = sessionSafe ? LoaderAppearance.SuccessInk : LoaderAppearance.WarningInk;
+                workflowTips.SetToolTip(megaFlasherBadge, sessionSafe
+                    ? "El ATmega en " + megaFlasherPort + " respondió como flasher AFR2 actual a " + megaFlasherBaud + " baudios."
+                    : "El ATmega en " + megaFlasherPort + " respondió como flasher AFR2 a " + megaFlasherBaud + " baudios, pero de una revisión anterior. Conviene recargar el flasher desde la pestaña Flasher.");
+                megaEvidence = "ATmega " + profile.Get("Signature") + " · Flasher encontrado (" + megaFlasherBaud + (sessionSafe ? ", actual)" : ", versión anterior)");
+            }
+            else
+            {
+                megaFlasherBadge.Text = "Flasher no encontrado (" + megaFlasherBaud + " · firmware del auto u otro)";
+                megaFlasherBadge.ForeColor = LoaderAppearance.WarningInk;
+                workflowTips.SetToolTip(megaFlasherBadge, "El ATmega en " + megaFlasherPort + " respondió por bootloader (" + profile.Get("Signature") + "), pero no respondió como flasher AFR2 a " + megaFlasherBaud + " baudios.");
+                megaEvidence = "ATmega " + profile.Get("Signature") + " · Flasher no encontrado (" + megaFlasherBaud + ")";
+            }
+            UpdateMegaFlasherBadgeVisibility();
+            UpdateConnectionEvidence("");
+        }
+        void ClearMegaFlasherDetection()
+        {
+            megaFlasherFound = null; megaFlasherPort = ""; megaFlasherBaud = ""; megaFlasherSessionSafe = false;
+            megaEvidence = "sin consultar";
+            UpdateMegaFlasherBadgeVisibility();
+            UpdateConnectionEvidence("");
+        }
         void UpdateConnectionEvidence(string message)
         {
             if (message.StartsWith("Escuchando", StringComparison.OrdinalIgnoreCase) || message.StartsWith("Consultando", StringComparison.OrdinalIgnoreCase))
             { evidencePort = ports.Text; romEvidence = "sin confirmar"; }
             if (message.StartsWith("Modo programación observado", StringComparison.OrdinalIgnoreCase)) bootEvidence = "UART observado a " + DateTime.Now.ToString("HH:mm:ss");
             if (message.IndexOf("ROM responde", StringComparison.OrdinalIgnoreCase) >= 0) romEvidence = "respuesta confirmada a " + DateTime.Now.ToString("HH:mm:ss");
+            if (message.StartsWith("ATmega detectado:", StringComparison.OrdinalIgnoreCase))
+            {
+                evidencePort = ports.Text;
+                if (!megaFlasherFound.HasValue || !String.Equals(megaFlasherPort, ports.Text, StringComparison.OrdinalIgnoreCase))
+                    megaEvidence = "ATmega " + profile.Get("Signature") + " detectado";
+            }
             string wiring = target.SelectedIndex == 0
                 ? "ATmega: RESET libre; D0/D1 aislados del ESP; USB-B al Mega."
                 : Operations.UsesMegaBridge(profile)
                     ? "ESP por flasher software: RESET Mega LIBRE; D18/TX1→E_RX y E_TX→D19/RX1. Baud fijo " + profile.Get("BridgeBaud") + ". Al terminar usar Flashear Firmware ATmega o el menú Flashear último backup."
                     : "ESP: RESET ATmega → GND; D0 → RX central y D1 → TX central del selector ESP URAT. Al cargar te voy a avisar para que presiones KEY y RST.";
-            evidence.Text = wiring + "\r\nEvidencia " + evidencePort + ": arranque " + bootEvidence + " | ROM " + romEvidence + ".\r\n" + (pendingJob == null ? "Los estados observados no prueban el cableado ni que el modo siga vigente después de otro reset." : "Solicitud MCP pendiente: revisar en Codex / MCP. No se ejecutó todavía.");
+            string summary = target.SelectedIndex == 0
+                ? "Evidencia " + evidencePort + ": " + megaEvidence + "."
+                : "Evidencia " + evidencePort + ": arranque " + bootEvidence + " | ROM " + romEvidence + ".";
+            evidence.Text = wiring + "\r\n" + summary + "\r\n" + (pendingJob == null ? "Los estados observados no prueban el cableado ni que el modo siga vigente después de otro reset." : "Solicitud MCP pendiente: revisar en Codex / MCP. No se ejecutó todavía.");
         }
         void RefreshHistory()
         {

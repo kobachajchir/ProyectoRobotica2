@@ -64,12 +64,13 @@ uint8_t Afr2Dashboard_Render(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s){
     if(!ssid || !*ssid){if(connected)strcpy_P(fallback,s->network_sta?PSTR("Wi-Fi"):PSTR("AP"));ssid=fallback;}
     if(!ip || !*ip)ip="IP: --";
     uint16_t ss=offset(ssid,u->clock_ms-u->scroll_started_ms),is=offset(ip,u->clock_ms-u->scroll_started_ms);
-    uint8_t flags=(!!s->network_valid) | (!!s->network_sta<<1) | (!!s->network_ap<<2) | (!!s->battery_valid<<3) | ((s->network_mode==2)<<4);
+    uint8_t flags=(!!s->network_valid) | (!!s->network_sta<<1) | (!!s->network_ap<<2) | (!!s->battery_valid<<3) | ((s->network_mode==2)<<4) | (!!s->sync_online<<5);
     uint8_t header=full || d->header_flags!=flags || d->network_boot!=s->network_boot || d->network_revision!=s->network_revision || d->battery_mv!=s->battery_mv;
     if(full)Afr2Oled_Clear(o);
     if(header){
         Afr2Oled_FillRect(o,0,0,128,26,AFR2_BLACK);
         Afr2Icon_Draw(o,!s->network_valid?AFR2_ICON_WIFI:s->network_mode==2?AFR2_ICON_AP:!connected?AFR2_ICON_WIFI_OFF:s->network_sta?AFR2_ICON_WIFI:AFR2_ICON_AP,0,3,18);
+        if(s->sync_online)Afr2Icon_Draw(o,AFR2_ICON_LINK,93,1,12);
         uint16_t mv=s->battery_mv;uint8_t battery=s->battery_valid?AFR2_ICON_BATTERY_EMPTY+(mv==0?0:mv<6000?1:mv<7000?2:mv<8000?3:4):AFR2_ICON_BATTERY_UNKNOWN;
         char voltage[8];if(s->battery_valid)snprintf_P(voltage,sizeof(voltage),PSTR("%u.%uV"),mv/1000u,mv%1000u/100u);else strcpy_P(voltage,PSTR("--V"));
         /* Compact icon keeps the voltage lane clear, as in the accepted render. */

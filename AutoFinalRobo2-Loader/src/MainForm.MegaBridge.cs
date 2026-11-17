@@ -82,7 +82,7 @@ namespace AFR2Loader
             AddButton(footer, "Cargar flasher en ATmega...", InstallFlasher, 285); AddButton(footer, "Flashear último backup", () => { ShowOperation(); FlashMegaBackup(); }, 245, ButtonRole.Secondary); layout.Controls.Add(footer, 0, 5);
             bridgeTab.Controls.Add(layout); tabs.TabPages.Add(bridgeTab);
             bridgeTransport.SelectionChangeCommitted += (s, e) => ChooseEspTransport(bridgeTransport.SelectedIndex);
-            bridgeSpeed.SelectionChangeCommitted += (s, e) => { if (syncingBridge) return; ReadSettings(); SetProfileValue("BridgeBaud", Convert.ToString(bridgeSpeed.SelectedItem)); SetProfileValue("EspBaud", Convert.ToString(bridgeSpeed.SelectedItem)); SyncBridgeOptions(); };
+            bridgeSpeed.SelectionChangeCommitted += (s, e) => { if (syncingBridge) return; ReadSettings(); SetProfileValue("BridgeBaud", Convert.ToString(bridgeSpeed.SelectedItem)); SetProfileValue("EspBaud", Convert.ToString(bridgeSpeed.SelectedItem)); ClearMegaFlasherDetection(); SyncBridgeOptions(); };
             ports.SelectedIndexChanged += (s, e) => UpdateBridgeServiceState();
             settings.CellEndEdit += (s, e) => { if (!syncingBridge) { ReadSettings(); SyncBridgeOptions(); } };
             tabs.SelectedIndexChanged += (s, e) => { if (tabs.SelectedTab == bridgeTab) { ReadSettings(); SyncBridgeOptions(); } }; SyncBridgeOptions();

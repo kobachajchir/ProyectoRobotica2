@@ -21,7 +21,7 @@ namespace AFR2Loader
         // AFR2-20261106-06. Colors by function: action (compile/flash), information, danger, warning, success.
         // High contrast uses system colors instead (see MainForm.ButtonStyle).
         internal static readonly Color ActionFill = Color.FromArgb(24, 112, 69), InfoFill = Color.FromArgb(30, 89, 153), DangerFill = Color.FromArgb(166, 40, 48);
-        internal static readonly Color WarningInk = Color.FromArgb(145, 80, 0), SuccessInk = Color.FromArgb(20, 110, 65);
+        internal static readonly Color WarningInk = Color.FromArgb(145, 80, 0), SuccessInk = Color.FromArgb(20, 110, 65), YellowHintInk = Color.FromArgb(202, 138, 4);
         internal static Color Selection { get { return Dark ? Border : SystemColors.Highlight; } }
         internal static Color SelectionText { get { return Dark ? Text : SystemColors.HighlightText; } }
     }
@@ -70,6 +70,8 @@ namespace AFR2Loader
 
         Color AppearanceForeground(Color original)
         {
+            if (original.R >= 180 && original.G >= 130 && original.B <= 90 && original.R > original.B * 2)
+                return LoaderAppearance.Dark ? ColorTranslator.FromHtml("#facc15") : ColorTranslator.FromHtml("#9a6700");
             if (!LoaderAppearance.Dark) return original.GetBrightness() > .72F ? LoaderAppearance.Text : original;
             if (original.GetBrightness() > .72F) return original;
             if (Math.Abs(original.R - original.G) < 24 && Math.Abs(original.G - original.B) < 24) return LoaderAppearance.Text;

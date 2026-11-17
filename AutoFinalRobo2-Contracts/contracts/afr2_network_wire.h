@@ -20,4 +20,10 @@ enum {
  AFR2_NET_EVENT_MAX=AFR2_NET_SYNC_FAIL_5
 };
 #define AFR2_NOTICE_NETWORK 16u
+/* AFR2-20261117-05: codigo de vinculacion de la copia web (Firebase), ESP -> ATmega. Cuerpo de 12 bytes:
+ * esp_boot_id u32le, ttl_s u8 (1..60, tiempo en el OLED), codigo ascii:7 ("K7M-4QX", A-Z sin I/L/O/U, 0-9, guion).
+ * Sensible: el codigo da acceso de lectura a la copia online durante 5 min. Respuesta sin cuerpo. */
+#define AFR2_EXT_SYNC_PAIR 0x57u
+#define AFR2_SYNC_PAIR_CODE_LEN 7u
+#define AFR2_SYNC_PAIR_BYTES 12u
 #endif

@@ -16,6 +16,9 @@ public:
     bool loadWifi(JsonDocument &doc);
     bool hasWifiConfig() const;
     bool saveWifi(const JsonDocument &doc);
+    /* AFR2-20261117-05: clave de escritura de la copia web (Firebase) en /config/sync.key; '' la borra. */
+    bool loadSyncKey(char *out,size_t size);
+    bool saveSyncKey(const char *key);
     void health(JsonObject out) const;
 private:
     bool mounted_=false, webReady_=false;

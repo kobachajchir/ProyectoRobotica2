@@ -33,9 +33,12 @@ public:
     void tick(uint32_t now);
     void networkEvent(uint8_t kind,uint8_t subject=0);
     void networkServerReady();
+    bool isBusyFor(const IPAddress &remoteIp);
+    void busyStatus(JsonObject out,const IPAddress &requesterIp);
 private:
     struct Session {
         uint32_t id=0, lastSeen=0, window=0, inputSeen=0;
+        IPAddress remoteIp;
         uint16_t bytes=0, expected=0, rate=0;
         bool used=false, ready=false;
         bool capabilitiesSent=false;
@@ -118,6 +121,21 @@ private:
     uint16_t networkRevision_=0,networkDropped_=0;
     uint8_t networkHead_=0,networkTail_=0,networkCount_=0,networkPage_=0;
     bool networkLinked_=false,networkPending_=true,networkServer_=false;
+    bool syncEnabled_=true,syncOnline_=false,syncFailNotice_=false;
+    uint8_t syncFailCount_=0;
+    uint16_t syncDirtyMask_=0x01ffu;
+    uint32_t syncRev_=1,syncAckRev_=0,syncLastTryAt_=0,syncLastOkAt_=0,syncIntervalMs_=5000;
+    char syncEndpoint_[97]={};
+    /* AFR2-20261117-05: clave de la copia web (cache de /config/sync.key) y codigo de vinculacion pendiente
+     * para el OLED (SYNC_PAIR 0x57). */
+    char syncKey_[49]={},pairCode_[8]={};
+    bool syncKeyLoaded_=false,pairPending_=false;
+    uint8_t pairTtl_=0;
+    uint32_t pairUntil_=0;
+    static bool validSyncKey(const char *key);
+    void syncStatus(JsonObject out) const;
+    void syncLayers(JsonObject out,bool full,bool includeSimulators) const;
+    void noteSyncAttempt(bool ok,uint32_t ackRev=0);
     char megaInfo_[5][49]={};
     uint8_t infoPage_=0,infoReset_=0;
     bool infoReady_=false,productStopped_=true;

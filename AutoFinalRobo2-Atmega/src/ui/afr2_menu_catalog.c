@@ -7,7 +7,7 @@ static const Afr2MenuItem items[] PROGMEM={
  { "Menu", AFR2_N_MENU, 0, 0, 0,0,0 },
  { "Estado", AFR2_N_STATE, 0, 0, 0,0,0 },
  { "Control manual", AFR2_N_CONTROL, 0, 0, 0,0,0 },
- { "Modos y misiones", AFR2_N_MODES, 0, 0, 0,0,0 },
+ { "Modo de robot", AFR2_N_MODES, 0, 0, 0,0,0 },
  { "Pruebas", AFR2_N_TESTS, 0, 0, 0,0,0 },
  { "Sensores", AFR2_N_SENSORS, 0, 0, 0,0,0 },
  { "Calibracion", AFR2_N_CALIB, 0, 0, 0,0,0 },
@@ -237,7 +237,7 @@ static const Afr2MenuItem extra[] PROGMEM={
  { "1 m", 255, AFR2_A_RADAR_RANGE, 1, 0,0,0 },
  { "50 cm", 255, AFR2_A_RADAR_RANGE, 2, 0,0,0 },
  { "25 cm", 255, AFR2_A_RADAR_RANGE, 3, 0,0,0 },
- { "Seleccion de modo", AFR2_N_QUICK_MODES, 0, 0, 0,0,0 },
+ { "Modo de robot", AFR2_N_QUICK_MODES, 0, 0, 0,0,0 },
  { "Reposo", 255, AFR2_A_QUICK_MODE, 0, 0,0,0 },
  { "Manual", 255, AFR2_A_QUICK_MODE, 1, 0,0,0 },
  { "Volver", AFR2_N_QUICK, 0, 0,0,0,0 },
@@ -256,7 +256,7 @@ static const Afr2MenuItem reform[] PROGMEM={
  { "Estado OLED/I2C", AFR2_N_DISPLAY, 0, 0, 0, 0, 0 },
  { "Estado encoder", AFR2_N_ENCODER_VIEW, 0, 0, 0, 0, 0 },
  { "Control manual", AFR2_N_CONTROL, 0, 0, 0, 0, 0 },
- { "Modos/misiones", AFR2_N_MODES, 0, 0, 0, 0, 0 },
+ { "Modo de robot", AFR2_N_MODES, 0, 0, 0, 0, 0 },
  { "Volver", AFR2_N_MENU, 0, 0, 0, 0, 0 },
  { "Motor individual", AFR2_N_WHEEL, 0, 0, 0, 0, 0 },
  { "Hall una vuelta", AFR2_N_HALL_TEST, 0, 0, 0, 0, 0 },
@@ -385,6 +385,22 @@ static const Afr2MenuItem factors[] PROGMEM={
  { "Descartar cambios",255,AFR2_A_DISCARD,0,0,0,0 },
  { "Volver",AFR2_N_EXAM_MENU,0,0,0,0,0 },
 };
+/* AFR2-20261116-01: compensacion por motor en milesimas (500..1500, paso 5). */
+static const Afr2MenuItem motorTrim[] PROGMEM={
+ { "Escala motor FL",255,AFR2_A_MOTOR_TRIM_FL,0,500,1500,5 },
+ { "Escala motor FR",255,AFR2_A_MOTOR_TRIM_FR,0,500,1500,5 },
+ { "Escala motor RL",255,AFR2_A_MOTOR_TRIM_RL,0,500,1500,5 },
+ { "Escala motor RR",255,AFR2_A_MOTOR_TRIM_RR,0,500,1500,5 },
+ { "Volver",AFR2_N_CALIB,0,0,0,0,0 },
+};
+/* AFR2-20261117-04: one selector shared by Estado and the Modo quick card. */
+static const Afr2MenuItem robotModes[] PROGMEM={
+ { "Reposo",255,AFR2_A_QUICK_MODE,0,0,0,0 },
+ { "Manual",255,AFR2_A_QUICK_MODE,1,0,0,0 },
+ { "Seguidor de linea",AFR2_N_LINE_MODE,0,0,0,0,0 },
+ { "Ir",AFR2_N_GOTO_MENU,0,0,0,0,0 },
+ { "Volver",AFR2_N_MENU,0,0,0,0,0 },
+};
 static const Afr2MenuNode nodes[] PROGMEM={
  { "AutoFinalRobo2", AFR2_N_HOME, 1, 1, 0, 0x10001UL },
  { "Menu principal", AFR2_N_HOME, 0, 7, 1, 0x10002UL },
@@ -396,7 +412,7 @@ static const Afr2MenuNode nodes[] PROGMEM={
  { "Fallos", AFR2_N_STATE, 1, 3, 22, 0x30007UL },
  { "Control manual", AFR2_N_MENU, 0, 5, 0x4042u, 0x30008UL },
  { "Mecanum", AFR2_N_CONTROL, 0, 12, 27, 0x30009UL },
- { "Modos/misiones", AFR2_N_MENU, 0, 4, 39, 0x3000aUL },
+ { "Modo de robot", AFR2_N_MENU, 0, 5, 39, 0x3000aUL },
  { "Seguimiento linea", AFR2_N_MODES, 0, 5, 0x402cu, 0x3000bUL },
  { "Requisitos linea", AFR2_N_LINE_MODE, 1, 1, 49, 0x3000cUL },
  { "GOTO relativo", AFR2_N_MODES, 0, 8, 0x4037u, 0x3000dUL },
@@ -414,7 +430,7 @@ static const Afr2MenuNode nodes[] PROGMEM={
  { "Servo", AFR2_N_DISTANCE_SERVO, 0, 4, 0x800du, 0x30019UL },
  { "Calibracion", AFR2_N_MENU, 0, 6, 0x4010u, 0x3001aUL },
  { "Calibrar linea", AFR2_N_CALIB, 0, 7, 102, 0x3001bUL },
- { "Calibrar motores", AFR2_N_CALIB, 0, 8, 109, 0x3001cUL },
+ { "Calibrar motores", AFR2_N_CALIB, 0, 12, 109, 0x3001cUL },
  { "Geometria nominal", AFR2_N_STATE, 1, 1, 122, 0x3001dUL },
  { "Ajustes encoder", AFR2_N_CALIB, 0, 4, 0x401fu, 0x3001eUL },
  { "Wi-Fi", AFR2_N_MENU, 0, 7, 0x2000u, 0x3001fUL },
@@ -447,7 +463,7 @@ static const Afr2MenuNode nodes[] PROGMEM={
  { "Controles rapidos", AFR2_N_HOME, 1, 8, 0x801fu, 0x10003UL },
  { "Opciones radar", AFR2_N_RADAR_VIEW, 0, 2, 0x402au, 0x3003bUL },
  { "Alcance grafico", AFR2_N_RADAR_OPTIONS, 0, 4, 0x8027u, 0x3003cUL },
- { "Elegir modo", AFR2_N_QUICK, 0, 3, 0x802cu, 0x3003dUL },
+ { "Modo de robot", AFR2_N_QUICK, 0, 5, 0x802cu, 0x3003dUL },
  { "Prueba encoder", AFR2_N_TESTS, 1, 1, 89, 0x3003eUL },
  { "Prueba ESP", AFR2_N_TESTS, 0, 3, 0x403fu, 0x3003fUL },
  { "Potencia manual", AFR2_N_CONTROL, 1, 1, 26, 0x30040UL },
@@ -472,6 +488,8 @@ static const Afr2MenuNode nodes[] PROGMEM={
  { "Giros", AFR2_N_EXAM_MENU, 0, 5, 9, 0x3004eUL },
  { "Ejecutando test", AFR2_N_EXAM_MENU, 1, 1, 85, 0x3004fUL },
  { "Escala factores", AFR2_N_EXAM_MENU, 0, 9, 0, 0x30050UL },
+ /* AFR2-20261116-01: selector tras 5 fallos de sincronizacion (0 Cerrar por defecto, 1 Desactivar funcion). */
+ { "Fallo sincroniz.", AFR2_N_WIFI, 1, 2, 85, 0x3005bUL },
 };
 void Afr2Menu_Node(uint8_t index,Afr2MenuNode *out) {
     if(index>=AFR2_N_COUNT)index=AFR2_N_HOME;
@@ -489,6 +507,11 @@ void Afr2Menu_Item(uint8_t node,uint8_t index,Afr2MenuItem *out) {
     }
     Afr2MenuNode n;Afr2Menu_Node(node,&n);
     if(index>=n.count)index=n.count-1;
+    if(node==AFR2_N_MODES || node==AFR2_N_QUICK_MODES){
+        memcpy_P(out,&robotModes[index],sizeof(*out));
+        if(index==4)out->target=n.parent;
+        return;
+    }
     if(node==AFR2_N_WIFI_SETUP){if(!index){memset(out,0,sizeof(*out));strcpy(out->label,"Traer credenciales ESP");out->target=255;out->action=AFR2_A_WIFI_READ_CREDENTIALS;return;}--index;}
     if(node==AFR2_N_WIFI && index>=4){
         if(index<6){memset(out,0,sizeof(*out));strcpy_P(out->label,index==4?PSTR("QR conectar AP"):PSTR("QR abrir Web"));out->target=index==4?AFR2_N_QR_AP:AFR2_N_QR_WEB;return;}index-=2;
@@ -499,6 +522,7 @@ void Afr2Menu_Item(uint8_t node,uint8_t index,Afr2MenuItem *out) {
     /* AFR2-20261108-06: Preferencias inserta "Reintento Wi-Fi s" en la fila 2 sin mover reform[]. */
     if(node==AFR2_N_PREFS){if(index==2){memcpy_P(out,&extra[47],sizeof(*out));return;}if(index>2)--index;}
     if(node==AFR2_N_FACTORS){memcpy_P(out,&factors[index],sizeof(*out));return;}
+    if(node==AFR2_N_MOTOR_CALIB && index>=7){memcpy_P(out,&motorTrim[index-7],sizeof(*out));return;}
     if(node==AFR2_N_EXAM_MENU || node==AFR2_N_EXAM_MOVE || node==AFR2_N_EXAM_TURN){memcpy_P(out,&exam[n.first+index],sizeof(*out));return;}
     /* AFR2-20261111-02: "Pruebas examen" primera en Pruebas; el resto se corre una fila sin mover reform[]. */
     if(node==AFR2_N_TESTS){if(!index){memset(out,0,sizeof(*out));strcpy_P(out->label,PSTR("Pruebas examen"));out->target=AFR2_N_EXAM_MENU;return;}--index;}

@@ -81,7 +81,15 @@ export type Afr2CommandName =
   | 'robot.fault.get'
   | 'robot.fault.clear'
   | 'wifi.draft.submit'
-  | 'wifi.draft.cancel';
+  | 'wifi.draft.cancel'
+  | 'sync.status'
+  | 'sync.configure'
+  | 'sync.dismiss'
+  | 'sync.push'
+  // AFR2-20261117-05: clave de la copia web guardada en el ESP y código de vinculación en el OLED.
+  | 'sync.key.get'
+  | 'sync.key.set'
+  | 'sync.pair.show';
 
 export type Afr2ErrorCode =
   | 'BAD_REQUEST'

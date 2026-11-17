@@ -12,6 +12,134 @@ Broker::Session *Broker::session(uint32_t id) {
 void Broker::closeWs(AsyncWebSocketClient *client,uint16_t code,const char *reason){
     wsCloseCode_=code;strlcpy(wsCloseReason_,reason,sizeof(wsCloseReason_));client->close(code,reason);
 }
+bool Broker::isBusyFor(const IPAddress &remoteIp) {
+    for (const auto &s:sessions_) if (s.used) {
+        auto *peer=ws_.client(s.id);
+        if (peer && peer->status()==WS_CONNECTED) {
+            if ((uint32_t)s.remoteIp!=0 && remoteIp==s.remoteIp) return false;
+            return true;
+        }
+    }
+    return false;
+}
+void Broker::busyStatus(JsonObject out,const IPAddress &requesterIp) {
+    bool busy=false;
+    for (const auto &s:sessions_) if (s.used) {
+        auto *peer=ws_.client(s.id);
+        if (peer && peer->status()==WS_CONNECTED) { busy=true; break; }
+    }
+    out["busy"]=busy;
+    out["busyForRequester"]=isBusyFor(requesterIp);
+    out["maxWifiClients"]=4;
+    out["maxWebClients"]=1;
+    out["apClients"]=(WiFi.getMode()&WIFI_AP)?WiFi.softAPgetStationNum():0;
+    out["wsClients"]=readyWifiClients();
+    const char *modes[]={"idle","manual","line-follow","wheel-test","goto","fault","sequence","manual-pwm"};
+    out["robotMode"]=productMode_<8?modes[productMode_]:"unknown";
+    out["robotStopped"]=productStopped_;
+    out["uptimeMs"]=millis();
+}
+bool Broker::validSyncKey(const char *key) {
+    size_t n=strlen(key);
+    if(n<32 || n>48)return false;
+    for(size_t i=0;i<n;i++){char c=key[i];if(!((c>='0' && c<='9') || (c>='a' && c<='z') || (c>='A' && c<='Z') || c=='-' || c=='_'))return false;}
+    return true;
+}
+void Broker::syncStatus(JsonObject out) const {
+    out["schema"]="afr2-cloud-sync-1";
+    out["enabled"]=syncEnabled_;
+    out["online"]=syncEnabled_ && syncOnline_ && WiFi.status()==WL_CONNECTED;
+    out["staConnected"]=WiFi.status()==WL_CONNECTED;
+    out["failCount"]=syncFailCount_;
+    out["failNotice"]=syncFailNotice_;
+    out["defaultAction"]="close";
+    out["rev"]=syncRev_;
+    out["ackRev"]=syncAckRev_;
+    out["dirtyMask"]=syncDirtyMask_;
+    out["intervalMs"]=syncIntervalMs_;
+    out["endpoint"]=syncEndpoint_;
+    if(syncLastOkAt_)out["lastOkAtMs"]=syncLastOkAt_;else out["lastOkAtMs"]=nullptr;
+}
+void Broker::syncLayers(JsonObject out,bool full,bool includeSimulators) const {
+    uint16_t mask=full?0x01ffu:(syncDirtyMask_&0x01ffu);
+    if(includeSimulators)mask|=0x0200u;
+    out["mode"]=full?"snapshot":"delta";
+    out["rev"]=syncRev_;
+    out["baseRev"]=syncAckRev_;
+    out["includeSimulators"]=includeSimulators;
+    JsonObject layers=out["layers"].to<JsonObject>();
+    if(mask&0x0001u){
+        JsonObject sys=layers["system"].to<JsonObject>();
+        sys["version"]=AFR2_FIRMWARE_VERSION;sys["bootId"]=mega_.ownBootId();
+        sys["megaLink"]=mega_.state();sys["uptimeMs"]=millis();sys["freeHeapBytes"]=ESP.getFreeHeap();
+    }
+    if(mask&0x0002u){
+        JsonObject w=layers["wifi"].to<JsonObject>();
+        wifi_.status(w);w["wsClients"]= const_cast<Broker *>(this)->readyWifiClients();
+    }
+    if(mask&0x0004u){
+        JsonObject r=layers["robot"].to<JsonObject>();
+        const char *modes[]={"idle","manual","line-follow","wheel-test","goto","fault","sequence","manual-pwm"};
+        r["mode"]=productMode_<8?modes[productMode_]:"unknown";
+        r["stopped"]=productStopped_;r["motorsEnabled"]=stateData_[13]!=0;
+        r["fault"]=stateData_[12];r["configurationDirty"]=stateData_[25]!=0;
+    }
+    if(mask&0x01f8u){
+        JsonObject cfg=layers["config"].to<JsonObject>();
+        if(mask&0x0008u){
+            JsonObject m=cfg["motion"].to<JsonObject>();
+            m["speedLimitMmS"]=speedLimit_;m["pwmLimit"]=pwmLimit_;
+            m["wheelDiameterMm"]=wheelMm_;m["radiusSumMm"]=radiusMm_;
+        }
+        if(mask&0x0010u){
+            JsonObject mot=cfg["motors"].to<JsonObject>();
+            mot["enabled"]=stateData_[13]!=0;mot["pwmLimit"]=pwmLimit_;
+        }
+        if(mask&0x0040u){
+            JsonObject ln=cfg["line"].to<JsonObject>();
+            ln["enabled"]=(productFeatures_&AFR2_EXT_F_LINE)!=0;
+        }
+        if(mask&0x0080u){
+            JsonObject rd=cfg["radar"].to<JsonObject>();
+            rd["running"]=radarRunning_;rd["servoEnabled"]=servoEnabled_;
+        }
+        if(mask&0x0100u){
+            JsonObject ui=cfg["ui"].to<JsonObject>();
+            ui["longPressMs"]=afr2_get_u16(stateData_+26);
+        }
+    }
+    if(includeSimulators){
+        JsonObject sim=layers["simulators"].to<JsonObject>();
+        sim["explicitPush"]=true;sim["syncedAtMs"]=millis();
+    }
+}
+void Broker::noteSyncAttempt(bool ok,uint32_t ackRev) {
+    syncLastTryAt_=millis();
+    if(!syncEnabled_)return;
+    bool prevOnline=syncOnline_;
+    if(ok){
+        syncOnline_=WiFi.status()==WL_CONNECTED;
+        syncFailCount_=0;syncFailNotice_=false;syncLastOkAt_=syncLastTryAt_;
+        if(ackRev){syncAckRev_=ackRev;syncDirtyMask_&=~0x01ffu;}
+    } else {
+        syncOnline_=false;
+        if(syncFailCount_<255)++syncFailCount_;
+        if(syncFailCount_>=5 && !syncFailNotice_){
+            syncFailNotice_=true;
+            networkEvent(AFR2_NET_SYNC_FAIL_5,5);
+            JsonDocument evt;
+            evt["failCount"]=syncFailCount_;
+            evt["message"]="Fallo de sincronización tras 5 intentos";
+            evt["defaultAction"]="close";
+            broadcast("sync.fault",evt);
+        }
+    }
+    if(prevOnline!=syncOnline_){
+        networkPending_=true;networkPage_=0;
+        if(!++networkRevision_)++networkRevision_;
+    }
+    publishStatus();
+}
 void Broker::begin() {
     apJoin_=WiFi.onSoftAPModeStationConnected([this](const WiFiEventSoftAPModeStationConnected &e){networkEvent(AFR2_NET_CLIENT_JOIN,e.aid);});
     apLeave_=WiFi.onSoftAPModeStationDisconnected([this](const WiFiEventSoftAPModeStationDisconnected &e){networkEvent(AFR2_NET_CLIENT_LEAVE,e.aid);});
@@ -29,7 +157,7 @@ void Broker::event(AsyncWebSocketClient *client, AwsEventType type, void *arg, u
     uint32_t id=client->id();
     if (type==WS_EVT_CONNECT) {
         for (auto &s:sessions_) if (!s.used) {
-            ++wsOpened_;s={}; s.used=true; s.id=id; s.inputSeen=s.lastSeen=s.window=millis();networkEvent(AFR2_NET_WS_OPEN);return;
+            ++wsOpened_;s={}; s.used=true; s.id=id; s.remoteIp=client->remoteIP(); s.inputSeen=s.lastSeen=s.window=millis();networkEvent(AFR2_NET_WS_OPEN);return;
         }
         closeWs(client,1013,"Session limit"); return;
     }
@@ -114,6 +242,47 @@ void Broker::ingest(Session &s) {
         if(payload["interactive"].as<bool>())s.inputSeen=millis();
     }
     if(!strcmp(command,"system.hello"))strlcpy((char *)req.body,payload["clientVersion"].as<const char *>(),16);
+    if(!strcmp(command,"sync.configure")){
+        req.body[0]=payload["enabled"].is<bool>()?(payload["enabled"].as<bool>()?1:0):2;
+        uint16_t interval=payload["intervalMs"]|0;
+        if(interval && (interval<5000 || interval>10000)){error(req,"BAD_REQUEST","intervalMs fuera de 5000..10000.");return;}
+        afr2_put_u16(req.body+1,interval);
+        req.body[3]=payload["attemptOk"].is<bool>()?(payload["attemptOk"].as<bool>()?1:0):2;
+        afr2_put_u32(req.body+4,payload["ackRev"]|0u);
+        req.body[8]=payload["endpoint"].is<const char *>()?1:0;
+        if(req.body[8]){
+            const char *ep=payload["endpoint"]|"";
+            if(strlen(ep)>46){error(req,"BAD_REQUEST","Endpoint demasiado largo.");return;}
+            strlcpy((char *)(req.body+9),ep,47);
+        }
+        req.bodyLength=56;
+    }
+    if(!strcmp(command,"sync.dismiss")){
+        req.body[0]=payload["disable"]|false;req.bodyLength=1;
+    }
+    if(!strcmp(command,"sync.push")){
+        req.body[0]=payload["full"]|false;
+        req.body[1]=payload["includeSimulators"]|false;
+        req.body[2]=payload["attemptOk"].is<bool>()?(payload["attemptOk"].as<bool>()?1:0):2;
+        afr2_put_u32(req.body+3,payload["ackRev"]|0u);
+        req.bodyLength=7;
+    }
+    /* AFR2-20261117-05: clave de la copia web (sensible) y codigo de vinculacion para el OLED. */
+    if(!strcmp(command,"sync.key.set")){
+        const char *key=payload["key"]|"";
+        if(!payload["key"].is<const char *>() || payload["key"].as<JsonString>().size()!=strlen(key) || (key[0] && !validSyncKey(key))){
+            error(req,"BAD_REQUEST",F("Clave de sincronizacion invalida."));return;
+        }
+        strlcpy((char *)req.body,key,49);req.bodyLength=(uint8_t)strlen(key);
+    }
+    if(!strcmp(command,"sync.pair.show")){
+        const char *code=payload["code"]|"";
+        bool ok=payload["code"].is<const char *>() && payload["code"].as<JsonString>().size()==7 && strlen(code)==7 && code[3]=='-' &&
+            payload["ttlS"].is<uint8_t>() && payload["ttlS"].as<uint8_t>()>=1 && payload["ttlS"].as<uint8_t>()<=60;
+        for(uint8_t i=0;ok && i<7;i++)if(i!=3 && !((code[i]>='0' && code[i]<='9') || (code[i]>='A' && code[i]<='Z')))ok=false;
+        if(!ok){error(req,"BAD_REQUEST",F("Codigo de vinculacion invalido."));return;}
+        memcpy(req.body,code,7);req.body[7]=payload["ttlS"].as<uint8_t>();req.bodyLength=8;
+    }
     if(!strcmp(command,"wifi.ap.fallback")){
         if(!payload["ask"].is<bool>()){error(req,"BAD_REQUEST","Falta ask booleano.");return;}
         req.body[0]=payload["ask"].as<bool>();req.bodyLength=1;
@@ -291,6 +460,7 @@ void Broker::status(JsonObject out,uint32_t now,uint32_t client,bool includeCapa
     JsonObject head=out["sensorHead"].to<JsonObject>();head["known"]=sensorKnown_ && mega_.ready();head["running"]=radarRunning_;head["enabled"]=servoEnabled_;head["ageMs"]=(uint32_t)(now-sensorAt_); out["brokerTs"]=now;
     if (mega_.hasReply()) out["megaAgeMs"]=mega_.age(now); else out["megaAgeMs"]=nullptr;
     draftStatus(out["wifiDraft"].to<JsonObject>());
+    syncStatus(out["cloudSync"].to<JsonObject>());
     if(includeCapabilities)describeCapabilities(out,now);
 }
 void Broker::describeCapabilities(JsonObject out,uint32_t now) {
@@ -325,6 +495,57 @@ void Broker::dispatch(const BrokerRequest &req,uint32_t now) {
     if (!strcmp(req.command,"system.alive")) {
         // Presence remains at 500 ms; permissions arrive via hello/status changes.
         payload["megaLink"]=mega_.state();payload["brokerTs"]=now;answer(req,frame);return;
+    }
+    if(!strcmp(req.command,"sync.status")){
+        syncStatus(payload);answer(req,frame);return;
+    }
+    if(!strcmp(req.command,"sync.configure")){
+        if(req.body[0]<2){
+            syncEnabled_=req.body[0]!=0;
+            if(!syncEnabled_){syncOnline_=false;syncFailCount_=0;syncFailNotice_=false;}
+        }
+        uint16_t interval=afr2_get_u16(req.body+1);
+        if(interval>=5000 && interval<=10000)syncIntervalMs_=interval;
+        if(req.body[8])strlcpy(syncEndpoint_,(const char *)(req.body+9),sizeof(syncEndpoint_));
+        if(req.body[3]<2)noteSyncAttempt(req.body[3]!=0,afr2_get_u32(req.body+4));
+        else {networkPending_=true;networkPage_=0;if(!++networkRevision_)++networkRevision_;publishStatus();}
+        syncStatus(payload);answer(req,frame);return;
+    }
+    if(!strcmp(req.command,"sync.dismiss")){
+        bool disable=req.body[0]!=0;
+        syncFailCount_=0;syncFailNotice_=false;
+        if(disable){syncEnabled_=false;syncOnline_=false;}
+        networkPending_=true;networkPage_=0;if(!++networkRevision_)++networkRevision_;
+        syncStatus(payload);answer(req,frame);publishStatus();return;
+    }
+    if(!strcmp(req.command,"sync.key.get") || !strcmp(req.command,"sync.key.set")){
+        if(!syncKeyLoaded_){
+            if(!storage_.loadSyncKey(syncKey_,sizeof(syncKey_)) || (syncKey_[0] && !validSyncKey(syncKey_)))syncKey_[0]=0;
+            syncKeyLoaded_=true;
+        }
+        if(!strcmp(req.command,"sync.key.set")){
+            char next[49];strlcpy(next,(const char *)req.body,sizeof(next));
+            if(!storage_.saveSyncKey(next)){error(req,"INTERNAL_ERROR",F("No se pudo guardar la clave en LittleFS."));return;}
+            strlcpy(syncKey_,next,sizeof(syncKey_));
+            payload["saved"]=true;
+        } else payload["key"]=syncKey_;
+        answer(req,frame);return;
+    }
+    if(!strcmp(req.command,"sync.pair.show")){
+        if(!productReady_ || !mega_.ready() || !(productFeatures_&AFR2_EXT_F_NETWORK_UI)){
+            error(req,"MEGA_LINK_DOWN",F("El ATmega no esta disponible para mostrar el codigo."),true);return;
+        }
+        memcpy(pairCode_,req.body,7);pairCode_[7]=0;pairTtl_=req.body[7];
+        pairPending_=true;pairUntil_=now+(uint32_t)pairTtl_*1000u;
+        payload["queued"]=true;answer(req,frame);return;
+    }
+    if(!strcmp(req.command,"sync.push")){
+        bool full=req.body[0]!=0,includeSim=req.body[1]!=0;
+        if(includeSim){syncDirtyMask_|=0x0200u;if(!++syncRev_)++syncRev_;}
+        if(req.body[2]<2)noteSyncAttempt(req.body[2]!=0,afr2_get_u32(req.body+3));
+        syncStatus(payload["status"].to<JsonObject>());
+        syncLayers(payload,full,includeSim);
+        answer(req,frame);return;
     }
     if(!strcmp(req.command,"wifi.info")){
         wifi_.status(payload);payload["espBootId"]=mega_.ownBootId();payload["wsClients"]=readyWifiClients();auto *peer=ws_.client(req.client);
@@ -547,7 +768,7 @@ void Broker::tick(uint32_t now) {
            !mega_.ready() || !productReady_ || !(productFeatures_&AFR2_EXT_F_MANUAL_PWM) || !productStateAt_ || (uint32_t)(now-productStateAt_)>=2000u || (uint32_t)(now-pwmStreamAt_)>=200u)pwmStreamPending_=false;
         else if(!waiting_ && (uint32_t)(now-webPulseAt_)<500u && mega_.streamPwm(pwmStream_,now))pwmStreamPending_=false;
     }
-    bool localFront=count_ && (!strncmp(queue_[tail_].command,"wifi.",5) || !strncmp(queue_[tail_].command,"system.",7));
+    bool localFront=count_ && (!strncmp(queue_[tail_].command,"wifi.",5) || !strncmp(queue_[tail_].command,"system.",7) || !strncmp(queue_[tail_].command,"sync.",5));
     if (!deferredClient_ && count_ && (localFront || (!waiting_ && !mega_.busy()))) {
         BrokerRequest req=queue_[tail_]; queue_[tail_]=BrokerRequest{};
         tail_=(tail_+1)%4; --count_; dispatch(req,now); req.wifi=WifiConfig{};

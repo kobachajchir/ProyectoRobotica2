@@ -332,8 +332,10 @@ namespace AFR2Loader
             foreach (var file in files) details += "Offset " + file.Item1 + "\r\n" + Describe(file.Item2) + "\r\n\r\n";
             var hashes = files.Select(f => Hash(f.Item2)).ToArray();
             if (!confirm("Continuar para flashear ESP", details + "La ROM respondió. Esto autoriza ESCRIBIR y después VERIFICAR los archivos indicados.",
-                new[] { UsesMegaBridge(p) ? "Revisé puerto, archivos, offsets y enlace D18/D19; mantener RESET Mega LIBRE." : p.Get("EspTransport") == "usb-ttl" ? "Revisé COM del USB–TTL, lógica 3,3 V, TX/RX cruzados y GND; enlace UART Mega aislado." : "Revisé puerto, archivos y offsets.", AutoKeyRst(p) ? "KEY/RST automáticos en cada sesión: el flasher ejecuta la entrada a programación y confirma su estado; no toco los botones." : "Mantengo KEY del ESP hasta el aviso del primer porcentaje de escritura; solo RST queda suelto.", "Si se pierde alimentación o se cancela, el contenido puede quedar incompleto." }))
+                new[] { UsesMegaBridge(p) ? "Revisé puerto, archivos, offsets y enlace D18/D19; mantener RESET Mega LIBRE." : p.Get("EspTransport") == "usb-ttl" ? "Revisé COM del USB–TTL, lógica 3,3 V, TX/RX cruzados y GND; enlace UART Mega aislado." : "Revisé puerto, archivos y offsets.", AutoKeyRst(p) ? "KEY/RST automáticos en cada sesión: el flasher ejecuta la entrada a programación y confirma su estado; no toco los botones." : "Al continuar ejecutaré la secuencia KEY/RST para la escritura y mantendré KEY hasta el primer porcentaje; solo RST queda suelto.", "Si se pierde alimentación o se cancela, el contenido puede quedar incompleto." }))
                 throw new OperationCanceledException("Carga no confirmada.");
+            token.ThrowIfCancellationRequested();
+            await PrepareEspBootForWrite(p, port, listen, token);
             token.ThrowIfCancellationRequested();
             for (int i = 0; i < files.Count; i++) EnsureUnchanged(files[i].Item2, hashes[i]);
             var oledImages = new List<Tuple<string, string>>();
@@ -394,6 +396,43 @@ namespace AFR2Loader
             if (!signature.Success || !signature.Groups[1].Value.Equals(p.Get("Signature"), StringComparison.OrdinalIgnoreCase))
                 throw new CommandFailure("No se reconoció la firma ATmega esperada. Revisá la salida de avrdude.", p.Resolve("Avrdude"), result.ExitCode, result.Output);
             Stage("device_connected", "ATmega detectado: firma " + signature.Groups[1].Value + ". No se escribió ni verificó firmware.");
+            await ProbeMegaFlasherStatus(p, port, signature.Groups[1].Value, token);
+        }
+        async Task ProbeMegaFlasherStatus(Profile p, string port, string signatureHex, CancellationToken token)
+        {
+            if (String.IsNullOrEmpty(BridgeToolPath) || !File.Exists(BridgeToolPath)) return;
+            try
+            {
+                string python = p.Resolve("Python");
+                if (String.IsNullOrWhiteSpace(python) || !File.Exists(python)) return;
+                Profile.ValidateValue("BridgeBaud", p.Get("BridgeBaud"));
+                Profile.ValidateValue("BridgeStartupSeconds", p.Get("BridgeStartupSeconds"));
+                Stage("checking_flasher", "Comprobando si el ATmega ejecuta el flasher AFR2 a " + p.Get("BridgeBaud") + " baudios...");
+                var args = new[] { "-u", BridgeToolPath, "--flasher-keyrst", "probe", "--port", port,
+                    "--bridge-baud", p.Get("BridgeBaud"), "--startup-seconds", p.Get("BridgeStartupSeconds") };
+                var probe = await Command(p, "Python", args, Path.GetDirectoryName(BridgeToolPath), token, 45);
+                Match match = Regex.Match(probe.Output, @"AFR2-FLASHER:\s*present=(yes|no)\s+baud=(\d+)(?:[^\r\n]*?\bsession_safe=(\d+))?", RegexOptions.IgnoreCase);
+                if (!match.Success) return;
+                string baud = match.Groups[2].Value;
+                bool found = match.Groups[1].Value.Equals("yes", StringComparison.OrdinalIgnoreCase);
+                bool sessionSafe = found && match.Groups[3].Success && match.Groups[3].Value == "1";
+                MegaFlasherChecked = true;
+                MegaFlasherFound = found;
+                MegaFlasherSessionSafe = sessionSafe;
+                MegaFlasherBaud = baud;
+                Steps.Add(new { megaSignature = signatureHex, flasherFound = found, bridgeBaud = baud, sessionSafe = sessionSafe });
+                CompletionMessage = found
+                    ? "ATmega detectado (firma " + signatureHex + "). Flasher encontrado a " + baud + " baudios" +
+                      (sessionSafe ? " (revisión actual)." : " (revisión anterior: recargar desde Flasher ATmega).")
+                    : "ATmega detectado (firma " + signatureHex + "). Flasher no encontrado a " + baud + " baudios (firmware del auto u otro programa).";
+                log(CompletionMessage);
+                Stage(found ? "flasher_found" : "flasher_absent", CompletionMessage);
+            }
+            catch (OperationCanceledException) { throw; }
+            catch (Exception error)
+            {
+                log("No se pudo consultar si el ATmega ejecuta el flasher AFR2: " + error.Message);
+            }
         }
     }
 }

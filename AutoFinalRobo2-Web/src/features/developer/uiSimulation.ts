@@ -27,7 +27,7 @@ export type SimulationEvent = {type:'scan-fixture';outcome:'networks'|'empty'|'f
 const sampleNetworks = Array.from({ length: 16 }, (_, i) => `Red demo ${i + 1}`);
 const wrap = (n: number, count: number) => ((n % count) + count) % count;
 const limit = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
-const persistent = [115,116,117,118,119,120,4, 6, 7, 14, 25, 26, 28, 29, 30, 31, 32, 33, 34, 35, 36, 41, 42, 53, 54, 68, 70, 71, 81];
+const persistent = [115,116,117,118,119,120,121,122,123,124,4, 6, 7, 14, 25, 26, 28, 29, 30, 31, 32, 33, 34, 35, 36, 41, 42, 53, 54, 68, 70, 71, 81];
 const dirty = (u: UiSimulation) => persistent.some(key => u.values[key] !== u.saved[key]) || u.lineCalibrated !== u.savedLineCalibrated;
 const radarDirty = (u: UiSimulation) => [70, 71].some(key => u.values[key] !== u.saved[key]);
 const poseReady = (u: UiSimulation) => !!(u.values[39] && u.hallCpr.every(Boolean) && u.values[40]);
@@ -41,6 +41,7 @@ function menuSnapshot(u: UiSimulation): FirmwareSnapshot {
 export const simulationScreenCode = (u: UiSimulation) => {
   const code = (u.edit && u.editingAction === 12) || u.node === S.AFR2_N_HALL_PICK ? 0x030044
     : u.edit && u.editingAction!==undefined && u.editingAction>=115 && u.editingAction<=120 ? 0x030051+u.editingAction-115
+    : u.edit && u.editingAction!==undefined && u.editingAction>=121 && u.editingAction<=124 ? 0x030057+u.editingAction-121
     : u.edit && u.editingAction === 83 ? 0x030040 : u.touch ? 0x030035
     : u.notice && u.notice.kind > 16 ? 0x040000 + u.notice.kind - 16 : Number(firmwareNode(u.node)[5]);
   return `0x${code.toString(16).padStart(6, '0')}`;
@@ -50,6 +51,7 @@ export function simulationItems(u: UiSimulation): FirmwareMenuItem[] {
   const item = (label: string): FirmwareMenuItem => ({ label, target: 255, action: 0, arg: 0, min: 0, max: 0, step: 0 });
   if (u.node === S.AFR2_N_HOME || u.node === S.AFR2_N_HALL_COUNT || u.node === S.AFR2_N_ENCODER_TEST) return [];
   if (u.node === S.AFR2_N_SAVE_CONFIRM) return ['Si', 'No'].map(item);
+  if (u.node === S.AFR2_N_SYNC_ASK) return ['Cerrar', 'Desactivar funcion'].map(item);
   if (u.node === S.AFR2_N_HALL_PICK) return ['FL', 'FR', 'RL', 'RR'].map(item);
   if (u.node === S.AFR2_N_WIFI_MODE_SELECT) return ['STA', 'AP', 'AP-STA'].map(item);
   if (u.node === S.AFR2_N_CAPS) return ['UI y OLED', 'UART y ESP', 'Sensores', 'PWM y STOP', 'GOTO y pose', 'Secuencias y EEPROM'].map(item);
@@ -61,7 +63,7 @@ export function simulationItems(u: UiSimulation): FirmwareMenuItem[] {
 }
 export function createUiSimulation(scenario: SimulationScenario = 'ready'): UiSimulation {
   const ready = scenario === 'ready';
-  const values: Record<number, number> = {115:1000,116:1000,117:775,118:775,119:1000,120:1000,4:150, 6:80, 7:100, 9:0, 10:0, 12:0, 13:40, 14:500, 20:1500,
+  const values: Record<number, number> = {115:1000,116:1000,117:775,118:775,119:1000,120:1000,121:1000,122:1000,123:1000,124:1000,4:150, 6:80, 7:100, 9:0, 10:0, 12:0, 13:40, 14:500, 20:1500,
     25:1, 26:31, 27:0, 28:0, 29:Number(ready), 30:0, 31:255, 32:4, 33:128, 34:8, 35:0,
     36:Number(ready), 37:80, 38:150, 39:Number(ready), 40:1, 41:4, 42:0, 44:3, 109:0, 110:1, 53:200, 54:0,
     59:90, 63:0, 64:180, 65:15, 66:100, 67:150, 68:0, 70:2, 71:1, 81:800, 83:100, 85:2000, 106:30 }; // AFR2-20261108-06: Reintento Wi-Fi s
@@ -85,7 +87,7 @@ function fixedParentNode(node: number): boolean {
     S.AFR2_N_MENU, S.AFR2_N_WIFI, S.AFR2_N_WIFI_VIEW, S.AFR2_N_WIFI_NETWORKS,
     S.AFR2_N_WIFI_SETUP, S.AFR2_N_WIFI_REVIEW, S.AFR2_N_WIFI_AP, S.AFR2_N_WIFI_SEARCH,
     S.AFR2_N_WIFI_MODE_SELECT, S.AFR2_N_WIFI_DATA, S.AFR2_N_NETWORK, S.AFR2_N_AP_INFO,
-    S.AFR2_N_QR_AP, S.AFR2_N_QR_WEB, S.AFR2_N_WIFI_ASK,
+    S.AFR2_N_QR_AP, S.AFR2_N_QR_WEB, S.AFR2_N_WIFI_ASK, S.AFR2_N_SYNC_ASK,
   ].includes(node);
 }
 function open(u: UiSimulation, node: number) {
@@ -165,7 +167,7 @@ export function simulationUnavailable(u:UiSimulation,item:FirmwareMenuItem):stri
   const a=item.action;
   if(!a)return null;
   if(a===55)return !u.stopped?'Detener salidas':u.hallMeasuring?'Finalizar Hall':u.mode===MODE.sequence?'Salir secuencia':u.mode!==MODE.fault?'Sin fallos activos':null;
-  if(a>=115 && a<=120 && (!u.stopped || u.hallMeasuring))return 'Detener para ajustar';
+  if(a>=115 && a<=124 && (!u.stopped || u.hallMeasuring))return 'Detener para ajustar';
   if(u.pending?.kind==='save')return 'Guardando EEPROM';
   if([74,75,77,86,87].includes(a) && actionState(u,a))return null;
   if(a===5 && u.mode===MODE.sequence)return 'Secuencia ocupada';
@@ -307,6 +309,11 @@ export function reduceUiSimulation(previous:UiSimulation,event:SimulationEvent):
       const item=firmwareMenuItem(79,u.selection,menuSnapshot(u));
       u.edit=true;u.editing=item;u.editingAction=item.action;u.editingLabel=item.label;u.draft=u.values[item.action];
     }
+    else if(code>=0x030057 && code<=0x03005a){
+      open(u,S.AFR2_N_MOTOR_CALIB);u.history=[];u.selection=7+(code-0x030057);
+      const item=firmwareMenuItem(S.AFR2_N_MOTOR_CALIB,u.selection,menuSnapshot(u));
+      u.edit=true;u.editing=item;u.editingAction=item.action;u.editingLabel=item.label;u.draft=u.values[item.action];
+    }
     else if(code===0x030044){open(u,S.AFR2_N_HALL_PICK);u.selection=u.values[12];u.history=[];}
     else {const node=L.nodes.findIndex(row=>Number(row[5])===code);if(node<0)return previous;open(u,node);u.history=[];
       if(node===S.AFR2_N_SAVE_CONFIRM){u.confirmTarget=S.AFR2_N_HALL_TEST;u.confirmSave=18;u.confirmDiscard=19;u.confirmWait=false;}
@@ -325,6 +332,13 @@ export function reduceUiSimulation(previous:UiSimulation,event:SimulationEvent):
     if(rotation)u.selection^=1;
     if(click && invoke(u,actionItem(u.selection?u.confirmDiscard:u.confirmSave),u.selection && u.confirmSave===18?2:0)){
       if(!u.selection)u.confirmWait=true;else{leaveConfirm(u);notify(u,'Descartados',false,'Cambios',2500);}}
+    return u;
+  }
+  if(u.node===S.AFR2_N_SYNC_ASK){
+    if(u.notice){if(click)dismiss(u);return u;}
+    if(long){goBack(u);return u;}
+    if(rotation)u.selection^=1;
+    if(click){goBack(u);if(u.selection===1)notify(u,'Desactivada',false,'Sincronizacion',2500);}
     return u;
   }
   if(u.node===S.AFR2_N_HALL_PICK || u.node===S.AFR2_N_HALL_COUNT){
@@ -429,7 +443,7 @@ export function simulationSnapshot(u: UiSimulation): FirmwareSnapshot {
     [S.AFR2_N_WIFI_REVIEW]: [u.draftSsid, `Modo:${v[S.AFR2_A_WIFI_MODE]} Listo:${Number(u.wifiDraftReady)}`, 'Giro: opciones'],
     [S.AFR2_N_VERSIONS]: ['Mega demo UI', 'ESP:demo', 'Web:demo'],
     [S.AFR2_N_CAPS]: ['UI/TWI/UART/STOP', `Linea:${Number(u.lineCalibrated)} Hall:${Number(hall)}`, `GOTO req:${Number(pose)}`],
-    [S.AFR2_N_PREFS_VIEW]: [`EEPROM valida:${Number(u.prefsLoaded)}`, `Guardado estado:${u.prefsLoaded ? 2 : 0}`, 'CRC/version 12'],
+    [S.AFR2_N_PREFS_VIEW]: [`EEPROM valida:${Number(u.prefsLoaded)}`, `Guardado estado:${u.prefsLoaded ? 2 : 0}`, 'CRC/version 14'],
   };
   const items = simulationItems(u).slice(u.firstVisible, u.firstVisible + 3);
   if(u.node===S.AFR2_N_SAVE_CONFIRM && u.confirmSave===18)lines[u.node]=[`Sensor Hall ${['FL','FR','RL','RR'][v[12]]}`,`Pulsos:${u.hallDraft[v[12]]}`,''];

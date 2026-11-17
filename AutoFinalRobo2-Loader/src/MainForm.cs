@@ -38,6 +38,10 @@ namespace AFR2Loader
         string currentLog;
         bool busy;
         readonly ToolStripMenuItem configMenu = new ToolStripMenuItem("Perfiles");
+        CancellationTokenSource startupComCancel;
+        ConcurrentDictionary<string, Task> startupPortTasks;
+        string startupDetectedPort = "", startupDetectedSummary = "";
+        bool startupComScanning, startupComScanCompleted, manualPortSelected;
 
         public MainForm(string appDir, string requestedProfile = null, string requestedEspMode = null)
         {
@@ -77,6 +81,7 @@ namespace AFR2Loader
             var tabs = new TabControl { Dock = DockStyle.Fill, Padding = new Point(12, 8) };
             var operations = new TabPage("Operación") { Padding = new Padding(16) };
             var configuration = new TabPage("Configuración") { Padding = new Padding(UiInset) };
+            configurationTabs = tabs; configurationTab = configuration;
             tabs.TabPages.Add(operations); InitializeMegaBridge(tabs); tabs.TabPages.Add(configuration);
             var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 6 };
             layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
@@ -159,10 +164,12 @@ namespace AFR2Loader
             timer.Interval = 100; timer.Tick += (s, e) => { DrainLog(); DrainCommandFeedback(); }; timer.Start();
             FillSettings(); RefreshPorts();
             FormClosing += WindowClosing;
+            ports.SelectionChangeCommitted += (s, e) => { manualPortSelected = true; };
             InitializeIntegration(tabs, layout, configLayout, footer);
             InitializeSerial(tabs);
             InitializePreferences(tabs);
             InitializeConverter(tabs);
+            Shown += async (s, e) => await StartStartupComDetectionAsync();
             bridgeTab.Text = "Flasher";
             string[] tabOrder = { "Operación", "Flasher", "Monitor serie", "Historial de sesión", "Eventos y errores", "Conversor HEX / ASCII", "Servidor MCP", "Configuración" };
             var orderedPages = tabs.TabPages.Cast<TabPage>().OrderBy(page => { int index = Array.IndexOf(tabOrder, page.Text); return index < 0 ? 8 : index; }).ToArray();
@@ -353,6 +360,12 @@ namespace AFR2Loader
             {
                 lock (logGate) logFile = new StreamWriter(currentLog + ".txt", false, new UTF8Encoding(false));
                 Log(title + " | perfil: " + snapshot.Get("Name") + " | puerto: " + port);
+                if (usesSerial && (startupComScanning || startupComCancel != null))
+                {
+                    SetState("Liberando autodetección COM antes de usar " + port + "...");
+                    await StopStartupComProbeAsync(port);
+                    cancellation.Token.ThrowIfCancellationRequested();
+                }
                 if (usesSerial && serialCapture != null)
                 {
                     SetState("Liberando monitor serie antes de usar la herramienta de carga/diagnóstico...");
@@ -363,6 +376,9 @@ namespace AFR2Loader
                 SetState(title);
                 await body(ops, snapshot, port, cancellation.Token);
                 resultState = "completed";
+                if (ops.MegaFlasherChecked) SetMegaFlasherDetection(port, ops.MegaFlasherFound, ops.MegaFlasherBaud, ops.MegaFlasherSessionSafe);
+                else if (ops.InstalledMegaFlasher) SetMegaFlasherDetection(port, true, snapshot.Get("BridgeBaud"), true);
+                else if (ops.MegaFirmwareFlashed || ops.FlashedMegaBackup) ClearMegaFlasherDetection();
                 status.Text = "Completado: " + title;
                 lastResult.Text = !String.IsNullOrEmpty(ops.CompletionMessage) ? ops.CompletionMessage : ops.Verified ? "Carga completada y contenido verificado correctamente. Consultá el registro y restaurá el cableado de operación." : "Operación completada sin escritura/verificación de firmware. Consultá el detalle del registro.";
                 lastResult.ForeColor = Color.FromArgb(20, 110, 65); Log(status.Text);
@@ -461,6 +477,7 @@ namespace AFR2Loader
         void DetectSelected()
         {
             if (target.SelectedIndex != 0) { DetectEsp(); return; }
+            ClearMegaFlasherDetection();
             Execute("Detectar ATmega / firma", (ops, p, port, token) => ops.ProbeMega(p, port, token), true);
         }
         void Flash()
@@ -493,10 +510,169 @@ namespace AFR2Loader
             else if (!closingAfterSerial && serialCapture != null)
             {
                 e.Cancel = true;
-                try { await StopSerialMonitor("Cierre de ventana"); closingAfterSerial = true; BeginInvoke(new Action(Close)); }
+                try { CancelStartupComProbe(); await StopSerialMonitor("Cierre de ventana"); closingAfterSerial = true; BeginInvoke(new Action(Close)); }
                 catch (Exception error) { QueueFailure("Cierre de ventana", error); }
             }
-            else { RejectPending(); if (bridge != null) bridge.Dispose(); timer.Stop(); timer.Dispose(); }
+            else { CancelStartupComProbe(); RejectPending(); if (bridge != null) bridge.Dispose(); timer.Stop(); timer.Dispose(); }
+        }
+        void UpdateComAutoDetectHint()
+        {
+            if (comAutoDetectHint == null) return;
+            bool active = preferences != null && preferences.AutoDetectComOnStartup;
+            string text;
+            Color ink;
+            if (!active)
+            {
+                ink = LoaderAppearance.Muted;
+                text = "Autodetectar COM inactivo · Configuración -> General";
+            }
+            else
+            {
+                ink = LoaderAppearance.YellowHintInk;
+                if (startupComScanning) text = "Autodetectando COM al iniciar...";
+                else if (!String.IsNullOrEmpty(startupDetectedPort)) text = "Autodetectar COM activo · " + startupDetectedPort + " (" + startupDetectedSummary + ")";
+                else if (startupComScanCompleted) text = "Autodetectar COM activo · sin respuesta al iniciar";
+                else text = "Autodetectar COM activo · aplica al iniciar";
+            }
+            bool textChanged = comAutoDetectHint.Text != text;
+            if (textChanged) comAutoDetectHint.Text = text;
+            Color renderedInk = AppearanceForeground(ink);
+            if (comAutoDetectHint.ForeColor != renderedInk && comAutoDetectHint.ForeColor != ink)
+                comAutoDetectHint.ForeColor = ink;
+            if (textChanged) FitOperationRows();
+        }
+        int ReadStartupBridgeBaud()
+        {
+            int baud = 115200;
+            if (profile != null)
+            {
+                string raw = profile.Get("BridgeBaud");
+                int parsed;
+                if (int.TryParse(raw, out parsed) && (parsed == 115200 || parsed == 57600 || parsed == 38400 || parsed == 9600))
+                    baud = parsed;
+            }
+            return baud;
+        }
+        async Task StartStartupComDetectionAsync()
+        {
+            if (preferences == null || !preferences.AutoDetectComOnStartup || startupComScanning || IsDisposed) return;
+            if (busy || (serialCapture != null && serialCapture.Active)) return;
+
+            string[] portNames = SerialPort.GetPortNames()
+                .Where(p => System.Text.RegularExpressions.Regex.IsMatch(p ?? "", @"^COM[1-9][0-9]{0,4}$", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(p => p.Length)
+                .ThenBy(p => p)
+                .ToArray();
+            if (portNames.Length == 0)
+            {
+                startupComScanCompleted = true;
+                startupDetectedPort = "";
+                startupDetectedSummary = "";
+                UpdateComAutoDetectHint();
+                Log("Autodetección COM al iniciar: no hay puertos COM disponibles.");
+                return;
+            }
+
+            var cts = new CancellationTokenSource();
+            var tasks = new ConcurrentDictionary<string, Task>(StringComparer.OrdinalIgnoreCase);
+            startupComCancel = cts;
+            startupPortTasks = tasks;
+            startupComScanning = true;
+            startupComScanCompleted = false;
+            startupDetectedPort = "";
+            startupDetectedSummary = "";
+            UpdateComAutoDetectHint();
+            int bridgeBaud = ReadStartupBridgeBaud();
+            Log("Autodetección COM al iniciar: consultando " + String.Join(", ", portNames) + " (flasher @" + bridgeBaud + "/115200 o #AFR2 TAP)...");
+            try
+            {
+                StartupComScan scan = await StartupComDetector.ProbeAllAsync(portNames, bridgeBaud, tasks, cts.Token);
+                if (IsDisposed) return;
+                if (cts.IsCancellationRequested)
+                {
+                    Log("Autodetección COM al iniciar interrumpida antes de completar.");
+                    return;
+                }
+                if (scan.Matches.Count > 0)
+                {
+                    ComProbeResult chosen = scan.Matches
+                        .OrderByDescending(m => m.Kind == "flasher")
+                        .ThenByDescending(m => m.SessionSafe)
+                        .ThenBy(m => m.Port.Length)
+                        .ThenBy(m => m.Port, StringComparer.OrdinalIgnoreCase)
+                        .First();
+                    startupDetectedPort = chosen.Port;
+                    startupDetectedSummary = chosen.Detail;
+                    if (!manualPortSelected && !busy && (serialCapture == null || !serialCapture.Active))
+                    {
+                        if (!ports.Items.Cast<object>().Any(x => StringComparer.OrdinalIgnoreCase.Equals(Convert.ToString(x), chosen.Port)))
+                            RefreshPorts();
+                        string matchedItem = ports.Items.Cast<object>()
+                            .Select(x => Convert.ToString(x))
+                            .FirstOrDefault(x => StringComparer.OrdinalIgnoreCase.Equals(x, chosen.Port));
+                        if (matchedItem != null) ports.SelectedItem = matchedItem;
+                    }
+                    if (scan.Matches.Count == 1)
+                    {
+                        Log("Autodetección COM al iniciar: conectado en " + chosen.Port + " (" + chosen.Detail + ").");
+                    }
+                    else
+                    {
+                        string allMatches = String.Join(", ", scan.Matches.Select(m => m.Port + " [" + m.Detail + "]"));
+                        Log("Autodetección COM al iniciar: seleccionado " + chosen.Port + " (" + chosen.Detail + "). Respuestas: " + allMatches + ".");
+                    }
+                }
+                else
+                {
+                    Log("Autodetección COM al iniciar: sin respuesta AFR2 en " + scan.ProbedCount + " puerto(s) COM.");
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                if (!IsDisposed) Log("Autodetección COM al iniciar cancelada.");
+            }
+            catch (Exception error)
+            {
+                if (!IsDisposed) Log("Autodetección COM al iniciar: " + error.Message);
+            }
+            finally
+            {
+                if (startupComCancel == cts)
+                {
+                    startupComScanning = false;
+                    startupComScanCompleted = !cts.IsCancellationRequested;
+                    startupComCancel = null;
+                    startupPortTasks = null;
+                    if (!IsDisposed) UpdateComAutoDetectHint();
+                }
+                cts.Dispose();
+            }
+        }
+        void CancelStartupComProbe()
+        {
+            CancellationTokenSource cts = startupComCancel;
+            if (cts == null) return;
+            try { cts.Cancel(); }
+            catch (ObjectDisposedException) { }
+        }
+        async Task StopStartupComProbeAsync(string port = null)
+        {
+            CancellationTokenSource cts = startupComCancel;
+            ConcurrentDictionary<string, Task> tasks = startupPortTasks;
+            if (cts == null && !startupComScanning) return;
+            CancelStartupComProbe();
+            Task waitTask = null;
+            if (!String.IsNullOrWhiteSpace(port) && tasks != null)
+                tasks.TryGetValue(port.Trim(), out waitTask);
+            else if (tasks != null && !tasks.IsEmpty)
+                waitTask = Task.WhenAll(tasks.Values.ToArray());
+
+            if (waitTask != null && !waitTask.IsCompleted)
+            {
+                try { await Task.WhenAny(waitTask, Task.Delay(3500)); }
+                catch { }
+            }
         }
         void OpenManual()
         {

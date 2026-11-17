@@ -15,6 +15,7 @@ namespace AFR2Loader
             try { preferences = LoaderPreferences.Read(); }
             catch (Exception error) { preferences = new LoaderPreferences(); MessageBox.Show(this, "No se pudieron leer las preferencias: " + error.Message); }
             backupBeforeFlasher.Checked = preferences.BackupMegaBeforeFlasher;
+            SyncAutoDetectComSetting();
             var menu = new ToolStripMenuItem("Preferencias");
             foreach (string caption in new[] { "Backups ATmega", "Asistentes", "Registros" }) { string section = caption; menu.DropDownItems.Add(caption, null, (s, e) => ShowPreferences(section)); }
             optionsMenu.DropDownItems.Insert(0, menu);
@@ -37,7 +38,7 @@ namespace AFR2Loader
                 if (ShowStyledDialog(dialog) != DialogResult.OK) return false;
                 if (noMore.Checked)
                 {
-                    var next = new LoaderPreferences { Theme = preferences.Theme, BackupMegaBeforeFlasher = preferences.BackupMegaBeforeFlasher, ShowNoMegaBackupWarning = false, RequireChecklist = preferences.RequireChecklist, ChecklistsInitiallyChecked = preferences.ChecklistsInitiallyChecked };
+                    var next = new LoaderPreferences { Theme = preferences.Theme, BackupMegaBeforeFlasher = preferences.BackupMegaBeforeFlasher, ShowNoMegaBackupWarning = false, RequireChecklist = preferences.RequireChecklist, ChecklistsInitiallyChecked = preferences.ChecklistsInitiallyChecked, AutoDetectComOnStartup = preferences.AutoDetectComOnStartup };
                     next.Save(); preferences = next; showNoBackupWarning.Checked = false;
                     Log("Aviso sin backup desactivado; se puede reactivar en Preferencias.");
                 }

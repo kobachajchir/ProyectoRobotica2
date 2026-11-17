@@ -13,16 +13,28 @@ namespace AFR2Loader
         readonly ComboBox filesystemLayout = new ComboBox { Width = 285, DropDownStyle = ComboBoxStyle.DropDownList };
         readonly CheckBox includeFilesystem = new CheckBox { Text = "Incluir filesystem", AutoSize = true };
         readonly Label memorySummary = new Label { Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft };
+        readonly Label megaFlasherBadge = new Label { AutoSize = true, Margin = new Padding(4, 12, 0, 8), Visible = false };
+        readonly Label comAutoDetectHint = new Label
+        {
+            AutoSize = true,
+            Margin = new Padding(12, 12, 0, 8),
+            Cursor = Cursors.Hand,
+            ForeColor = LoaderAppearance.Muted,
+            Text = "Autodetectar COM inactivo · Configuración -> General"
+        };
         Button atPackageButton;
         bool syncingEspOptions;
 
         Control CreateOperationSelectors()
         {
             var selectors = UiRow(); selectors.WrapContents = true;
-            var portGroup = UiRow(); portGroup.WrapContents = false; portGroup.Margin = new Padding(0, 0, 24, 0);
+            var portGroup = UiRow(); portGroup.WrapContents = true; portGroup.Margin = new Padding(0, 0, 24, 0);
             ports.Width = 115; ports.DropDownStyle = ComboBoxStyle.DropDownList;
             portGroup.Controls.Add(UiField("Puerto", ports)); idleControls.Add(ports);
             AddButton(portGroup, "Actualizar puertos", RefreshPorts, 165).Margin = new Padding(16, 4, 0, 4);
+            comAutoDetectHint.Click += (s, e) => OpenGeneralConfigurationTab();
+            new ToolTip().SetToolTip(comAutoDetectHint, "Activa o desactiva la autodetección de puerto COM al iniciar desde Configuración -> General.");
+            portGroup.Controls.Add(comAutoDetectHint);
             var targetGroup = UiRow(); targetGroup.WrapContents = false; targetGroup.Margin = new Padding(0);
             deviceTarget.Items.AddRange(new object[] { "ATmega", "ESP" }); deviceTarget.SelectedIndex = 0;
             idleControls.Add(deviceTarget); targetGroup.Controls.Add(UiField("Destino", deviceTarget));
@@ -42,7 +54,11 @@ namespace AFR2Loader
             panel.Controls.Add(selectors, 0, 1);
             var mega = UiRow();
             megaVariant.Items.AddRange(new object[] { "Firmware completo del auto", "Solo comunicación" }); megaVariant.SelectedIndex = 0;
-            mega.Controls.Add(UiField("Variante ATmega", megaVariant)); idleControls.Add(megaVariant); megaOptionsRow = mega;
+            mega.Controls.Add(UiField("Variante ATmega", megaVariant)); idleControls.Add(megaVariant);
+            megaFlasherBadge.Font = new Font(Font, FontStyle.Bold);
+            workflowTips.SetToolTip(megaFlasherBadge, "Resultado condicional de Detectar ATmega sobre si la placa ejecuta el flasher AFR2.");
+            mega.Controls.Add(megaFlasherBadge);
+            megaOptionsRow = mega;
             megaVariant.SelectionChangeCommitted += (s, e) => UpdateTargetActions(); panel.Controls.Add(mega, 0, 2);
             var options = UiRow();
             espMode.Width = 195; espMode.Items.AddRange(new object[] { "Firmware propio", "Paquete AT" });

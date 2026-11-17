@@ -2,6 +2,8 @@ import { NetworkPill,NetworkDetails } from '../../features/connection/NetworkCon
 import { BatteryPill, BatteryDetails } from '../../features/connection/BatteryStatus';
 import { RobotAlerts } from '../../features/connection/RobotAlerts';
 import { RobotModePill } from '../../features/connection/RobotModePill';
+import { QrAccessModal } from '../../features/connection/QrAccessModal';
+import { CloudSyncDetails, CloudSyncPill } from '../../features/sync/CloudSyncController';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { BrandMark } from '../ui/BrandMark';
@@ -46,7 +48,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       return true;
     }
   });
-  const [modal, setModal] = useState<'oled' | 'settings' | 'network' | 'battery' | 'faults' | 'mode' | 'more' | null>(null);
+  const [modal, setModal] = useState<'oled' | 'settings' | 'qr' | 'sync' | 'network' | 'battery' | 'faults' | 'mode' | 'more' | null>(null);
   const [origin, setOrigin] = useState<ModalOrigin | null>(null);
   const sidebar = useRef<HTMLElement>(null);
   const location = useLocation();
@@ -176,6 +178,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <span className="afr2-location">{title}</span>
             </div>
             <div className="afr2-action-row afr2-topbar-actions">
+              <CloudSyncPill onOpen={source => { setOrigin(source); setModal('sync'); }} />
               <RobotModePill open={modal === 'mode'} origin={origin}
                 onOpen={source => { setOrigin(source); setModal('mode'); }}
                 onClose={() => setModal(value => value === 'mode' ? null : value)} />
@@ -220,6 +223,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         <FloatingModal open={modal==='network'} origin={origin} onClose={()=>setModal(v=>v==='network'?null:v)} title="Red conectada" description="Wi-Fi y punto de acceso del auto">
           <NetworkDetails onClose={()=>setModal(null)}/>
         </FloatingModal>
+        {/* AFR2-20261117-01: modal de sincronización web, con el mismo formato que Red y Batería. */}
+        <FloatingModal open={modal === 'sync'} origin={origin} onClose={() => setModal(value => value === 'sync' ? null : value)} title="Sincronización web" description="Copia online de la configuración y el estado del auto">
+          <CloudSyncDetails />
+        </FloatingModal>
         <FloatingModal open={modal === 'battery'} origin={origin} onClose={() => setModal(value => value === 'battery' ? null : value)} title="Batería" description="Voltaje medido por el controlador">
           <BatteryDetails />
         </FloatingModal>
@@ -230,6 +237,19 @@ export function AppShell({ children }: { children: ReactNode }) {
           title="Configuración y apariencia"
         >
           <div className="afr2-theme-field"><span>Apariencia</span><SegmentedControl ariaLabel="Apariencia" items={THEME_CHOICES} value={preference} onChange={setPreference} /></div>
+          <div className="afr2-action-row my-3">
+            <Button
+              type="button"
+              variant="secondary"
+              icon={<UiIcon name="wifi" size={16} />}
+              onClick={(event) => {
+                setOrigin({ element: event.currentTarget, keyboard: event.detail === 0 });
+                setModal('qr');
+              }}
+            >
+              Mostrar QR de la app y Wi-Fi
+            </Button>
+          </div>
           <SystemPanel />
           {/* AFR2-20261101-12: Desarrollador se encuentra sin conocer el triple toque del logo. */}
           <section className="afr2-settings-about" aria-labelledby="afr2-settings-about-title">
@@ -238,6 +258,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <NavLink to="/desarrollador" className="afr2-route-link" onClick={() => setModal(null)}><UiIcon name="board" /><span>Desarrollador</span></NavLink>
           </section>
         </FloatingModal>
+        <QrAccessModal open={modal === 'qr'} origin={origin} onClose={() => setModal(value => value === 'qr' ? 'settings' : value)} />
         <FloatingModal open={modal === 'more'} origin={origin} onClose={() => setModal(value => (value === 'more' ? null : value))} title="Más" description="El resto de las secciones, la pantalla en vivo y la configuración.">
           <nav aria-label="Más secciones" className="afr2-more-list">
             <button type="button" className="afr2-route-link" aria-haspopup="dialog" onClick={event => openModal('oled', event.currentTarget, event.detail === 0)}>

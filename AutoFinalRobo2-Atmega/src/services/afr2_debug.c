@@ -235,7 +235,8 @@ uint8_t Afr2Debug_TxIdle(void) { return !d.ready || Afr2Usart_TxIdle(&usart); }
 #if AFR2_DEBUG_TAP
 static uint8_t sensitive_command(uint8_t command) {
     /* Keep in sync with "sensitive": true in Contracts/contracts/wire_catalog.json. */
-    return command == AFR2_EXT_WIFI_POLL || command == AFR2_EXT_WIFI_UPDATE || command == AFR2_EXT_NETWORK_STATE;
+    return command == AFR2_EXT_WIFI_POLL || command == AFR2_EXT_WIFI_UPDATE || command == AFR2_EXT_NETWORK_STATE ||
+           command == AFR2_EXT_SYNC_PAIR; /* AFR2-20261117-05 */
 }
 static PGM_P tap_name(uint8_t mode) {
     switch (mode) {

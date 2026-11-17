@@ -74,12 +74,15 @@
 #define CMD_RELEASE 0x12u    /* release KEY and RST, no reset */
 #define CMD_RST_PULSE 0x13u  /* pulse RST only, KEY untouched */
 #define CMD_BOOT_TEST 0x14u   /* AFR2-20261106-17: capture ROM boot at 74880 */
+#define CMD_BOOT_HOLD 0x15u   /* AFR2-20261116-02: capture 74880 and keep KEY held until RUN/END_AUTO/RELEASE */
 #define CMD_AUTO_OFF 0x20u   /* PC config: release pins, refuse pin commands */
 #define CMD_AUTO_ON 0x21u    /* PC config: allow ENTER_BOOT/RUN/RST_PULSE */
+#define CMD_END_AUTO 0x22u   /* AFR2-20261116-02: release KEY, auto=0, send RSP before RST pulse */
 #define CMD_LABEL 0x30u       /* AFR2-20261108-08: title or image name for the OLED */
 #define CMD_RESULT_OK 0x31u   /* AFR2-20261108-08: esptool ended without error */
 #define CMD_RESULT_FAIL 0x32u /* AFR2-20261108-08: esptool ended with an error */
 #define FLAG_DISPLAY 0x10u
+#define FLAG_SESSION_SAFE 0x20u
 #define KEY_MAX_HOLD_OVERFLOWS 143u /* Timer1 clk/1024 overflow 4.19 s: ~600 s */
 static const uint8_t ctl_magic[8] = { 0xA5, 'A', 'F', 'R', '2', 'C', 'T', 'L' };
 static const uint8_t rsp_magic[8] = { 0xA5, 'A', 'F', 'R', '2', 'R', 'S', 'P' };
@@ -132,7 +135,9 @@ static void quiesce(void)
     /* D13 is the radar servo in this car: never use it as a status LED. */
     DDRB &= (uint8_t)~_BV(PB7); PORTB &= (uint8_t)~_BV(PB7);
     DDRE &= (uint8_t)~_BV(PE0); PORTE &= (uint8_t)~_BV(PE0); /* RX0 */
+    PORTE |= _BV(PE1); DDRE |= _BV(PE1); /* TX0 idle high even when TXEN0=0 */
     DDRD &= (uint8_t)~_BV(PD2); PORTD &= (uint8_t)~_BV(PD2); /* RX1 */
+    PORTD |= _BV(PD3); DDRD |= _BV(PD3); /* TX1/D18 idle high even when TXEN1=0 */
     /* D32/D33 KEY/RST: input without pull-up (button released) until a frame arrives. */
     PORTC &= (uint8_t)~(KEY_MASK|RST_MASK); DDRC &= (uint8_t)~(KEY_MASK|RST_MASK);
 }
@@ -240,8 +245,12 @@ static void from_pc(uint8_t value)
 ISR(USART0_RX_vect)
 {
     uint8_t flags = UCSR0A, value = UDR0;
-    if (flags & (_BV(FE0)|_BV(DOR0)|_BV(UPE0))) ++afr2_bridge_rx0_errors;
-    else from_pc(value);
+    if (flags & (_BV(FE0)|_BV(DOR0)|_BV(UPE0))) {
+        ++afr2_bridge_rx0_errors;
+        ctl_stage = 0; ctl_pos = 0;
+    } else {
+        from_pc(value);
+    }
 }
 ISR(USART1_RX_vect)
 {
@@ -263,6 +272,7 @@ ISR(USART1_UDRE_vect)
 /* Drive HIGH = transistor on = button pressed. Release: drive low, then input. */
 static void line_press(uint8_t mask) { PORTC |= mask; DDRC |= mask; }
 static void line_release(uint8_t mask) { PORTC &= (uint8_t)~mask; DDRC &= (uint8_t)~mask; }
+static void hold_start(void) { TCNT1 = 0; TIFR1 = _BV(TOV1); hold_overflows = 0; TCCR1B = _BV(CS12)|_BV(CS10); }
 static void hold_stop(void) { TCCR1B = 0; key_held = 0; }
 static void release_all(void)
 {
@@ -283,10 +293,15 @@ static void send_pc(uint8_t value)
 static void reply(uint8_t cmd, uint8_t status)
 {
     uint8_t i;
-    for (i = 0; i < 8u; ++i) send_pc(rsp_magic[i]);
-    send_pc(cmd); send_pc(status);
-    /* bit3: framed boot-test support; bit4: OLED feedback (AFR2-20261108-08) */
-    send_pc((uint8_t)((key_held ? 1u : 0u) | (rst_held ? 2u : 0u) | (auto_enabled ? 4u : 0u) | 8u | FLAG_DISPLAY));
+    uint8_t ok = 1u;
+    cli();
+    for (i = 0; i < 8u; ++i) ok &= push(&to_pc, rsp_magic[i]);
+    ok &= push(&to_pc, cmd);
+    ok &= push(&to_pc, status);
+    /* bit3: framed boot-test; bit4: OLED feedback; bit5: CMD_BOOT_HOLD + CMD_END_AUTO */
+    ok &= push(&to_pc, (uint8_t)((key_held ? 1u : 0u) | (rst_held ? 2u : 0u) | (auto_enabled ? 4u : 0u) | 8u | FLAG_DISPLAY | FLAG_SESSION_SAFE));
+    if (ok && !afr2_bridge_overflow) UCSR0B |= _BV(UDRIE0);
+    sei();
 }
 static void flush_after_control(void)
 {
@@ -297,39 +312,63 @@ static void flush_after_control(void)
     UCSR0B &= (uint8_t)~_BV(UDRIE0); UCSR1B &= (uint8_t)~_BV(UDRIE1);
     sei();
 }
-/* AFR2-20261106-17. Bounded diagnostic, USB baud unchanged; no flash writes.
- * UART1 alone reads ROM boot at nominal 74880 (U2X, UBRR=26 at 16 MHz).
- * Payload: A5 AFR2BOOT, uint16 little-endian byte count, exact captured bytes.
- * Pins are released before any reply, even if the PC vanished during capture.
- * AFR2-20261108-08: UART1 interrupts are off during the capture (polled as before);
- * PC bytes that arrive meanwhile stay queued and are flushed afterwards.
+/* AFR2-20261106-17 / AFR2-20261116-02. Bounded boot capture at nominal 74880 (U2X, UBRR=26 at 16 MHz).
+ * TX1/PD3 remains output HIGH across all UCSR1B baud changes so E_RX never sees a Hi-Z/LOW glitch
+ * once the ESP8266 ROM enters download/autobaud mode. If hold_key != 0 (CMD_BOOT_HOLD), KEY remains
+ * pressed under the Timer1 safety timeout until CMD_RUN, CMD_END_AUTO, CMD_RELEASE or Mega reset.
  */
-static void capture_boot(void)
+static void capture_boot(uint8_t cmd, uint8_t hold_key)
 {
     uint8_t bytes[256], saved_a = UCSR1A & _BV(U2X1);
     uint8_t saved_h = UBRR1H, saved_l = UBRR1L, errors = 0;
-    uint16_t count = 0, tick;
+    uint16_t count = 0, tick, last_rx = 0;
     static const uint8_t magic[] = {0xA5,'A','F','R','2','B','O','O','T'};
-    release_all(); esp_hold = 1; UCSR1B = 0;
+    release_all();
+    cli();
+    esp_hold = 1;
+    PORTD |= _BV(PD3); DDRD |= _BV(PD3);
+    UCSR1B = 0;
     UBRR1H = 0; UBRR1L = 26; UCSR1A = _BV(U2X1);
-    UCSR1B = _BV(RXEN1)|_BV(TXEN1);
     while (UCSR1A & _BV(RXC1)) { (void)UDR1; }
+    UCSR1B = _BV(RXEN1)|_BV(TXEN1);
+    sei();
+    _delay_ms(1);
     line_press(KEY_MASK); key_held = 1; _delay_ms(20); rst_pulse();
     for (tick = 0; tick < 60000u; ++tick) {
         while (UCSR1A & _BV(RXC1)) {
             uint8_t flags = UCSR1A, value = UDR1;
             if (flags & (_BV(FE1)|_BV(DOR1)|_BV(UPE1))) errors = 1;
             if (count < sizeof(bytes)) bytes[count++] = value; else errors = 1;
+            last_rx = tick;
         }
+        if (tick >= 10000u && count > 0u && (uint16_t)(tick - last_rx) >= 2500u) break;
         _delay_us(20); /* poll faster than the two-byte USART receive buffer fills */
     }
-    release_all(); UCSR1B = 0;
+    cli();
+    if (hold_key) {
+        line_release(RST_MASK); rst_held = 0;
+        line_press(KEY_MASK); key_held = 1;
+        hold_start();
+    } else {
+        release_all();
+    }
+    PORTD |= _BV(PD3); DDRD |= _BV(PD3);
+    UCSR1B = 0;
     UBRR1H = saved_h; UBRR1L = saved_l; UCSR1A = saved_a;
-    UCSR1B = UART1_RUN;
-    flush_after_control(); esp_hold = 0; reply(CMD_BOOT_TEST, errors ? 3u : 0u);
+    while (UCSR1A & _BV(RXC1)) { (void)UDR1; }
+    /* Keep RXCIE1 off while queueing RSP + AFR2BOOT payload; enable after flushing. */
+    UCSR1B = _BV(RXEN1)|_BV(TXEN1);
+    sei();
+    _delay_ms(2);
+    flush_after_control(); reply(cmd, errors ? 3u : 0u);
     for (tick = 0; tick < sizeof(magic); ++tick) send_pc(magic[tick]);
     send_pc((uint8_t)count); send_pc((uint8_t)(count >> 8));
     for (tick = 0; tick < count; ++tick) send_pc(bytes[tick]);
+    cli();
+    while (UCSR1A & _BV(RXC1)) { (void)UDR1; }
+    UCSR1B = UART1_RUN;
+    esp_hold = 0;
+    sei();
 }
 
 /* AFR2-20261108-08: labels sent by the Loader for the OLED. */
@@ -367,17 +406,43 @@ static void run_command(uint8_t cmd, const uint8_t *data, uint8_t n)
         if (!auto_enabled) { status = 1; break; } /* not configured by the PC: touch nothing */
         release_all();
         line_press(KEY_MASK); key_held = 1; _delay_ms(20);
-        TCNT1 = 0; TIFR1 = _BV(TOV1); hold_overflows = 0; TCCR1B = _BV(CS12)|_BV(CS10);
-        rst_pulse(); _delay_ms(200); /* KEY stays held until RUN, RELEASE, timeout or Mega reset */
+        hold_start();
+        rst_pulse(); _delay_ms(200); /* KEY stays held until RUN, END_AUTO, RELEASE, timeout or Mega reset */
         break;
     case CMD_BOOT_TEST:
         if (!auto_enabled) { status = 1; break; }
-        capture_boot(); return;
+        capture_boot(CMD_BOOT_TEST, 0u); return;
+    case CMD_BOOT_HOLD:
+        if (!auto_enabled) { status = 1; break; }
+        capture_boot(CMD_BOOT_HOLD, 1u); return;
     case CMD_RUN:
         if (!auto_enabled) { status = 1; break; }
         line_release(KEY_MASK); hold_stop(); _delay_ms(20); rst_pulse(); _delay_ms(50);
         cli(); prog.esp_reset = 1; ++prog_seq; sei();
         break;
+    case CMD_END_AUTO:
+        if (!auto_enabled) { release_all(); status = 1; break; }
+        cli(); esp_hold = 1; UCSR1B &= (uint8_t)~_BV(RXCIE1); sei();
+        release_all(); auto_enabled = 0; _delay_ms(20);
+        cli(); prog.esp_reset = 1; ++prog_seq; sei();
+        flush_after_control(); reply(CMD_END_AUTO, 0);
+        /* Wait until RSP is queued/shifted out before resetting ESP into normal flash mode. */
+        {
+            uint16_t wait_ms;
+            for (wait_ms = 0; wait_ms < 100u; ++wait_ms) {
+                uint8_t drained;
+                cli(); drained = (to_pc.head == to_pc.tail) && !(UCSR0B & _BV(UDRIE0)); sei();
+                if (drained) break;
+                _delay_ms(1);
+            }
+        }
+        _delay_ms(2);
+        rst_pulse(); _delay_ms(50);
+        cli();
+        while (UCSR1A & _BV(RXC1)) { (void)UDR1; }
+        UCSR1B = UART1_RUN; esp_hold = 0;
+        sei();
+        return;
     case CMD_RELEASE: release_all(); break;
     case CMD_RST_PULSE:
         if (!auto_enabled) { status = 1; break; }

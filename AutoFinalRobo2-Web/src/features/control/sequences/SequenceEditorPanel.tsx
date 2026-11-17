@@ -49,6 +49,7 @@ import { wheelDurationMs } from './blockCompletion';
 import { compilePhysicalProgram } from './physicalProgram';
 import { movementDurationMs } from './mecanumKinematics';
 import { FloatingModal } from '../../../components/ui/FloatingModal';
+import { SyncSimulatorButton } from '../../sync/CloudSyncController';
 import type { SimulationMapFeed } from '../ControlMap';
 
 export interface SequenceEditorPanelProps {
@@ -1443,6 +1444,11 @@ export function SequenceEditorPanel({ preview }: SequenceEditorPanelProps) {
               >
                 Detener / Reiniciar
               </Button>
+              <SyncSimulatorButton
+                simulator="sequences"
+                data={{ activeProgramId: activeDoc.id, name: activeDoc.name, editorLevel: activeDoc.editorLevel, totalDurationMs }}
+                disabled={simPlaying}
+              />
             </div>
 
             <div>

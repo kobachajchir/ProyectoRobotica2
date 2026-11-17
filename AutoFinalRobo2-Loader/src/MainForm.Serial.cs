@@ -160,12 +160,20 @@ namespace AFR2Loader
             if (!Int32.TryParse(serialBaud.Text, out baud) || baud < 300 || baud > 2000000) throw new ArgumentException("Ingresá baudios entre 300 y 2000000; para arranque del ESP usá 74880.");
             return baud;
         }
+        bool stoppingStartupComForSerial;
         async Task OpenSerialMonitor()
         {
-            if (busy || pendingJob != null || serialTransition || (serialCapture != null && serialCapture.Active)) return;
+            if (busy || pendingJob != null || serialTransition || stoppingStartupComForSerial || (serialCapture != null && serialCapture.Active)) return;
             SerialCapture previous = serialCapture;
-            try { await StartSerialCapture(serialPorts.Text, ReadSerialBaud(), serialCodec.Text); }
+            stoppingStartupComForSerial = true;
+            try
+            {
+                if (startupComScanning || startupComCancel != null) await StopStartupComProbeAsync(serialPorts.Text);
+                if (IsDisposed) return;
+                await StartSerialCapture(serialPorts.Text, ReadSerialBaud(), serialCodec.Text);
+            }
             catch (Exception error) { if (serialCapture == previous || serialCapture == null || serialCapture.State != "failed") QueueFailure("monitor", error); }
+            finally { stoppingStartupComForSerial = false; }
         }
         async Task StartSerialCapture(string port, int baud, string codec)
         {

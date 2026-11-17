@@ -27,17 +27,18 @@ import { ModelSpinner } from '../../components/three/ModelSpinner';
 import { GotoSimulatorPanel } from './goto/GotoSimulatorPanel';
 import type { GotoCommand } from './goto/gotoSimulation';
 import { ManualDriveOverlay, type ManualDirection } from './manual/ManualDriveOverlay';
+import { LineFollowerPanel } from './LineFollowerPanel';
 import type { ModalOrigin } from '../../components/ui/FloatingModal';
 
 type WheelId = 'FL' | 'FR' | 'RL' | 'RR';
-type ControlTaskId = 'drive' | 'sequences' | 'wheel' | 'goto' | 'calibrate' | 'preferences';
+type ControlTaskId = 'drive' | 'sequences' | 'wheel' | 'goto' | 'line' | 'calibrate' | 'preferences';
 /** AFR2-20261101-12 / VIS-053: Control se reparte en Conducir, Programas y Puesta a punto. */
 export type ControlArea = 'drive' | 'programs' | 'setup';
 const AREA_TASKS: Record<ControlArea, readonly ControlTaskId[]> = {
-  drive: ['drive'], programs: ['sequences', 'goto'], setup: ['wheel', 'calibrate', 'preferences'],
+  drive: ['drive'], programs: ['sequences', 'goto', 'line'], setup: ['wheel', 'calibrate', 'preferences'],
 };
 const TASK_PARAM: Record<string, ControlTaskId> = {
-  secuencias: 'sequences', goto: 'goto', ruedas: 'wheel', wheel: 'wheel', calibracion: 'calibrate', preferencias: 'preferences',
+  secuencias: 'sequences', goto: 'goto', linea: 'line', line: 'line', ruedas: 'wheel', wheel: 'wheel', calibracion: 'calibrate', preferencias: 'preferences',
 };
 function initialTask(area: ControlArea, param: string | null): ControlTaskId {
   const requested = param ? TASK_PARAM[param] : undefined;
@@ -439,6 +440,11 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
             ),
           },
           {
+            id: 'line',
+            label: 'Seguidor de línea',
+            content: <LineFollowerPanel />,
+          },
+          {
             id: 'calibrate',
             label: 'Calibración',
             content: (
@@ -485,6 +491,7 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
       {area === 'programs' && <TaskSections ariaLabel="Tipos de programa" value={activeTask} onValueChange={changeTask} items={[
         { id: 'sequences', label: 'Secuencias', content: task('sequences') },
         { id: 'goto', label: 'GOTO', content: task('goto') },
+        { id: 'line', label: 'Seguidor de línea', content: task('line') },
       ]} />}
       {area === 'setup' && <TaskSections ariaLabel="Puesta a punto" value={activeTask} onValueChange={changeTask} items={[
         { id: 'wheel', label: 'Ruedas', content: task('wheel') },

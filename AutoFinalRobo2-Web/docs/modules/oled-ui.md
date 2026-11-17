@@ -1,3 +1,5 @@
+> **AFR2-20261117-04 / 1.34.0:** Modo de robot sincroniza Estado y la tarjeta rápida Modo: Reposo, Manual, Seguidor de linea, Ir y Volver contextual. Línea e Ir abren sus controles existentes; navegación sin inicio automático. ATmega/Web en fuente; sin generadores, tests, compilación, validaciones ni cargas.
+
 # OLED vinculada al ATmega — AFR2-20261024-09
 
 Actualización14: Pantallas y navegación organiza59identidades como árbol,

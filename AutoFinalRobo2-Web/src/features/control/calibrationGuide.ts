@@ -127,10 +127,31 @@ export const CALIBRATION_GUIDE: Record<number, ParameterGuide> = {
     'Seleccioná la orientación de presentación de la OLED para adaptarla al montaje físico.',
     '0 conserva la orientación normal; 1 solicita la rotación de 180°. No se ingresa el número 180.',
     'Valor 1 equivale a elegir la orientación invertida de la pantalla.', 'No rota el robot del simulador ni modifica el sistema de coordenadas de movimiento.'),
+  121: entry('Escala de compensación motor FL', 'Tracción / Compensación por motor', 'milésimas (1000 = 1.000×)',
+    'Factor multiplicativo individual de la rueda delantera izquierda (FL) para igualar un motor que gira más lento de fábrica.',
+    'Se aplica tanto en conducción manual PWM (con normalización anti-saturación sobre las 4 ruedas) como a la salida del regulador PI en lazo cerrado.',
+    '1000 = 1.000× (sin cambio). 1120 (+12%) compensa un motor más lento; 890 (-11%) atenúa las demás ruedas.', 'Rango 500…1500 (0.500× a 1.500×), pasos de 5. Se conserva en EEPROM v14.'),
+  122: entry('Escala de compensación motor FR', 'Tracción / Compensación por motor', 'milésimas (1000 = 1.000×)',
+    'Factor multiplicativo individual de la rueda delantera derecha (FR) para compensar asimetrías electromecánicas entre motores.',
+    'Escala el esfuerzo PWM de FR manteniendo la proporción exacta entre las 4 ruedas incluso al 100% de potencia.',
+    '1000 = 1.000× (sin cambio). Rango 500…1500.', 'Se aplica en lazo abierto y cerrado; guardar desde Preferencias para persistir en EEPROM v14.'),
+  123: entry('Escala de compensación motor RL', 'Tracción / Compensación por motor', 'milésimas (1000 = 1.000×)',
+    'Factor multiplicativo individual de la rueda trasera izquierda (RL) para compensar diferencias de velocidad de fábrica.',
+    'Escala el esfuerzo PWM de RL y re-normaliza el conjunto si algún motor supera el límite PWM.',
+    '1000 = 1.000× (sin cambio). Rango 500…1500.', 'Se aplica en lazo abierto y cerrado; guardar desde Preferencias para persistir en EEPROM v14.'),
+  124: entry('Escala de compensación motor RR', 'Tracción / Compensación por motor', 'milésimas (1000 = 1.000×)',
+    'Factor multiplicativo individual de la rueda trasera derecha (RR) para compensar diferencias de velocidad de fábrica.',
+    'Escala el esfuerzo PWM de RR y re-normaliza el conjunto si algún motor supera el límite PWM.',
+    '1000 = 1.000× (sin cambio). Rango 500…1500.', 'Se aplica en lazo abierto y cerrado; guardar desde Preferencias para persistir en EEPROM v14.'),
 };
 
 export function explainEditorValue(id: number, value: number) {
   if (!Number.isFinite(value)) return 'Ingresa un número valido para interpretar este valor.';
+  if (id >= 121 && id <= 124) {
+    const wheel = ['FL', 'FR', 'RL', 'RR'][id - 121];
+    const pct = ((value - 1000) / 10).toFixed(1);
+    return `Rueda ${wheel}: factor ${(value / 1000).toFixed(3)}× (${value >= 1000 ? `+${pct}` : pct}% respecto al nominal 1.000).`;
+  }
   if (id >= 33 && id <= 35) return `${value} / 256 = ${(value / 256).toFixed(5)} como coeficiente Q8 efectivo.`;
   if (id === 26 || id === 30) {
     const names = id === 26 ? ['IR1', 'IR2', 'IR3', 'IR4', 'IR5'] : ['FL', 'FR', 'RL', 'RR'];
