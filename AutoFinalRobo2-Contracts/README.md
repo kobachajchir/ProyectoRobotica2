@@ -1,3 +1,4 @@
+> **AFR2-20261117-09 / 1.36.0 · Loader 2.5.0:** [El auto informa sus versiones en la autodetección del Loader](changes/2026-11-17-09-versiones-autodeteccion-loader.md) · [línea base de compatibilidad](docs/COMPATIBILIDAD_VERSIONES.md). ATmega, ESP, Web ESP y Loader compilados; sin cargar ni probar.
 > **AFR2-20261117-08 / 1.35.3:** [«Reconectando a» muestra la red Wi-Fi, no el AP](changes/2026-11-17-08-reconectando-red-sta.md). ESP, ATmega y Web ESP compilados; sin cargar ni probar.
 > **AFR2-20261117-07 / 1.35.2:** [ATmega: textos y tablas constantes de RAM a flash](changes/2026-11-17-07-atmega-ram-a-flash.md). RAM estática de 7 202 B a 6 858 B; ATmega compilado sin cargar; ESP y Web solo versión.
 > **AFR2-20261117-06 / 1.35.1:** [Encoder con botones redondos bajo la pantalla, pills que se estiran y captura del Loader](changes/2026-11-17-06-encoder-redondo-pills-loader.md). ATmega, ESP y Web compilados; Web publicada en Hosting; sin cargar.

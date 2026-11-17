@@ -1,3 +1,13 @@
+## AFR2-20261117-09 — 17/11/2026
+
+La autodetección del Loader ahora informa las versiones. Ante `#AFR2 TAP ?`, el ATmega responde, después de la confirmación del TAP, `VER mega=… ext=… esp=… web=…`. La versión del ESP y la de la Web salen de lo que el ESP le informa, o del `BT01` de su arranque.
+
+El Loader 2.5.0 lee esa línea y la muestra en la leyenda de autodetección (con «igual al repo» / «distinta del repo») y en el registro («Versiones detectadas» y «Compatibilidad de versiones»). Con firmware anterior informa «sin versiones».
+
+Nueva [línea base de compatibilidad](docs/COMPATIBILIDAD_VERSIONES.md): Loader 2.5.0, producto 1.36.0, EX01 v13. La Web muestra la versión 2.5.0 del Loader.
+
+Versión: producto 1.36.0 (subversión); Loader 2.5.0. ATmega y Loader en fuente; ESP y Web solo versión. [Ficha](changes/2026-11-17-09-versiones-autodeteccion-loader.md). Compilados ATmega, ESP, Web ESP, LittleFS y Loader 2.5.0. Sin cargar ni probar.
+
 ## AFR2-20261117-08 — 17/11/2026
 
 ESP: en STA+AP, el OLED avisaba «Reconectando a» con el nombre del AP. El estado Wi-Fi que el ESP envía al ATmega usaba `staSsid | apSsid`; ahora manda la red STA configurada (`WiFi.SSID()`) y nunca el AP. `displayInfo()` hace lo mismo, así los dos mensajes coinciden.

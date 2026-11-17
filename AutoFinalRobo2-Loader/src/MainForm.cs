@@ -541,6 +541,46 @@ namespace AFR2Loader
                 comAutoDetectHint.ForeColor = ink;
             if (textChanged) FitOperationRows();
         }
+        // AFR2-20261117-09 (Loader 2.5.0): versión de producto del repositorio del perfil, para comparar con lo detectado.
+        string RepoProductVersion()
+        {
+            try
+            {
+                if (profile == null) return null;
+                string header = Path.Combine(profile.Resolve("Repo"), "AutoFinalRobo2-Contracts", "contracts", "afr2_build_info.h");
+                if (!File.Exists(header)) return null;
+                var m = System.Text.RegularExpressions.Regex.Match(File.ReadAllText(header), "#define\\s+AFR2_FIRMWARE_VERSION\\s+\"([^\"]+)\"");
+                return m.Success ? m.Groups[1].Value : null;
+            }
+            catch (Exception) { return null; }
+        }
+        string VersionMatchSuffix(ComProbeResult found)
+        {
+            if (found == null || !found.VersionsReported) return "";
+            string repo = RepoProductVersion();
+            bool aligned = found.MegaVersion == found.EspVersion && found.EspVersion == found.WebVersion;
+            if (repo == null) return aligned ? " · versiones alineadas" : " · versiones distintas";
+            return aligned && found.MegaVersion == repo ? " · igual al repo" : " · distinta del repo " + repo;
+        }
+        void LogDetectedVersions(ComProbeResult found)
+        {
+            if (found == null || found.Kind != "product") return;
+            if (!found.VersionsReported)
+            {
+                Log("Versiones detectadas: el firmware no las informa (anterior a 1.36.0). Loader " + LoaderVersion.Value + ".");
+                return;
+            }
+            string repo = RepoProductVersion();
+            Log("Versiones detectadas: ATmega " + found.MegaVersion + " (EX01 v" + found.ExtVersion + "), ESP " + found.EspVersion +
+                ", Web " + found.WebVersion + "; Loader " + LoaderVersion.Value + (repo != null ? "; repo " + repo : "") + ".");
+            var differences = new List<string>();
+            if (found.EspVersion == "?") differences.Add("el ATmega todavía no recibió la versión del ESP");
+            else if (found.EspVersion != found.MegaVersion) differences.Add("ESP " + found.EspVersion + " distinta de ATmega " + found.MegaVersion);
+            if (found.WebVersion != "?" && found.WebVersion != found.MegaVersion) differences.Add("Web " + found.WebVersion + " distinta de ATmega " + found.MegaVersion);
+            if (repo != null && found.MegaVersion != repo) differences.Add("el auto tiene " + found.MegaVersion + " y el repo " + repo);
+            if (differences.Count > 0) Log("Compatibilidad de versiones: " + String.Join("; ", differences) + ". Cargá los tres módulos de la misma versión.");
+            else Log("Compatibilidad de versiones: ATmega, ESP y Web coinciden" + (repo != null ? " con el repo" : "") + ".");
+        }
         int ReadStartupBridgeBaud()
         {
             int baud = 115200;
@@ -603,7 +643,7 @@ namespace AFR2Loader
                         .ThenBy(m => m.Port, StringComparer.OrdinalIgnoreCase)
                         .First();
                     startupDetectedPort = chosen.Port;
-                    startupDetectedSummary = chosen.Detail;
+                    startupDetectedSummary = chosen.Detail + VersionMatchSuffix(chosen);
                     if (!manualPortSelected && !busy && (serialCapture == null || !serialCapture.Active))
                     {
                         if (!ports.Items.Cast<object>().Any(x => StringComparer.OrdinalIgnoreCase.Equals(Convert.ToString(x), chosen.Port)))
@@ -613,6 +653,7 @@ namespace AFR2Loader
                             .FirstOrDefault(x => StringComparer.OrdinalIgnoreCase.Equals(x, chosen.Port));
                         if (matchedItem != null) ports.SelectedItem = matchedItem;
                     }
+                    LogDetectedVersions(chosen);
                     if (scan.Matches.Count == 1)
                     {
                         Log("Autodetección COM al iniciar: conectado en " + chosen.Port + " (" + chosen.Detail + ").");

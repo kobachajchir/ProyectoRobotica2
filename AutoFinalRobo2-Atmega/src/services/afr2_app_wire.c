@@ -415,6 +415,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         } else if(d[0]==3) {
             if(n<3 || d[1]>1 || d[2]>15 || n!=3+d[2] || memchr(d+3,0,d[2]))return AFR2_RESULT_BAD_REQUEST;
             char *v=d[1]?w->web_version:w->esp_version;memcpy(v,d+3,d[2]);v[d[2]]=0;
+            Afr2Debug_PeerVersion(d[1],v); /* AFR2-20261117-09: linea VER de la autodeteccion del Loader */
         } else return AFR2_RESULT_BAD_REQUEST;
         w->changed_ms=p->now;break;
     }

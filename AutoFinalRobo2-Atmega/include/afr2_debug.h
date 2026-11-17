@@ -48,6 +48,8 @@ void Afr2Debug_Input(int8_t rotation, bool click, bool menu, uint32_t now_ms);
 void Afr2Debug_NetEvent(uint8_t kind, uint8_t arg, uint32_t sequence);
 void Afr2Debug_NetState(uint8_t mode, uint8_t sta, uint8_t ap, uint8_t clients, uint8_t web, uint32_t esp_boot);
 uint8_t Afr2Debug_TxIdle(void);
+/* AFR2-20261117-09: version informada por el ESP (web=0: firmware ESP, web=1: paquete Web) para la linea VER. */
+void Afr2Debug_PeerVersion(uint8_t web, const char *text);
 /* AFR2-20261108-09. Raw ESP byte for TAP mode 4. payload_byte: the byte is a ROBO2 payload byte
  * of frame `command` (parser state 11 before the push), redacted if that command is private. */
 void Afr2Debug_PeerRaw(uint8_t byte, bool payload_byte, uint8_t command);
@@ -65,6 +67,7 @@ static inline void Afr2Debug_NetState(uint8_t m, uint8_t s, uint8_t a, uint8_t c
     (void)m; (void)s; (void)a; (void)c; (void)w; (void)b;
 }
 static inline uint8_t Afr2Debug_TxIdle(void) { return 1u; }
+static inline void Afr2Debug_PeerVersion(uint8_t w, const char *t) { (void)w; (void)t; }
 #define AFR2_DBG(...) ((void)0)
 #endif
 

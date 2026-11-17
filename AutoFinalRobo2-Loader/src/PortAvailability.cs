@@ -32,6 +32,10 @@ namespace AFR2Loader
     {
         public string Port, Kind, Detail, Baud;
         public bool Responded, SessionSafe;
+        // AFR2-20261117-09 (Loader 2.5.0): versiones informadas por el firmware de producto (línea VER del TAP).
+        // null = el firmware no las informa (anterior a 1.36.0); "?" = el ATmega todavía no conoce la del ESP/Web.
+        public string MegaVersion, EspVersion, WebVersion, ExtVersion;
+        public bool VersionsReported { get { return MegaVersion != null; } }
     }
 
     internal sealed class StartupComScan
@@ -145,7 +149,12 @@ namespace AFR2Loader
                         {
                             ReadAvailable(serial, rxBytes, rxText);
                             ComProbeResult hit = MatchResponse(portName, baud, rxBytes, rxText);
-                            if (hit != null) return hit;
+                            if (hit != null)
+                            {
+                                // AFR2-20261117-09: el firmware 1.36.0+ manda «VER …» justo después de la confirmación del TAP.
+                                if (hit.Kind == "product") WaitVersions(serial, hit, rxBytes, rxText, token);
+                                return hit;
+                            }
                             Thread.Sleep(20);
                         }
                         round++;
@@ -157,6 +166,27 @@ namespace AFR2Loader
                 // Ignore busy, disconnected, virtual Bluetooth timeouts or unsupported ports during startup scan.
             }
             return null;
+        }
+
+        static readonly Regex VersionLine = new Regex(@"\bVER mega=(\S+) ext=(\d+) esp=(\S+) web=(\S+)", RegexOptions.CultureInvariant);
+
+        static void WaitVersions(SerialPort serial, ComProbeResult hit, List<byte> rxBytes, StringBuilder rxText, CancellationToken token)
+        {
+            var watch = Stopwatch.StartNew();
+            while (watch.ElapsedMilliseconds < 700 && !token.IsCancellationRequested)
+            {
+                ReadAvailable(serial, rxBytes, rxText);
+                Match m = VersionLine.Match(rxText.ToString());
+                if (m.Success)
+                {
+                    hit.MegaVersion = m.Groups[1].Value; hit.ExtVersion = m.Groups[2].Value;
+                    hit.EspVersion = m.Groups[3].Value; hit.WebVersion = m.Groups[4].Value;
+                    hit.Detail = "Firmware AFR2 · ATmega " + hit.MegaVersion + " · ESP " + hit.EspVersion + " · Web " + hit.WebVersion + " (115200)";
+                    return;
+                }
+                Thread.Sleep(20);
+            }
+            hit.Detail = "Firmware AFR2 (115200) · sin versiones: firmware anterior a 1.36.0";
         }
 
         static void ReadAvailable(SerialPort serial, List<byte> rxBytes, StringBuilder rxText)

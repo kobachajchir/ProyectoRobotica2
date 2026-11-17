@@ -73,6 +73,9 @@ static struct {
     uint32_t peer_ms, rom_ms;
     uint16_t noise_hall, noise_enc;   /* AFR2-20261110-15: last reported storm counters */
     uint32_t noise_ms;
+    /* AFR2-20261117-09: version del ESP segun su ultimo BT01 (mayor, menor, parche, extension). */
+    uint8_t esp_ver[4], esp_ver_valid;
+    char esp_text[16], web_text[16];   /* AFR2-20261117-09: versiones en texto que manda el ESP */
 } d;
 
 #if AFR2_DEBUG_TAP
@@ -89,6 +92,7 @@ static char tap_line[TAP_LINE_MAX];
 static uint8_t tap_raw[TAP_RAW_MAX];
 static struct {
     uint8_t mode, line_len, raw_len, raw_flags, raw_lost, report, switching;
+    uint8_t version_report; /* AFR2-20261117-09: linea VER pendiente tras "#AFR2 TAP ?" */
     uint16_t lost;
     uint32_t raw_ms, baud, switch_ms;   /* baud: current port speed */
 } t;
@@ -294,7 +298,7 @@ static void tap_command(void) {
     if (strncmp_P(tap_line, PSTR("#AFR2 TAP "), 10) != 0) return;
     char arg = tap_line[10];
     if (tap_line[11] != 0) { AFR2_DBG("TAP error: use #AFR2 TAP 0..4 or ?"); return; }
-    if (arg == '?') { t.report = 1; return; }
+    if (arg == '?') { t.report = 1; t.version_report = 1; return; }
     if (arg >= '0' && arg <= '4') { tap_set_mode((uint8_t)(arg - '0')); return; }
     AFR2_DBG("TAP error: use #AFR2 TAP 0..4 or ?");
 }
@@ -318,6 +322,18 @@ static void tap_control(uint32_t now) {
             t.report = 0;
             if (target != t.baud) { t.switching = 1; t.switch_ms = now; }
         }
+    }
+    /* AFR2-20261117-09: versiones para la autodeteccion del Loader, despues de la confirmacion del TAP.
+     * El ESP se informa con lo que trajo su ultimo BT01; "esp=?" si todavia no llego ninguno. */
+    if (t.version_report && !t.report && !t.switching) {
+        /* Texto del ESP si llego; si no, el BT01 de su arranque; si no, "?". */
+        char esp[16];
+        if (d.esp_text[0]) strcpy(esp, d.esp_text);
+        else if (d.esp_ver_valid) snprintf_P(esp, sizeof(esp), PSTR("%u.%u.%u"), d.esp_ver[0], d.esp_ver[1], d.esp_ver[2]);
+        else { esp[0] = '?'; esp[1] = 0; }
+        if (log_p(PSTR("VER mega=" AFR2_FIRMWARE_VERSION " ext=%u esp=%s web=%s"), (unsigned)AFR2_EXT_VERSION,
+                  esp, d.web_text[0] ? d.web_text : "?"))
+            t.version_report = 0;
     }
     tap_switch_baud(now);
     if (t.raw_len && (uint32_t)(now - t.raw_ms) >= TAP_RAW_IDLE_MS) tap_flush_raw();
@@ -368,6 +384,10 @@ static void flush_faults(uint32_t now) {
     }
 }
 
+void Afr2Debug_PeerVersion(uint8_t web, const char *text) {
+    char *v = web ? d.web_text : d.esp_text;
+    strncpy(v, text ? text : "", 15); v[15] = 0;
+}
 void Afr2Debug_LinkEvent(const Afr2LinkEvent *e) {
     if (!e || !d.ready) return;
     uint32_t now = Afr2Board_Millis();
@@ -376,6 +396,7 @@ void Afr2Debug_LinkEvent(const Afr2LinkEvent *e) {
         if (!e->data || e->length < 14u) break;
         const uint8_t *b = e->data;   /* "BT01", node, bootId u32, reason, major, minor, patch, ext */
         d.esp_boot = afr2_get_u32(b + 5);
+        memcpy(d.esp_ver, b + 10, 4); d.esp_ver_valid = 1;
         if (d.esp_resets != UINT16_MAX) ++d.esp_resets;
         AFR2_DBG("ESP BOOT id=%08lx rst=%u %S fw=%u.%u.%u ext=%u n=%u",
             (unsigned long)d.esp_boot, b[9], esp_reason(b[9]), b[10], b[11], b[12], b[13], d.esp_resets);

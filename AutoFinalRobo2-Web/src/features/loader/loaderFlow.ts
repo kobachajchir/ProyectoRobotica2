@@ -11,7 +11,7 @@ export interface LoaderStep {
   input: string; output: string; points: string[]; details: string[];
 }
 
-export const LOADER_VERSION = '2.0.0';
+export const LOADER_VERSION = '2.5.0'; // AFR2-20261117-09: alineada con AFR2-Loader/src/JobState.cs
 
 export const LOADER_JOURNEYS: Record<LoaderJourney, LoaderStep[]> = {
   mega: [
