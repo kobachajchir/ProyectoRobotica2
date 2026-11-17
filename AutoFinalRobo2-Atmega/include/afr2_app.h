@@ -39,6 +39,7 @@ typedef struct {
     uint16_t route_speed;
     uint8_t route_state, route_count, route_index, route_done, route_fault;
     uint8_t wifi_ask;     /* AFR2-20261108-06: 0 nada, 1 aviso recibido (abrir selector cuando la UI quede libre), 2 selector abierto */
+    uint8_t sync_ask;     /* AFR2-20261116-01: 0 nada, 1 fallo 5 intentos recibido, 2 selector Cerrar/Desactivar abierto */
 } Afr2App;
 void Afr2App_Init(Afr2App *a,Afr2Product *p,Afr2Ui *ui,Afr2Oled *oled,Afr2Link *link);
 void Afr2App_Task(Afr2App *a,uint32_t now);

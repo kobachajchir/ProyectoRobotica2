@@ -28,7 +28,7 @@ void Afr2Product_Defaults(Afr2Config *c) {
     for(uint8_t i=0;i<5;i++)c->line_threshold[i]=512;
     /* AFR2-20261108-02: el usuario midio ~370 pulsos por vuelta en cada rueda; ese es el valor inicial
      * (sigue siendo editable con Calibracion > Hall). No hay conversion 11*reductora supuesta. */
-    for(uint8_t i=0;i<4;i++)c->counts_per_rev[i]=AFR2_DEFAULT_CPR;
+    for(uint8_t i=0;i<4;i++){c->counts_per_rev[i]=AFR2_DEFAULT_CPR;c->motor_trim[i]=1000u;}
     /* AFR2-20261108-05: referencia medida por el usuario. En crudo, al girar hacia adelante las derechas cuentan
      * negativo y las izquierdas positivo; una vuelta CW exterior da -370 en las cuatro. Es lo que dejaria la
      * calibracion Hall completa en cada rueda: signo invertido (CW positivo) y mascara CW, de modo que la
@@ -48,7 +48,7 @@ uint8_t Afr2Product_ConfigValid(const Afr2Config *c) {
     if(c->geometry_ready && !c->radius_sum_mm)return 0;
     for(uint8_t i=0;i<6;i++)if(c->odom_scale[i]>2000u)return 0;
     for(uint8_t i=0;i<5;i++)if(c->line_threshold[i]>1023)return 0;
-    for(uint8_t i=0;i<4;i++)if(c->counts_per_rev[i]>1000000UL)return 0;
+    for(uint8_t i=0;i<4;i++)if(c->counts_per_rev[i]>1000000UL || c->motor_trim[i]<500u || c->motor_trim[i]>1500u)return 0;
     return 1;
 }
 void Afr2Product_Init(Afr2Product *p,uint8_t reset) {
@@ -152,7 +152,15 @@ uint8_t Afr2Product_DrivePwm(Afr2Product *p,int16_t forward,int16_t strafe,int16
         memset(p->integral,0,sizeof(p->integral));memset(p->last_error,0,sizeof(p->last_error));
         for(uint8_t i=0;i<4;i++)p->hall_change_ms[i]=p->now;
     }
-    for(uint8_t i=0;i<4;i++)p->target[i]=(int32_t)v[i]*p->config.pwm_limit/peak;
+    /* AFR2-20261116-01: compensacion por motor (motor_trim[0..3] en milesimas) con normalizacion anti-saturacion
+     * cuando un factor >1000 supera pwm_limit, manteniendo la proporcion exacta entre las 4 ruedas. */
+    int32_t raw[4],max_pwm=p->config.pwm_limit;
+    for(uint8_t i=0;i<4;i++){
+        int32_t base=(int32_t)v[i]*p->config.pwm_limit/peak;
+        raw[i]=(base*(int32_t)p->config.motor_trim[i]+(base>=0?500:-500))/1000;
+        if(abs32(raw[i])>max_pwm)max_pwm=abs32(raw[i]);
+    }
+    for(uint8_t i=0;i<4;i++)p->target[i]=(int16_t)(max_pwm>p->config.pwm_limit?raw[i]*p->config.pwm_limit/max_pwm:raw[i]);
     if(p->goto_state==1)p->goto_state=3;
     p->mode=AFR2_PWM_MANUAL;p->command_ms=p->local_started_ms=p->now;p->test_started_ms=ttl;p->stopped=0;return AFR2_OK;
 }
@@ -172,6 +180,7 @@ uint8_t Afr2Product_StartLine(Afr2Product *p) {
     if(!p->config.motor_ready || !p->sensors.line_valid_raw || !calibrated(p))return AFR2_UNAVAILABLE;
     if(p->goto_state==1)p->goto_state=3;
     Afr2Head_SetIr(1);p->sensors.line_valid=1;   /* AFR2-20261108-13: following a line turns its sensors on */
+    p->last_line_error=0;p->last_line_ms=p->now;p->line_cross_ms=0;
     p->manual_selected=0;p->mode=AFR2_LINE;p->stopped=0;p->command_ms=p->now;return AFR2_OK;
 }
 uint8_t Afr2Product_StartGoto(Afr2Product *p,int32_t x,int32_t y) {
@@ -343,12 +352,26 @@ void Afr2Product_Task(Afr2Product *p,uint32_t now) {
     if(p->fault){Afr2Product_Stop(p);return;}
     if(!p->stopped && p->mode!=AFR2_WHEEL_TEST && p->mode!=AFR2_PWM_MANUAL && !calibrated(p)){p->fault=2;Afr2Product_Stop(p);return;}
     if(p->mode==AFR2_LINE) {
-        if(!p->sensors.line_valid || !p->sensors.line_bits){Afr2Product_Stop(p);p->notice=2;return;}
-        /* AFR2-20261107-43: IR1 (bit0, A4) esta a la izquierda (confirmado por el usuario). Linea a la
-         * izquierda => error positivo => wz positivo = giro antihorario (hacia la linea). */
-        int16_t error=0,n=0;for(uint8_t i=0;i<5;i++)if(p->sensors.line_bits&(1u<<i)){error+=2-(int16_t)i;n++;}
+        if(!p->sensors.line_valid){Afr2Product_Stop(p);p->notice=2;return;}
+        /* AFR2-20261116-01: cruce transversal completo (5 sensores) sostenido >=150 ms detiene en meta;
+         * perdida breve de linea (<=250 ms) mantiene el ultimo giro para recuperar la cinta. */
+        if((p->sensors.line_bits&0x1fu)==0x1fu){
+            if(!p->line_cross_ms)p->line_cross_ms=now;
+            else if((uint32_t)(now-p->line_cross_ms)>=150u){Afr2Product_Stop(p);p->notice=1;return;}
+        }else p->line_cross_ms=0;
+        int16_t wz=0;
+        if(!p->sensors.line_bits){
+            if(p->last_line_error && (uint32_t)(now-p->last_line_ms)<=250u)wz=p->last_line_error;
+            else {Afr2Product_Stop(p);p->notice=2;return;}
+        }else{
+            /* AFR2-20261107-43: IR1 (bit0, A4) esta a la izquierda (confirmado por el usuario). Linea a la
+             * izquierda => error positivo => wz positivo = giro antihorario (hacia la linea). */
+            int16_t error=0,n=0;for(uint8_t i=0;i<5;i++)if(p->sensors.line_bits&(1u<<i)){error+=2-(int16_t)i;n++;}
+            wz=(int16_t)((int32_t)error*p->config.line_kp/n);
+            p->last_line_error=wz;p->last_line_ms=now;
+        }
         uint8_t mode=p->mode;uint32_t local_timeout_ms=p->local_started_ms;
-        if(Afr2Product_Drive(p,p->config.line_speed,0,(int16_t)((int32_t)error*p->config.line_kp/n),500)!=AFR2_OK)Afr2Product_Stop(p);
+        if(Afr2Product_Drive(p,p->config.line_speed,0,wz,500)!=AFR2_OK)Afr2Product_Stop(p);
         else p->mode=mode;
         p->local_started_ms=local_timeout_ms;
     }
@@ -399,7 +422,8 @@ void Afr2Product_Task(Afr2Product *p,uint32_t now) {
             if(p->integral[i]<-32767)p->integral[i]=-32767;
             int32_t output=(int32_t)p->config.kp*error+(int32_t)p->config.ki*p->integral[i]+
                 (int32_t)p->config.kd*(error-p->last_error[i]);p->last_error[i]=error;
-            wanted=clamp(output/256,p->config.pwm_limit);
+            int32_t trimmed=((output/256)*(int32_t)p->config.motor_trim[i]+(output>=0?500:-500))/1000;
+            wanted=clamp(trimmed,p->config.pwm_limit);
             }
         }
         p->pwm[i]=ramp(p->pwm[i],p->stopped?0:wanted,p->config.ramp_step);

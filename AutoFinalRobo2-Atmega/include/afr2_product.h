@@ -10,8 +10,7 @@
 #include "afr2_sensor_head.h"
 #include "afr2_battery_wire.h"
 #include "afr2_geometry.h"
-#define AFR2_CONFIG_VERSION 13u /* AFR2-20261111-06: 78-byte payload; six directional odometry scales, v1..11 migrate in RAM.
- * AFR2-20261112-01: v13 mismo payload; un registro v12 con giro CW/CCW = 1000 toma AFR2_TURN_ODOM_PERMILLE en RAM. */
+#define AFR2_CONFIG_VERSION 14u /* AFR2-20261116-01: 86-byte payload; adds motor_trim[4] permille (500..1500), v1..13 migrate in RAM. */
 #define AFR2_WIFI_RETRY_DEFAULT_S 30u /* AFR2-20261108-06: "Seguir esperando" vuelve a preguntar tras este tiempo */
 #define AFR2_NOTICE_MS 3000u
 #define AFR2_FACTORY_HALL_MASK 0x0Fu /* AFR2-20261108-05: signos y convencion CW de fabrica en las 4 ruedas */
@@ -31,7 +30,8 @@ enum { AFR2_WIFI_STATUS=1, AFR2_WIFI_SCAN, AFR2_WIFI_WEB_DRAFT,
        AFR2_WIFI_LOCAL_DRAFT, AFR2_WIFI_CONNECT, AFR2_WIFI_CANCEL, AFR2_WIFI_RETRY, AFR2_WIFI_REBOOT_ESP, AFR2_WIFI_DISCONNECT, AFR2_WIFI_CHANGE_MODE, AFR2_WIFI_READ_CREDENTIALS, AFR2_WIFI_PAGE,
        /* AFR2-20261108-06: respuesta al selector sin Wi-Fi. WAIT lleva 2 bytes: segundos u16LE. */
        AFR2_WIFI_AP_START, AFR2_WIFI_WAIT,
-       AFR2_WIFI_ASK_FALLBACK=AFR2_WIFI_OP_ASK_FALLBACK, AFR2_WIFI_AP_STOP=AFR2_WIFI_OP_AP_STOP };
+       AFR2_WIFI_ASK_FALLBACK=AFR2_WIFI_OP_ASK_FALLBACK, AFR2_WIFI_AP_STOP=AFR2_WIFI_OP_AP_STOP,
+       AFR2_WIFI_SYNC_DISABLE=AFR2_WIFI_OP_SYNC_DISABLE };
 typedef struct {
     uint8_t line_kind, line_invert, line_calibrated, motor_signs, motor_ready;
     uint8_t hall_wired, hall_signs, geometry_ready, encoder_steps, encoder_invert, contrast, rotation;
@@ -46,6 +46,7 @@ typedef struct {
     uint8_t hall_cw_mask; /* AFR2-20261106-12: calibrated CW from wheel exterior; per-wheel migration. */
     uint16_t odom_scale[6]; /* AFR2-20261111-06: forward, reverse, left, right, CW, CCW; permille 0..2000. */
     uint16_t wifi_retry_s; /* AFR2-20261108-06: 10..300 s, paso 10; espera de "Seguir esperando" */
+    uint16_t motor_trim[4]; /* AFR2-20261116-01: FL, FR, RL, RR permille 500..1500, default 1000. */
 } Afr2Config;
 typedef struct {
     uint16_t line_raw[5], distance_mm;
@@ -74,7 +75,7 @@ typedef struct {
     uint8_t credential_length, credentials_visible;
     uint32_t display_boot,display_event,display_ms;
     uint16_t display_revision;
-    uint8_t display_page,display_ready,ap_active,ap_clients,web_ready;
+    uint8_t display_page,display_ready,ap_active,ap_clients,web_ready,sync_online;
     uint8_t ask_fallback,policy_valid,policy_requested;
     uint8_t link_phase; /* AFR2-20261109-01: 0 idle/connected, 1 STA connecting, 2 AP starting (notices) */
     char ap_ssid[33],ap_password[64];
@@ -103,6 +104,8 @@ typedef struct Afr2Product {
     uint16_t local_timeout_ms;
     uint32_t now, control_ms, command_ms, local_started_ms, session, web_ms;
     uint32_t test_started_ms, mission_started_ms;
+    int16_t last_line_error;
+    uint32_t last_line_ms, line_cross_ms;
     int16_t pwm[4], target[4], speed[4], last_error[4];
     int32_t integral[4], previous_counts[4], hall_start, hall_delta, hall_peak;
     uint32_t hall_change_ms[4];

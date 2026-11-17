@@ -1,6 +1,6 @@
 {
   "schema": "afr2-wire-catalog-1",
-  "updated_by": "AFR2-20261111-08",
+  "updated_by": "AFR2-20261116-01",
   "notes": "Catalogo de comandos UART ROBO2/perfil 2 + EX01 v13 para interpretes (Loader, Protocol Studio). Autoridad de IDs: afr2_wire.h, afr2_product_wire.h, afr2_sensor_wire.h, afr2_network_wire.h, afr2_battery_wire.h. Largos cotejados con el despachador del ATmega (afr2_link.c, afr2_app_wire.c, afr2_sensor_commands.c, afr2_network.c, afr2_sequence.c) el 08/11/2026; sin prueba en placa. Toda alta/baja/modificacion de un CMD actualiza este archivo (skill afr2-wire-commands). 'bytes' cuenta el cuerpo de aplicacion, sin sesion/transaccion/resultado. 'variable' indica largo dependiente del contenido.",
   "envelope": {
     "header": "52 4F 42 4F 32",
@@ -256,6 +256,6 @@
     "esp_reset_reason": { "0": "power-on", "1": "hw-watchdog", "2": "exception", "3": "soft-watchdog", "4": "soft-restart", "5": "deep-sleep", "6": "external-reset", "253": "stack-smash", "254": "user-exception", "255": "desconocida" },
     "avr_reset_bits": { "1": "power-on", "2": "reset-pin", "4": "brown-out", "8": "watchdog", "16": "jtag" },
     "xtensa_exccause": { "0": "IllegalInstruction", "1": "Syscall", "2": "InstructionFetchError", "3": "LoadStoreError", "4": "Level1Interrupt", "5": "Alloca", "6": "IntegerDivideByZero", "8": "Privileged", "9": "LoadStoreAlignment", "12": "InstrPIFDataError", "13": "LoadStorePIFDataError", "14": "InstrPIFAddrError", "15": "LoadStorePIFAddrError", "16": "InstTLBMiss", "17": "InstTLBMultiHit", "18": "InstFetchPrivilege", "20": "InstFetchProhibited", "24": "LoadStoreTLBMiss", "25": "LoadStoreTLBMultiHit", "26": "LoadStorePrivilege", "28": "LoadProhibited", "29": "StoreProhibited" },
-    "net_event": { "1": "esp-boot", "2": "web-ready", "3": "sta-got-ip", "4": "ap-ready", "5": "ap-client-join", "6": "ap-client-leave", "7": "ws-open", "8": "ws-close", "9": "index-served", "10": "sta-lost", "11": "ap-stopped", "12": "sta-not-found" }
+    "net_event": { "1": "esp-boot", "2": "web-ready", "3": "sta-got-ip", "4": "ap-ready", "5": "ap-client-join", "6": "ap-client-leave", "7": "ws-open", "8": "ws-close", "9": "index-served", "10": "sta-lost", "11": "ap-stopped", "12": "sta-not-found", "13": "sync-fail-5" }
   }
 }

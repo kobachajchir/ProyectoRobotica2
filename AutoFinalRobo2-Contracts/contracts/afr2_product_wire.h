@@ -43,7 +43,8 @@
 /* AFR2-20261109-02: WIFI_POLL op15 carries ask:u8, op16 stops AP; UPDATE details accepts optional ask:u8 at byte18. */
 #define AFR2_WIFI_OP_ASK_FALLBACK 15u
 #define AFR2_WIFI_OP_AP_STOP 16u
-#define AFR2_WIFI_OP_MAX 16u
+#define AFR2_WIFI_OP_SYNC_DISABLE 17u
+#define AFR2_WIFI_OP_MAX 17u
 #define AFR2_EXT_DIAG_POLL 0x32u
 #define AFR2_EXT_DIAG_RESULT 0x33u
 /* AFR2-20261024-01: sequence range does not replace EX01 product IDs. */

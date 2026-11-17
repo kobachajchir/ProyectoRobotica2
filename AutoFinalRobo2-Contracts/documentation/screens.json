@@ -1100,10 +1100,10 @@
         "select",
         "menu"
       ],
-      "state": "source-integrated-compiled-runtime-unverified",
+      "state": "source-integrated-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261106-01",
-      "item_count": 8,
+      "change_id": "AFR2-20261116-01",
+      "item_count": 12,
       "back_semantics": "long-release contextual back; explicit Volver uses same guard; mandatory Yes/No cannot be bypassed",
       "variant": "three16px-rows; flash-icons; selected-text800ms-dwell-40ms-scroll; explicit-Volver",
       "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
@@ -3475,6 +3475,150 @@
       "physical_evidence": false,
       "build_evidence": "No build, test, validator or flash for this change",
       "change_id": "AFR2-20261111-06"
+    },
+    {
+      "id": "shared:screen/030057",
+      "local_code": "0x030057",
+      "name": "Escala motor FL",
+      "role": "editor",
+      "parent": "shared:screen/03001C",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "draft permille 500..1500; 1000=1.000; display X.XXX",
+        "editing.action 121"
+      ],
+      "actions": [
+        "rotate-draft-step-5",
+        "short-apply-to-RAM",
+        "long-release-discard-editor-draft"
+      ],
+      "item_count": 1,
+      "variant": "Numeric editor variant of node 28 (Calibrar motores); short applies in RAM; parent asks Si/No on leave if configuration is dirty",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261116-01"
+    },
+    {
+      "id": "shared:screen/030058",
+      "local_code": "0x030058",
+      "name": "Escala motor FR",
+      "role": "editor",
+      "parent": "shared:screen/03001C",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "draft permille 500..1500; 1000=1.000; display X.XXX",
+        "editing.action 122"
+      ],
+      "actions": [
+        "rotate-draft-step-5",
+        "short-apply-to-RAM",
+        "long-release-discard-editor-draft"
+      ],
+      "item_count": 1,
+      "variant": "Numeric editor variant of node 28 (Calibrar motores); short applies in RAM; parent asks Si/No on leave if configuration is dirty",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261116-01"
+    },
+    {
+      "id": "shared:screen/030059",
+      "local_code": "0x030059",
+      "name": "Escala motor RL",
+      "role": "editor",
+      "parent": "shared:screen/03001C",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "draft permille 500..1500; 1000=1.000; display X.XXX",
+        "editing.action 123"
+      ],
+      "actions": [
+        "rotate-draft-step-5",
+        "short-apply-to-RAM",
+        "long-release-discard-editor-draft"
+      ],
+      "item_count": 1,
+      "variant": "Numeric editor variant of node 28 (Calibrar motores); short applies in RAM; parent asks Si/No on leave if configuration is dirty",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261116-01"
+    },
+    {
+      "id": "shared:screen/03005A",
+      "local_code": "0x03005A",
+      "name": "Escala motor RR",
+      "role": "editor",
+      "parent": "shared:screen/03001C",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "draft permille 500..1500; 1000=1.000; display X.XXX",
+        "editing.action 124"
+      ],
+      "actions": [
+        "rotate-draft-step-5",
+        "short-apply-to-RAM",
+        "long-release-discard-editor-draft"
+      ],
+      "item_count": 1,
+      "variant": "Numeric editor variant of node 28 (Calibrar motores); short applies in RAM; parent asks Si/No on leave if configuration is dirty",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261116-01"
+    },
+    {
+      "id": "shared:screen/03005B",
+      "local_code": "0x03005B",
+      "name": "Fallo sincronizacion",
+      "role": "menu",
+      "parent": "shared:screen/03001F",
+      "renderer": "atmega:src/ui/afr2_screens.c:Afr2Ui_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "selection (0 Cerrar por defecto, 1 Desactivar funcion)",
+        "revision"
+      ],
+      "actions": [
+        "rotate",
+        "select",
+        "menu"
+      ],
+      "item_count": 2,
+      "variant": "Two-choice decision after 5 failed online sync attempts: Cerrar (default, row 0) keeps sync enabled; Desactivar funcion (row 1) turns online sync off",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261116-01"
+    },
+    {
+      "id": "shared:screen/04000D",
+      "local_code": "0x04000D",
+      "name": "Fallo sincronizacion",
+      "role": "notification",
+      "parent": "return-to-current-context",
+      "renderer": "atmega:src/ui/afr2_network_screen.c:Afr2NetworkNotice_Render",
+      "web_renderer": "web:src/features/oled/firmwareRenderer.ts:renderFirmwareScreen",
+      "fields": [
+        "notice.title",
+        "notice.text",
+        "notice.ms"
+      ],
+      "actions": [
+        "select",
+        "menu"
+      ],
+      "item_count": 0,
+      "variant": "Network event 13 (AFR2_NET_SYNC_FAIL_5) notification followed by 0x03005B choice",
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "physical_evidence": false,
+      "build_evidence": "No build, test, validator or flash for this change",
+      "change_id": "AFR2-20261116-01"
     }
   ],
   "battery_screens_change": "AFR2-20261029-26; appended nodes 0x030039 and 0x03003a; source only",

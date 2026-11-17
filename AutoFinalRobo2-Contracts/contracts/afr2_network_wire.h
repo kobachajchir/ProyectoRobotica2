@@ -14,7 +14,10 @@ enum {
   * 2 clave incorrecta, 3 no se pudo unir. El ESP espera la decision del OLED (Iniciar AP /
   * Seguir esperando); un ATmega que lo rechaza (BAD_REQUEST) vuelve al AP automatico. */
  AFR2_NET_STA_NOT_FOUND,
- AFR2_NET_EVENT_MAX=AFR2_NET_STA_NOT_FOUND
+ /* AFR2-20261116-01: 5 intentos fallidos consecutivos de sincronizacion online. Abre el aviso
+  * interactivo con Cerrar (defecto) y Desactivar sincronizacion. */
+ AFR2_NET_SYNC_FAIL_5,
+ AFR2_NET_EVENT_MAX=AFR2_NET_SYNC_FAIL_5
 };
 #define AFR2_NOTICE_NETWORK 16u
 #endif

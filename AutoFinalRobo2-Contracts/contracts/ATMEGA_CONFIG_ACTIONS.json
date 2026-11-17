@@ -522,6 +522,65 @@
       "section": "preferences",
       "step": 10,
       "note": "AFR2-20261108-06. EEPROM v11, defecto 30. Tiempo que el ESP sigue intentando la red STA tras 'Seguir esperando' antes de volver a preguntar."
+    },
+    {
+      "id": 121,
+      "symbol": "AFR2_A_MOTOR_TRIM_FL",
+      "config_access": true,
+      "label": "Escala motor FL",
+      "min": 500,
+      "max": 1500,
+      "editor_step": 5,
+      "unit": "permille (1000=1.000)",
+      "step": 5,
+      "note": "AFR2-20261116-01. EEPROM v14, defecto 1000. Factor de compensacion de potencia para la rueda delantera izquierda (FL)."
+    },
+    {
+      "id": 122,
+      "symbol": "AFR2_A_MOTOR_TRIM_FR",
+      "config_access": true,
+      "label": "Escala motor FR",
+      "min": 500,
+      "max": 1500,
+      "editor_step": 5,
+      "unit": "permille (1000=1.000)",
+      "step": 5,
+      "note": "AFR2-20261116-01. EEPROM v14, defecto 1000. Factor de compensacion de potencia para la rueda delantera derecha (FR)."
+    },
+    {
+      "id": 123,
+      "symbol": "AFR2_A_MOTOR_TRIM_RL",
+      "config_access": true,
+      "label": "Escala motor RL",
+      "min": 500,
+      "max": 1500,
+      "editor_step": 5,
+      "unit": "permille (1000=1.000)",
+      "step": 5,
+      "note": "AFR2-20261116-01. EEPROM v14, defecto 1000. Factor de compensacion de potencia para la rueda trasera izquierda (RL)."
+    },
+    {
+      "id": 124,
+      "symbol": "AFR2_A_MOTOR_TRIM_RR",
+      "config_access": true,
+      "label": "Escala motor RR",
+      "min": 500,
+      "max": 1500,
+      "editor_step": 5,
+      "unit": "permille (1000=1.000)",
+      "step": 5,
+      "note": "AFR2-20261116-01. EEPROM v14, defecto 1000. Factor de compensacion de potencia para la rueda trasera derecha (RR)."
+    },
+    {
+      "id": 125,
+      "symbol": "AFR2_A_SYNC_ASK",
+      "config_access": false,
+      "label": "Respuesta ante fallo de sincronizacion online",
+      "min": 0,
+      "max": 1,
+      "unit": "0 Cerrar (defecto) / 1 Desactivar funcion",
+      "section": "wifi",
+      "note": "AFR2-20261116-01. Solo la pantalla 0x03005B tras 5 intentos fallidos; 0 cierra el aviso y conserva activa la funcion, 1 genera el trabajo op 17 para desactivar la sincronizacion."
     }
   ],
   "retired_action_ids": [

@@ -53,7 +53,9 @@ enum {
  /* AFR2-20261108-06: la red STA elegida no conecto; elegir Iniciar AP (defecto a los 5 s) o Seguir esperando. */
  AFR2_N_WIFI_ASK,
  /* AFR2-20261111-02: Pruebas examen (desplazamiento 1 m y giros) y su pantalla de ejecucion. */
- AFR2_N_EXAM_MENU, AFR2_N_EXAM_MOVE, AFR2_N_EXAM_TURN, AFR2_N_EXAM_RUN, AFR2_N_FACTORS, AFR2_N_COUNT };
+ AFR2_N_EXAM_MENU, AFR2_N_EXAM_MOVE, AFR2_N_EXAM_TURN, AFR2_N_EXAM_RUN, AFR2_N_FACTORS,
+ /* AFR2-20261116-01: selector Cerrar (defecto) / Desactivar funcion tras 5 fallos de sincronizacion online. */
+ AFR2_N_SYNC_ASK, AFR2_N_COUNT };
 enum {
  AFR2_A_NONE = 0,
  AFR2_A_STOP = 1,
@@ -133,7 +135,10 @@ enum {
  AFR2_A_EXAM_START = 111, AFR2_A_EXAM_STOP = 112, AFR2_A_EXAM_CLEAR = 113, AFR2_A_EXAM_STATE = 114,
  /* AFR2-20261111-06: local factor editors; not CONFIG wire keys. */
  AFR2_A_SCALE_FORWARD = 115, AFR2_A_SCALE_REVERSE = 116, AFR2_A_SCALE_LEFT = 117,
- AFR2_A_SCALE_RIGHT = 118, AFR2_A_SCALE_CW = 119, AFR2_A_SCALE_CCW = 120 };
+ AFR2_A_SCALE_RIGHT = 118, AFR2_A_SCALE_CW = 119, AFR2_A_SCALE_CCW = 120,
+ /* AFR2-20261116-01: per-motor compensation trims (permille 500..1500) and sync failure response (0 close, 1 disable). */
+ AFR2_A_MOTOR_TRIM_FL = 121, AFR2_A_MOTOR_TRIM_FR = 122, AFR2_A_MOTOR_TRIM_RL = 123, AFR2_A_MOTOR_TRIM_RR = 124,
+ AFR2_A_SYNC_ASK = 125 };
 typedef struct { char label[33]; uint8_t target,action; int16_t arg,min,max,step; } Afr2MenuItem;
 typedef struct { char title[18]; uint8_t parent,view,count; uint16_t first; uint32_t code; } Afr2MenuNode;
 void Afr2Menu_Node(uint8_t index,Afr2MenuNode *out);
