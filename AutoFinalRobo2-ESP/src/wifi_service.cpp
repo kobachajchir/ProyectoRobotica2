@@ -318,6 +318,9 @@ void WifiService::displayInfo(WifiDisplayInfo &out) const {
     out.staConnected=(out.mode&1u) && WiFi.status()==WL_CONNECTED && (uint32_t)ip!=0;
     out.apReady=(out.mode&2u) && apOn_ && (uint32_t)ap!=0;
     if(out.staConnected){strlcpy(out.staSsid,WiFi.SSID().c_str(),sizeof(out.staSsid));out.rssi=WiFi.RSSI();for(uint8_t i=0;i<4;i++)out.staIp[i]=ip[i];}
+    /* AFR2-20261117-08: sin conexion STA, la red que el ESP intenta (configuracion de estacion) para que el OLED
+     * diga «Reconectando a <red Wi-Fi>». Nunca el nombre del AP. */
+    else if((out.mode&1u) && staWanted_)strlcpy(out.staSsid,WiFi.SSID().c_str(),sizeof(out.staSsid));
     if(out.apReady){strlcpy(out.apSsid,apSsid_.c_str(),sizeof(out.apSsid));strlcpy(out.apPassword,apPassword_,sizeof(out.apPassword));
         out.clients=WiFi.softAPgetStationNum();for(uint8_t i=0;i<4;i++)out.apIp[i]=ap[i];}
 }

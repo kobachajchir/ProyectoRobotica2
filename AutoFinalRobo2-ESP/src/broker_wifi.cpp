@@ -162,7 +162,10 @@ void Broker::tickWifi(uint32_t now) {
     }
     if(!wifiStatusAt_ || (uint32_t)(now-wifiStatusAt_)>=2000u) {
         JsonDocument status;wifi_.status(status.to<JsonObject>());uint8_t b[46]={};
-        const char *m=status["mode"]|"OFF",*ssid=status["staSsid"]|(status["apSsid"]|"");
+        // AFR2-20261117-08: antes, sin STA conectada se mandaba el nombre del AP en el campo de la red STA y el OLED
+        // avisaba «Reconectando a <AP>». Ahora va la red STA configurada (o vacío en modo AP).
+        const char *m=status["mode"]|"OFF",*ssid=status["staSsid"]|"";
+        String staTarget;if(!*ssid && (!strcmp(m,"STA") || !strcmp(m,"AP_STA"))){staTarget=WiFi.SSID();ssid=staTarget.c_str();}
         b[1]=!strcmp(m,"STA")?1:!strcmp(m,"AP")?2:!strcmp(m,"AP_STA")?3:0;b[2]=status["staConnected"]|false;
         afr2_put_u16(b+3,(int16_t)(status["rssiDbm"]|-127));b[5]=strlen(ssid)>32?32:strlen(ssid);memcpy(b+6,ssid,b[5]);
         IPAddress ip,ap;ip.fromString(status["staIp"]|"0.0.0.0");ap.fromString(status["apIp"]|"0.0.0.0");

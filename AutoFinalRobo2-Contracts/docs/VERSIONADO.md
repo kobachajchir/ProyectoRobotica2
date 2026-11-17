@@ -37,6 +37,7 @@ Reglas:
 
 | Versión | Tipo | Cambio |
 |---|---|---|
+| 1.35.3 | subversión mínima | AFR2-20261117-08: «Reconectando a» con la red STA configurada en vez del nombre del AP (ESP). ESP en fuente; ATmega y Web solo versión. |
 | 1.35.2 | subversión mínima | AFR2-20261117-07: textos y tablas constantes del ATmega de RAM a flash (−344 B de RAM, sin cambio de comportamiento). ATmega compilado; ESP y Web solo versión. |
 | 1.35.1 | subversión mínima | AFR2-20261117-06: botones redondos del encoder bajo la pantalla con leyenda, pills de la barra que se estiran en hover y captura del Loader en Hosting. Web en fuente; ATmega y ESP solo versión. |
 | 1.35.0 | subversión | AFR2-20261117-05: copia de la sincronización en Firebase (`autofinalrobo2`, Auth anónimo, escritor con clave guardada en el ESP), vinculación de una compu con código en el OLED (CMD `0x57 SYNC_PAIR`) y vista remota `#/remoto` de solo lectura. ATmega, ESP y Web en fuente. |

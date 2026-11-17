@@ -1,3 +1,9 @@
+## AFR2-20261117-08 — 17/11/2026
+
+ESP: en STA+AP, el OLED avisaba «Reconectando a» con el nombre del AP. El estado Wi-Fi que el ESP envía al ATmega usaba `staSsid | apSsid`; ahora manda la red STA configurada (`WiFi.SSID()`) y nunca el AP. `displayInfo()` hace lo mismo, así los dos mensajes coinciden.
+
+Versión: 1.35.3 (subversión mínima). ESP en fuente; ATmega y Web solo versión. [Ficha](changes/2026-11-17-08-reconectando-red-sta.md). Compilados ESP, ATmega, Web ESP y LittleFS; actualizadas las huellas del renderer OLED que cambió 1.35.2 (solo textos a flash, mismo dibujo). Sin cargar ni probar.
+
 ## AFR2-20261117-07 — 17/11/2026
 
 ATmega: textos y tablas constantes de RAM a flash. Firmas `BT01`, `AFR2` y `EX01`, argumentos `%S` con `PSTR`, `strcpy_P`/`strncmp_P`, prefijos del QR, textos de los avisos de red, tablas de `qrcodegen` en `PROGMEM` y `-fno-tree-switch-conversion` (sin tablas CSWTCH).
