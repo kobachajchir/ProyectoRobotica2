@@ -59,7 +59,7 @@ Compilado el 17/11/2026, a pedido del usuario:
 | ATmega | `make -B firmware communication-firmware library`: exit 0. `.data` 12 B + `.bss` 6 886 B = 6 898 B de RAM estática (+40 B); flash 170 116 B. Una advertencia previa ajena: `afr2_product.c:262` |
 | ESP | `platformio run`: SUCCESS. RAM 58,6 %; flash 479 239 B. LittleFS (`-t buildfs`): SUCCESS |
 | Web ESP | `npm run build:esp` (con `tsc`): exit 0. 1.36.0 en `ESP/data/dist`; estimación FS 2 859 008 de 2 867 200 B |
-| Loader | `Compilar.ps1` (csc .NET 4): exit 0. `AFR2Loader.exe` 2.5.0.0 en `%LOCALAPPDATA%\AutoFinalRobo2Loaderin` |
+| Loader | `Compilar.ps1` (csc .NET 4): exit 0. `AFR2Loader.exe` 2.5.0.0 en `%LOCALAPPDATA%\AutoFinalRobo2Loader\bin` |
 
 - No probado con el auto: falta cargar ATmega, ESP y LittleFS y abrir el Loader con la autodetección activa.
 - Hosting no se republicó: sigue en 1.35.1.
