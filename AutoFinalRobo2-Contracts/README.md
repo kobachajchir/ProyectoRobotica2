@@ -1,3 +1,4 @@
+> **AFR2-20261117-06 / 1.35.1:** [Encoder con botones redondos bajo la pantalla, pills que se estiran y captura del Loader](changes/2026-11-17-06-encoder-redondo-pills-loader.md). ATmega, ESP y Web compilados; Web publicada en Hosting; sin cargar.
 > **AFR2-20261117-05 / 1.35.0:** [Copia de la sincronización en Firebase, vinculación por código en el OLED y vista remota](changes/2026-11-17-05-firebase-sync-acceso-web.md). CMD nuevo `0x57 SYNC_PAIR`; ATmega, ESP (más LittleFS) y Web compilados; Web publicada en https://autofinalrobo2.web.app; sin cargar ni probar con el auto.
 > **AFR2-20261117-01 / 1.33.0:** [Sección Seguidor de línea, accesos rápidos de Inicio y hash FNV-1a por capa en la sincronización](changes/2026-11-17-01-seccion-seguidor-linea-accesos-inicio.md). Web en fuente; ATmega y ESP solo versión; sin compilar, probar ni cargar.
 

@@ -1,0 +1,79 @@
+/* AFR2-20261117-06 — Pills de la barra superior (Sync web, Modo, Red, Batería, Alertas).
+ * En reposo son botones redondos solo con el icono. Al pasar el cursor, al enfocarlas con teclado o mientras su
+ * modal está abierto (aria-expanded) se estiran con animación y muestran su texto; al salir se vuelven a achicar.
+ * En hover/foco/abierto toman el color de acción de fondo y el texto sobre acción, como el resto de los botones.
+ * Va al final de index.css y dobla la clase de la barra para pisar las reglas por ancho de workspace.css,
+ * line-follower.css y touch-rail.css sin tocarlas. */
+.afr2-topbar.afr2-topbar :is(.afr2-network-pill, .afr2-mode-pill) {
+  position: relative;
+  justify-content: center;
+  gap: 0;
+  min-width: 44px;
+  max-width: none;
+  height: 44px;
+  min-height: 44px;
+  /* 20 px de icono + 2 × 11 px + 2 × 1 px de borde = 44 px: círculo exacto. */
+  padding: 0 11px;
+  transition:
+    padding 260ms var(--ease-out),
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    transform 140ms var(--ease-out);
+}
+.afr2-topbar.afr2-topbar :is(.afr2-network-pill, .afr2-mode-pill) > svg { flex: none; }
+.afr2-topbar.afr2-topbar :is(.afr2-network-pill, .afr2-mode-pill) > :is(span, strong, small) {
+  display: inline-block;
+  max-width: 0;
+  margin-left: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+  vertical-align: middle;
+  transition: max-width 280ms var(--ease-out), margin-left 280ms var(--ease-out), opacity 180ms ease;
+}
+
+/* Estirada: hover, foco por teclado o modal abierto. */
+.afr2-topbar.afr2-topbar :is(.afr2-network-pill, .afr2-mode-pill):is(:focus-visible, [aria-expanded="true"]) { padding-inline: 14px 16px; }
+.afr2-topbar.afr2-topbar :is(.afr2-network-pill, .afr2-mode-pill):is(:focus-visible, [aria-expanded="true"]) > :is(span, strong, small) {
+  max-width: 11rem;
+  margin-left: .45rem;
+  opacity: 1;
+}
+.afr2-topbar.afr2-topbar :is(.afr2-network-pill, .afr2-mode-pill):is(:focus-visible, [aria-expanded="true"]) {
+  background: var(--action);
+  border-color: var(--action);
+  color: var(--text-on-action);
+}
+@media (hover: hover) and (pointer: fine) {
+  .afr2-topbar.afr2-topbar :is(.afr2-network-pill, .afr2-mode-pill):hover { padding-inline: 14px 16px; background: var(--action); border-color: var(--action); color: var(--text-on-action); }
+  .afr2-topbar.afr2-topbar :is(.afr2-network-pill, .afr2-mode-pill):hover > :is(span, strong, small) { max-width: 11rem; margin-left: .45rem; opacity: 1; }
+}
+
+/* Alertas: el número queda siempre visible como insignia sobre el icono; se oculta sin avisos. */
+.afr2-topbar.afr2-topbar .afr2-alert-pill > .afr2-alert-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  max-width: none;
+  min-width: 19px;
+  height: 19px;
+  margin: 0;
+  padding-inline: 4px;
+  opacity: 1;
+  border-radius: 999px;
+  background: var(--warning);
+  color: var(--surface-solid, #0b1220);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 19px;
+  text-align: center;
+}
+.afr2-topbar.afr2-topbar .afr2-alert-pill[data-tone="error"] > .afr2-alert-count { background: var(--error); color: #fff; }
+.afr2-topbar.afr2-topbar .afr2-alert-pill[data-tone="neutral"] > .afr2-alert-count { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .afr2-topbar.afr2-topbar :is(.afr2-network-pill, .afr2-mode-pill),
+  .afr2-topbar.afr2-topbar :is(.afr2-network-pill, .afr2-mode-pill) > :is(span, strong, small) { transition: none; }
+}

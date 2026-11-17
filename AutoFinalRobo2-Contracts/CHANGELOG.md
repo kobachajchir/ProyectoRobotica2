@@ -1,3 +1,15 @@
+## AFR2-20261117-06 — 17/11/2026
+
+Ajustes de la Web.
+
+- **Encoder:** en Pantalla en vivo y en Ayuda → OLED, los botones son circulares, solo con icono, y van debajo de la pantalla alineados con su marco: giros a la izquierda y SW en el extremo derecho. Se dibujan con un portal desde `OledWorkbench`. En hover toman el color de acción. Debajo queda la leyenda de referencia con iconos.
+- **Barra superior:** las pills (Sync, Modo, Red, Batería, Alertas) son redondas solo con el icono. Se estiran con animación y muestran el texto en hover, foco o con su modal abierto (`aria-expanded`), con el color de acción. El número de alertas va como insignia.
+- **Loader:** la captura se incluye en el perfil completo (Hosting). Antes nunca entraba en la compilación; en el ESP no entra por espacio.
+
+Versión: 1.35.1 (subversión mínima). Web en fuente; ATmega y ESP solo versión. [Ficha](changes/2026-11-17-06-encoder-redondo-pills-loader.md).
+
+Validación: revisado en el servidor de desarrollo (escritorio y 375 px). ATmega, ESP (más LittleFS) y Web compilados; publicada en Hosting, con la captura del Loader y las pills de 44×44 comprobadas. Sin cargar.
+
 ## AFR2-20261117-05 — 17/11/2026
 
 Copia de la sincronización en Firebase, con vinculación por código en el OLED.

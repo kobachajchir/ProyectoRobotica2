@@ -2,6 +2,7 @@ import { EncoderGlyph } from './EncoderGlyph';
 import { UiIcon } from '../../components/ui/UiIcon';
 /* AFR2-20261029-27: quick controls/radar/PWM/WS integration; prior authors retained. */
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export const AFR2_LONG_PRESS_MS = 800;
 export const AFR2_ENCODER_LONG_MS = 800;
@@ -31,6 +32,8 @@ export interface EncoderControlProps {
   /** AFR2-20261103-27. Captura todo el teclado mientras el diálogo que contiene el control está abierto:
    * ← y → giran al soltar, Espacio es SW (mantenido, corto o largo al soltar), Enter no hace nada y Escape queda para cerrar. */
   keyboardCapture?: boolean;
+  /** AFR2-20261117-06: nodo bajo la pantalla donde se dibujan los botones circulares (portal). Sin él van dentro de la tarjeta. */
+  buttonsHost?: HTMLElement | null;
 }
 
 function RefreshSyncIcon({ spinning = false }: { spinning?: boolean }) {
@@ -63,6 +66,7 @@ export function EncoderControl({
   compact = false,
   label = 'Controles físicos · Encoder único KY-040',
   keyboardCapture = false,
+  buttonsHost = null,
 }: EncoderControlProps) {
   const threshold=Math.max(800,Math.min(3000,longPressMs));
   const isAvailable = available && !disabled;
@@ -255,6 +259,107 @@ export function EncoderControl({
         ? 'Acción o consulta en curso; aguardando respuesta del controlador.'
         : null);
 
+  // AFR2-20261117-06: botones circulares solo con icono. Giros juntos a la izquierda y SW en el extremo derecho.
+  const buttonRow = (
+    <div className="afr2-encoder-row" role="group" aria-label="Encoder: giros y pulsador SW">
+      <div className="afr2-encoder-row__turns">
+        <button
+          type="button"
+          disabled={controlsDisabled}
+          onClick={() => handleRotateClick('left')}
+          data-state={controlsDisabled ? 'disabled' : pressedRotate === 'left' ? 'pressed' : 'idle'}
+          aria-label="Giro izquierdo del encoder (-1)"
+          title="Giro izquierdo"
+          className="afr2-encoder-round"
+        >
+          <EncoderGlyph kind="turn" scale={1.5} mirror />
+        </button>
+        <button
+          type="button"
+          disabled={controlsDisabled}
+          onClick={() => handleRotateClick('right')}
+          data-state={controlsDisabled ? 'disabled' : pressedRotate === 'right' ? 'pressed' : 'idle'}
+          aria-label="Giro derecho del encoder (+1)"
+          title="Giro derecho"
+          className="afr2-encoder-round"
+        >
+          <EncoderGlyph kind="turn" scale={1.5} />
+        </button>
+      </div>
+      <button
+        type="button"
+        disabled={swButtonDisabled}
+        data-state={swStateAttr}
+        title={`Pulsador SW: corto confirma, largo (${threshold} ms al soltar) vuelve`}
+        aria-label={
+          longVisualActive
+            ? 'Largo preparado; soltar para ejecutar el retorno contextual.'
+            : 'Pulsador SW del encoder: pulsación corta confirma, mantener y soltar vuelve al contexto anterior'
+        }
+        onPointerDown={(e) => {
+          if (e.button !== 0 || controlsDisabled) return;
+          try {
+            e.currentTarget.setPointerCapture(e.pointerId);
+          } catch {
+            // Ignorar si el navegador no soporta captura en este dispositivo
+          }
+          beginPress('pointer');
+        }}
+        onPointerUp={(e) => {
+          try {
+            if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+              e.currentTarget.releasePointerCapture(e.pointerId);
+            }
+          } catch {
+            // Ignorar
+          }
+          if (activeInputSourceRef.current === 'pointer') {
+            finishPress();
+          }
+        }}
+        onPointerCancel={(e) => {
+          try {
+            if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+              e.currentTarget.releasePointerCapture(e.pointerId);
+            }
+          } catch {
+            // Ignorar
+          }
+          cancelGesture();
+        }}
+        onLostPointerCapture={() => {
+          if (activeInputSourceRef.current === 'pointer') {
+            cancelGesture();
+          }
+        }}
+        onKeyDown={(e) => {
+          if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault();
+            if (e.repeat) return;
+            beginPress('keyboard', e.key);
+          }
+        }}
+        onKeyUp={(e) => {
+          if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault();
+            if (activeInputSourceRef.current === 'keyboard' && activeKeyRef.current === e.key) {
+              finishPress();
+            }
+          }
+        }}
+        onBlur={() => {
+          cancelGesture();
+        }}
+        className="afr2-encoder-round afr2-encoder-round--sw select-none"
+      >
+        <div ref={barRef} className="afr2-oled-sw-progress pointer-events-none" style={{ transform: 'scaleX(0)' }} aria-hidden="true" />
+        <span className="afr2-encoder-round__icon">
+          <EncoderGlyph kind={longVisualActive ? 'long' : 'short'} scale={2} />
+        </span>
+      </button>
+    </div>
+  );
+
   return (
     <div
       ref={rootRef}
@@ -269,7 +374,7 @@ export function EncoderControl({
             {label}
           </span>
           <p className="text-xs text-[var(--text-muted)] mt-0.5">
-            Sin botón dedicado: largo al soltar vuelve por contexto, igual que la opción <code>Volver</code> en pantalla.
+            Los botones están debajo de la pantalla. Sin botón dedicado: largo al soltar vuelve por contexto, igual que la opción <code>Volver</code>.
           </p>
         </div>
 
@@ -295,153 +400,28 @@ export function EncoderControl({
         </div>
       </div>
 
-      <div className="afr2-encoder-grid grid grid-cols-1 sm:grid-cols-3 gap-2.5" role="group" aria-label="Acciones de giro y pulsación SW">
-        <div className="flex flex-col gap-1">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-            Giro izquierdo
-          </span>
-          <button
-            type="button"
-            disabled={controlsDisabled}
-            onClick={() => handleRotateClick('left')}
-            data-state={controlsDisabled ? 'disabled' : pressedRotate === 'left' ? 'pressed' : 'idle'}
-            aria-label="Giro izquierdo del encoder (-1)"
-            className="afr2-oled-live-btn min-h-12 w-full rounded-[var(--radius-sm)] px-3.5 py-2.5 text-sm font-semibold flex items-center justify-center gap-2.5"
-          >
-            <EncoderGlyph kind="turn" scale={1} mirror />
-            <span>Giro izquierdo</span>
-            {keyboardCapture && <kbd className="afr2-key-hint" aria-hidden="true">←</kbd>}
-          </button>
-        </div>
+      {/* AFR2-20261117-06: la fila de botones circulares va debajo de la pantalla (portal en buttonsHost);
+          acá queda la leyenda de referencia con los mismos iconos. */}
+      {buttonsHost ? createPortal(buttonRow, buttonsHost) : buttonRow}
 
-        <div className="flex flex-col gap-1">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-            Pulsador SW ({threshold} ms)
-          </span>
-          <button
-            type="button"
-            disabled={swButtonDisabled}
-            data-state={swStateAttr}
-            aria-label={
-              longVisualActive
-                ? 'Largo preparado; soltar para ejecutar el retorno contextual.'
-                : 'Pulsador SW del encoder: pulsación corta confirma, mantener y soltar vuelve al contexto anterior'
-            }
-            onPointerDown={(e) => {
-              if (e.button !== 0 || controlsDisabled) return;
-              try {
-                e.currentTarget.setPointerCapture(e.pointerId);
-              } catch {
-                // Ignorar si el navegador no soporta captura en este dispositivo
-              }
-              beginPress('pointer');
-            }}
-            onPointerUp={(e) => {
-              try {
-                if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-                  e.currentTarget.releasePointerCapture(e.pointerId);
-                }
-              } catch {
-                // Ignorar
-              }
-              if (activeInputSourceRef.current === 'pointer') {
-                finishPress();
-              }
-            }}
-            onPointerCancel={(e) => {
-              try {
-                if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-                  e.currentTarget.releasePointerCapture(e.pointerId);
-                }
-              } catch {
-                // Ignorar
-              }
-              cancelGesture();
-            }}
-            onLostPointerCapture={() => {
-              if (activeInputSourceRef.current === 'pointer') {
-                cancelGesture();
-              }
-            }}
-            onKeyDown={(e) => {
-              if (e.key === ' ' || e.key === 'Enter') {
-                e.preventDefault();
-                if (e.repeat) return;
-                beginPress('keyboard', e.key);
-              }
-            }}
-            onKeyUp={(e) => {
-              if (e.key === ' ' || e.key === 'Enter') {
-                e.preventDefault();
-                if (activeInputSourceRef.current === 'keyboard' && activeKeyRef.current === e.key) {
-                  finishPress();
-                }
-              }
-            }}
-            onBlur={() => {
-              cancelGesture();
-            }}
-            className="afr2-oled-live-btn afr2-oled-sw-btn relative overflow-hidden min-h-12 w-full rounded-[var(--radius-sm)] px-3.5 py-2.5 text-sm font-semibold flex items-center justify-center gap-2.5 select-none"
-          >
-            <div
-              ref={barRef}
-              className="afr2-oled-sw-progress pointer-events-none"
-              style={{ transform: 'scaleX(0)' }}
-              aria-hidden="true"
-            />
-            <span className="relative z-10 flex items-center gap-2">
-              <EncoderGlyph
-                kind={longVisualActive?'long':'short'}
-                scale={2}
-                color={
-                  swStateAttr === 'long'
-                    ? 'var(--attention-ink)'
-                    : swStateAttr === 'pressed'
-                      ? 'var(--text-on-action)'
-                      : 'currentColor'
-                }
-              />
-              <span>
-                {longVisualActive
-                  ? 'SW largo (soltar)'
-                  : pressing
-                    ? 'SW · Manteniendo…'
-                    : 'SW (Corto / Largo)'}
-              </span>
-              {keyboardCapture && <kbd className="afr2-key-hint" aria-hidden="true">Espacio</kbd>}
-            </span>
-          </button>
-          {/* AFR2-20261102-22: short legend under SW; the row being pressed lights up. */}
-          <dl className="afr2-sw-legend" aria-label="Qué hace el pulsador SW">
-            <div data-active={pressing && !longVisualActive || undefined}>
-              <dt><EncoderGlyph kind="short" scale={1} /><span>Corto</span></dt>
-              <dd>Inicio: menú · resto: confirma</dd>
-            </div>
-            <div data-active={longVisualActive || undefined}>
-              <dt><EncoderGlyph kind="long" scale={1} /><span>Largo</span></dt>
-              <dd>Inicio: rápidas · resto: vuelve</dd>
-            </div>
-          </dl>
+      <dl className="afr2-encoder-legend" aria-label="Referencia de los controles del encoder">
+        <div data-active={pressedRotate === 'left' || undefined}>
+          <dt><EncoderGlyph kind="turn" scale={1} mirror /><span>Giro izquierdo</span>{keyboardCapture && <kbd className="afr2-key-hint">←</kbd>}</dt>
+          <dd>Sube o va al anterior; en un valor, lo baja</dd>
         </div>
-
-        <div className="flex flex-col gap-1">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-            Giro derecho
-          </span>
-          <button
-            type="button"
-            disabled={controlsDisabled}
-            onClick={() => handleRotateClick('right')}
-            data-state={controlsDisabled ? 'disabled' : pressedRotate === 'right' ? 'pressed' : 'idle'}
-            aria-label="Giro derecho del encoder (+1)"
-            className="afr2-oled-live-btn min-h-12 w-full rounded-[var(--radius-sm)] px-3.5 py-2.5 text-sm font-semibold flex items-center justify-center gap-2.5"
-          >
-            <EncoderGlyph kind="turn" scale={1} />
-            <span>Giro derecho</span>
-            {keyboardCapture && <kbd className="afr2-key-hint" aria-hidden="true">→</kbd>}
-          </button>
+        <div data-active={pressedRotate === 'right' || undefined}>
+          <dt><EncoderGlyph kind="turn" scale={1} /><span>Giro derecho</span>{keyboardCapture && <kbd className="afr2-key-hint">→</kbd>}</dt>
+          <dd>Baja o va al siguiente; en un valor, lo sube</dd>
         </div>
-      </div>
+        <div data-active={(pressing && !longVisualActive) || undefined}>
+          <dt><EncoderGlyph kind="short" scale={1} /><span>Corto</span>{keyboardCapture && <kbd className="afr2-key-hint">Espacio</kbd>}</dt>
+          <dd>Inicio: menú · resto: confirma</dd>
+        </div>
+        <div data-active={longVisualActive || undefined} data-tone="long">
+          <dt><EncoderGlyph kind="long" scale={1} /><span>Largo</span></dt>
+          <dd>Mantener {threshold} ms y soltar · Inicio: rápidas · resto: vuelve</dd>
+        </div>
+      </dl>
 
       <div className="flex flex-col gap-1.5 pt-0.5 empty:hidden">
         {reasonToShow && (

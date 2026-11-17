@@ -24,10 +24,10 @@ function useBatteryStatus() {
   const label = !available ? connection.wsState === 'ready' && connection.megaLinkState === 'ready' ? 'No disponible' : 'Sin conexión' : !connection.battery ? 'Sin datos' : !responseFresh ? 'Lectura caducada' : state === 'off' ? 'Sin medición' : state === 'measuring' ? 'Midiendo…' : state === 'out-of-range' ? 'Fuera de rango' : !fresh ? 'Lectura caducada' : batteryVoltage(connection.battery);
   return { ...connection, available, fresh, label, age: batteryAge(connection.battery, now) };
 }
-export function BatteryPill({ onOpen }: { onOpen: (origin: ModalOrigin) => void }) {
+export function BatteryPill({ onOpen, open = false }: { onOpen: (origin: ModalOrigin) => void; open?: boolean }) {
   const { battery, fresh, label } = useBatteryStatus();
   return <button type="button" className="afr2-network-pill afr2-battery-pill" data-mode="unknown" data-fresh={fresh}
-    aria-haspopup="dialog" aria-label={`Batería: ${label}. Abrir medición de batería`} title={`Batería · ${label}`}
+    aria-haspopup="dialog" aria-expanded={open} aria-label={`Batería: ${label}. Abrir medición de batería`} title={`Batería · ${label}`}
     onClick={event => onOpen({ element: event.currentTarget, keyboard: event.detail === 0 })}>
     <BatteryIcon millivolts={fresh ? battery?.millivolts ?? null : null}/><span>Batería</span><strong>{label}</strong>
   </button>;

@@ -178,12 +178,12 @@ export function AppShell({ children }: { children: ReactNode }) {
               <span className="afr2-location">{title}</span>
             </div>
             <div className="afr2-action-row afr2-topbar-actions">
-              <CloudSyncPill onOpen={source => { setOrigin(source); setModal('sync'); }} />
+              <CloudSyncPill open={modal === 'sync'} onOpen={source => { setOrigin(source); setModal('sync'); }} />
               <RobotModePill open={modal === 'mode'} origin={origin}
                 onOpen={source => { setOrigin(source); setModal('mode'); }}
                 onClose={() => setModal(value => value === 'mode' ? null : value)} />
-              <NetworkPill onOpen={source=>{setOrigin(source);setModal('network');}} />
-              <BatteryPill onOpen={source => { setOrigin(source); setModal('battery'); }} />
+              <NetworkPill open={modal === 'network'} onOpen={source=>{setOrigin(source);setModal('network');}} />
+              <BatteryPill open={modal === 'battery'} onOpen={source => { setOrigin(source); setModal('battery'); }} />
               <RobotAlerts open={modal === 'faults'} origin={origin}
                 onOpen={source => { setOrigin(source); setModal('faults'); }}
                 onClose={() => setModal(value => value === 'faults' ? null : value)}

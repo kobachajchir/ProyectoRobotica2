@@ -5,14 +5,14 @@ import { UiIcon } from '../../components/ui/UiIcon';
 import { Button } from '../../components/ui/Button';
 import type { ModalOrigin } from '../../components/ui/FloatingModal';
 function Signal({level,connected}:{level:number;connected:boolean}){return <UiIcon name={!connected?'wifi-off':level>=3?'wifi':level===2?'wifi-high':level===1?'wifi-low':'wifi-zero'} />;}
-export function NetworkPill({onOpen}:{onOpen:(origin:ModalOrigin)=>void}){
+export function NetworkPill({onOpen,open=false}:{onOpen:(origin:ModalOrigin)=>void;open?:boolean}){
   const {wifiStatus:w,wsState}=useConnection();const [now,setNow]=useState(Date.now());
   useEffect(()=>{const id=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(id);},[]);
   const fresh=wsState==='ready' && !!w.receivedAtMs && now-w.receivedAtMs<7000;
   const ap=fresh && w.connectionInterface==='AP' && !!w.apIp,sta=fresh && !ap && w.staConnected;
   const rssi=w.connectionRssiDbm??null,level=rssi===null?0:rssi>=-55?3:rssi>=-67?2:rssi>=-75?1:0;
   const label=ap?w.apSsid:sta?w.staSsid:wsState==='ready'?'Red sin datos':wsState==='connecting' || wsState==='handshaking'?'Conectando…':'Sin conexión';
-  return <button type="button" className="afr2-network-pill" data-mode={ap?'ap':sta?'sta':'unknown'} aria-haspopup="dialog" title={`${label??'Red'}${sta && rssi!==null?` · ${rssi} dBm`:''}`} aria-label={`Red: ${label??'desconocida'}. Abrir información de red`} onClick={e=>onOpen({element:e.currentTarget,keyboard:e.detail===0})}>
+  return <button type="button" className="afr2-network-pill" data-mode={ap?'ap':sta?'sta':'unknown'} aria-haspopup="dialog" aria-expanded={open} title={`${label??'Red'}${sta && rssi!==null?` · ${rssi} dBm`:''}`} aria-label={`Red: ${label??'desconocida'}. Abrir información de red`} onClick={e=>onOpen({element:e.currentTarget,keyboard:e.detail===0})}>
     {ap?<UiIcon name="antenna"/>:<Signal level={level} connected={sta}/>}<span>{label??'Red'}</span><small>{ap?'AP':sta && rssi!==null?`${rssi} dBm`:''}</small>
   </button>;
 }

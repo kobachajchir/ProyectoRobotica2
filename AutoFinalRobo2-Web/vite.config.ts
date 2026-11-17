@@ -42,7 +42,10 @@ function runtimeAssets(embedded: boolean): Plugin {
   const banners = ['brand/home-hero-1600.webp', 'brand/home-hero-mobile-720.webp',
     ...['auto', 'brazo', 'conjunto'].flatMap(id => [`brand/models/model-${id}-1200.webp`, `brand/models/model-${id}-640.webp`]),
     // Ayuda: renders CAD de Fusion y captura de Inicio en el encabezado de cada módulo.
-    ...['atmega2560', 'esp12s-shield', 'web-inicio', 'oled-encoder'].map(id => `help/${id}.webp`)];
+    ...['atmega2560', 'esp12s-shield', 'web-inicio', 'oled-encoder'].map(id => `help/${id}.webp`),
+    // AFR2-20261117-06: captura del Loader solo en el perfil completo (Hosting). En el ESP no entra: el paquete
+    // está a un bloque del presupuesto LittleFS y Storage admite 24 activos.
+    ...(embedded ? [] : ['brand/loader-inicio-1206.webp'])];
   const files = [...new Set([...banners, 'brand/Logo-robot-768.webp', 'brand/Logo-robot-256.webp', 'brand/favicon-robot.webp', 'brand/apple-touch-icon-robot.png',
     'models/AutoFinalRobo2.glb', 'models/AFR2_Cubo_50mm.glb', 'models/AFR2_Sensor_Bateria.glb',
     // The assembly player is visual only; narration sources are archived outside public/.

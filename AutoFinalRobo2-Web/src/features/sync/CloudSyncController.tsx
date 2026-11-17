@@ -655,12 +655,12 @@ function syncStatusText(enabled: boolean, online: boolean, syncing: boolean, fai
  * Pill de la barra superior, con el mismo material que Red y Batería. Abre el modal de sincronización
  * (lo administra la barra, como los demás modales de estado).
  */
-export function CloudSyncPill({ onOpen }: { onOpen: (origin: ModalOrigin) => void }) {
+export function CloudSyncPill({ onOpen, open = false }: { onOpen: (origin: ModalOrigin) => void; open?: boolean }) {
   const { enabled, online, syncing, failCount, hasTarget } = useCloudSync();
   const status = syncStatusText(enabled, online, syncing, failCount, hasTarget);
   return (
     <button type="button" className="afr2-network-pill afr2-sync-pill" data-sync={status.mode} data-busy={syncing ? 'true' : 'false'}
-      aria-haspopup="dialog" aria-label={`Sincronización web: ${status.short}. Abrir ajustes de sincronización`}
+      aria-haspopup="dialog" aria-expanded={open} aria-label={`Sincronización web: ${status.short}. Abrir ajustes de sincronización`}
       title={`Sync web · ${status.short}`}
       onClick={(e) => onOpen({ element: e.currentTarget, keyboard: e.detail === 0 })}>
       <UiIcon name={!enabled ? 'wifi-off' : 'refresh'} />

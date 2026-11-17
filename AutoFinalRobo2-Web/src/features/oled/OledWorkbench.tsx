@@ -1,7 +1,7 @@
 /* AFR2-20261103-30. Banco de la OLED: la misma pantalla con sus controles para Pantalla en vivo y para la
  * biblioteca y la simulación de Ayuda → OLED. Barra superior con la última entrada, barra de estado,
  * avisos, pantalla con selector de filas y encoder. Cada uso solo aporta el lienzo y las acciones. */
-import type { ComponentProps, ReactNode } from 'react';
+import { useState, type ComponentProps, type ReactNode } from 'react';
 import { EncoderControl, type EncoderControlProps } from './EncoderControl';
 import { MenuSideControls } from './MenuSideControls';
 
@@ -40,6 +40,8 @@ export function OledWorkbench({ header, lastInput, headerAction, statusBar, noti
     onFocusCapture: (event: React.FocusEvent<HTMLElement>) => { if (event.target instanceof HTMLElement && event.target !== event.currentTarget) event.target.blur(); },
     onMouseDown: (event: React.MouseEvent<HTMLElement>) => { if (event.target instanceof Element && !event.target.closest('input, textarea')) event.preventDefault(); },
   } : {};
+  // AFR2-20261117-06: los botones del encoder se dibujan bajo la pantalla, con su mismo ancho.
+  const [buttonsHost, setButtonsHost] = useState<HTMLDivElement | null>(null);
   return <div className="afr2-oled-bench" {...guard}>
     {header}
     <div className="afr2-oled-bench__topbar">
@@ -51,16 +53,19 @@ export function OledWorkbench({ header, lastInput, headerAction, statusBar, noti
     <div className="afr2-oled-bench__body">
       <div className="afr2-oled-bench__display">
         <div className={`afr2-oled-with-side${reserveSide ? ' afr2-oled-with-side--reserved' : ''}`}>
-          <div className={`afr2-oled-bench__screen${placeholderText ? ' afr2-oled-bench__placeholder' : ''}`} data-stale={stale || undefined} aria-busy={busy}>
-            {screen}
-            {placeholderText && <p className="afr2-oled-bench__placeholder-text" role="status">{placeholderText}</p>}
+          <div className="afr2-oled-bench__screen-col">
+            <div className={`afr2-oled-bench__screen${placeholderText ? ' afr2-oled-bench__placeholder' : ''}`} data-stale={stale || undefined} aria-busy={busy}>
+              {screen}
+              {placeholderText && <p className="afr2-oled-bench__placeholder-text" role="status">{placeholderText}</p>}
+            </div>
+            <div ref={setButtonsHost} className="afr2-oled-bench__buttons" />
           </div>
           {reserveSide ? <div className="afr2-oled-side-slot">{side && <MenuSideControls {...side} />}</div> : side && <MenuSideControls {...side} />}
         </div>
         {caption}
       </div>
       <div className="afr2-oled-bench__controls">
-        <EncoderControl {...encoder} />
+        <EncoderControl {...encoder} buttonsHost={buttonsHost} />
       </div>
     </div>
   </div>;
