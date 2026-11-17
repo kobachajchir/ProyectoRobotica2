@@ -104,8 +104,9 @@ uint8_t Afr2Sequence_Command(Afr2Product *p,uint8_t cmd,const uint8_t *d,uint8_t
         s->state=2;afr2_put_u32(out,token);out[4]=2;out[5]=s->count;afr2_put_u32(out+6,s->total);*length=10;
     } else if(cmd==AFR2_EXT_SEQ_START) {
         if(n!=12 || !afr2_get_u32(d+8) || s->state!=2 || !p->stopped || Afr2Head_State()->running)return AFR2_RESULT_BAD_REQUEST;
+        if(p->selected_mode!=AFR2_MANUAL)return AFR2_RESULT_UNAVAILABLE;
         s->execution=afr2_get_u32(d+8);s->started=p->now;s->elapsed=0;s->index=0;s->state=3;
-        p->origin=AFR2_SOURCE_WEB;p->manual_selected=0;p->mode=AFR2_SEQUENCE;p->stopped=0;
+        p->origin=AFR2_SOURCE_WEB;p->mode=AFR2_SEQUENCE;p->stopped=0;
         if(s->mode){for(uint8_t w=0;w<4;w++)wheel_enter(p,w,s->first[w]);}
         afr2_put_u32(out,token);afr2_put_u32(out+4,s->execution);out[8]=3;out[9]=0;afr2_put_u32(out+10,0);*length=14;
     } else return AFR2_RESULT_UNAVAILABLE;
@@ -118,7 +119,7 @@ void Afr2Sequence_Tick(Afr2Product *p) {
 #if AFR2_SEQUENCE_MEMORY_APPROVED
     Afr2Sequence *s=&p->sequence;
     if(s->state!=3)return;
-    if(!same_session(p,s->source_session) || !Afr2Sequence_Available(p) || p->mode!=AFR2_SEQUENCE){Afr2Product_Stop(p);return;}
+    if(!same_session(p,s->source_session) || !Afr2Sequence_Available(p) || p->mode!=AFR2_SEQUENCE || p->selected_mode!=AFR2_MANUAL){Afr2Product_Stop(p);return;}
     uint32_t elapsed=p->now-s->started;s->elapsed=elapsed>s->total?s->total:elapsed;
     if(s->mode) {
         if(elapsed>=s->total){s->state=6;Afr2Product_Stop(p);return;}

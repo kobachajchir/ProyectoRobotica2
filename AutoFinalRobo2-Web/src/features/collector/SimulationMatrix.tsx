@@ -2,21 +2,21 @@ import { useId, useState } from 'react';
 import { Matrix4 } from 'three';
 import { forwardArm, JOINTS, rad, STANDALONE_MOUNT } from './armKinematics';
 import { useCollector } from './CollectorContext';
-import { CollapsiblePanel } from '../../components/ui/CollapsiblePanel';
 import { HomogeneousMatrix } from '../../components/robot/HomogeneousMatrix';
 
 type Frame = 'joint' | 'tool' | 'world';
 const fmt = (value: number) => (Math.abs(value) < .0005 ? 0 : value).toFixed(3);
 
 /** Demonstration of the nominal Web chain, linked to the same simulated pose.
- * Translations are displayed in mm; rotations are dimensionless. */
-export function SimulationMatrix({ expanded, onToggle }: { expanded: boolean; onToggle: () => void }) {
+ * Translations are displayed in mm; rotations are dimensionless.
+ * AFR2-20261117-13: contenido del panel flotante de matemáticas (FloatingMathPanel); ya no es un plegable. */
+export function SimulationMatrix() {
   const { state, kind } = useCollector();
   const [frame, setFrame] = useState<Frame>('joint');
   const selectorId = useId();
   const arm = kind === 'brazo', car = kind === 'auto';
   const index = state.selectedJoint;
-  if (!JOINTS[index]) return <CollapsiblePanel className="afr2-sim-matrix" title="Matematica en vivo" expanded={expanded} onToggle={onToggle}><p>El descriptor no contiene una cadena articular utilizable.</p></CollapsiblePanel>;
+  if (!JOINTS[index]) return <div className="afr2-sim-matrix"><p>El descriptor no contiene una cadena articular utilizable.</p></div>;
   const chain = forwardArm(state.joints, arm ? STANDALONE_MOUNT : undefined);
   const world = new Matrix4().makeTranslation(state.pose.x, state.pose.y, 0).multiply(new Matrix4().makeRotationZ(state.pose.yaw));
   const active = car ? 'world' : frame;
@@ -36,9 +36,9 @@ export function SimulationMatrix({ expanded, onToggle }: { expanded: boolean; on
       : ['cos θ', '−sin θ', '0', 'tx', 'sin θ', 'cos θ', '0', 'ty', '0', '0', '1', 'tz', '0', '0', '0', '1']
     : active === 'world' ? ['cos ψ', '−sin ψ', '0', 'x', 'sin ψ', 'cos ψ', '0', 'y', '0', '0', '1', 'z', '0', '0', '0', '1']
       : ['r11', 'r12', 'r13', 'px', 'r21', 'r22', 'r23', 'py', 'r31', 'r32', 'r33', 'pz', '0', '0', '0', '1'];
-  return <CollapsiblePanel className="afr2-sim-matrix" title="Matematica en vivo" subtitle="Transformaciones del modelo" meta="Provisional" expanded={expanded} onToggle={onToggle}>
+  return <div className="afr2-sim-matrix">
     <div className="afr2-sim-matrix__frame"><label htmlFor={selectorId}>Transformación a observar</label><select id={selectorId} value={active} onChange={e => setFrame(e.target.value as Frame)}>
-      {!car && <><option value="joint">Articulacion {JOINTS[index].label}</option><option value="tool">{arm ? 'Base' : 'Mundo'} → pinza</option></>}
+      {!car && <><option value="joint">Articulación {JOINTS[index].label}</option><option value="tool">{arm ? 'Base' : 'Mundo'} → pinza</option></>}
       {!arm && <option value="world">Mundo → chasis</option>}
     </select></div>
     <HomogeneousMatrix matrix={matrix} name={name} symbols={symbols} />
@@ -46,6 +46,6 @@ export function SimulationMatrix({ expanded, onToggle }: { expanded: boolean; on
       <div><span>cos {angleName}</span><strong>{fmt(Math.cos(angle))}</strong></div><div><span>sin {angleName}</span><strong>{fmt(Math.sin(angle))}</strong></div>
     </div>
     <p>{active === 'tool' ? 'Cadena compuesta · ' : ''}X adelante · Y izquierda · Z arriba · traslación en mm</p>
-    <details><summary>Ver expresión simbolica</summary><div className="afr2-sim-matrix__symbols">{symbols.map((s, i) => <span key={i}>{s}</span>)}</div></details>
-  </CollapsiblePanel>;
+    <details><summary>Ver expresión simbólica</summary><div className="afr2-sim-matrix__symbols">{symbols.map((s, i) => <span key={i}>{s}</span>)}</div></details>
+  </div>;
 }

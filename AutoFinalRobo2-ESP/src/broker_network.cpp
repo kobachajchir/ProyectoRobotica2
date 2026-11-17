@@ -86,7 +86,12 @@ void Broker::tickNetwork(uint32_t now) {
         command=AFR2_EXT_NETWORK_STATE;afr2_put_u16(body+4,networkRevision_);body[6]=networkPage_;
         if(networkPage_==0) {
             uint8_t *p=body+8;p[0]=networkInfo_.mode;p[1]=networkInfo_.staConnected;p[2]=networkInfo_.apReady;
-            p[3]=networkInfo_.clients;p[4]=(networkServer_?1u:0u)|((syncEnabled_ && syncOnline_)?2u:0u);
+            uint8_t flags=(networkServer_?1u:0u)|((syncEnabled_ && syncOnline_ && internetOk_)?2u:0u);
+            if(productFeatures_&AFR2_EXT_F_SYNC_CONTROL){
+                if(syncEnabled_)flags|=4u;
+                if(internetOk_)flags|=8u;
+            }
+            p[3]=networkInfo_.clients;p[4]=flags;
             afr2_put_u16(p+5,(uint16_t)networkInfo_.rssi);
             memcpy(p+7,networkInfo_.staIp,4);memcpy(p+11,networkInfo_.apIp,4);body[7]=15;
         } else {

@@ -230,17 +230,20 @@ Inicio 010001
 │  │  │  └─ Volver
 │  │  └─ Volver
 │  └─ Volver a Inicio [si se entró desde Rápidas, vuelve a ese contexto]
-└─ largo → Controles rápidos 010003
-   ├─ Barrido del radar [alternar]
-   ├─ Servo [alternar]
+└─ largo → Controles rápidos 010003 (9 tarjetas)
+   ├─ Selección de modo 03003d
+   │  ├─ Reposo [acción]
+   │  ├─ Manual [acción]
+   │  ├─ Seguidor de línea / Ir
+   │  └─ Volver [conserva tarjeta]
    ├─ Motores [habilitar/bloquear]
-   ├─ Seguir línea [alternar]
+   ├─ Ultrasonido [medir/apagar]
+   ├─ Barrido del radar [activar/detener]
+   ├─ Servo [activar/desactivar]
+   ├─ Sensores de línea [leer/apagar]
    ├─ Rastro del radar [mostrar/ocultar; cambio pendiente]
-   ├─ Menú principal → 010002 [retorno a esta tarjeta]
-   └─ Selección de modo 03003d
-      ├─ Reposo [acción]
-      ├─ Manual [acción]
-      └─ Volver [conserva tarjeta]
+   ├─ Sincronización (`0x30 op17/op18`) [activar/desactivar; activable solo si `internet_ok=1`, sino «Sin Internet / No activable»]
+   └─ Ajustes → Menú principal 010002 [retorno a esta tarjeta]
 ```
 
 Pantallas conservadas fuera del árbol normal: Geometría nominal 03001d

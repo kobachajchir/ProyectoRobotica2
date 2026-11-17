@@ -21,7 +21,7 @@ export interface UiSimulation extends FirmwareUiState {
   servoEnabled: boolean; radar: boolean; resumeRadar: boolean; feedback: string;
   quickSelection: number; radarPosition: Position; confirmSave: number; confirmDiscard: number; confirmTarget: number;
   pending: Pending | null; noticeTarget: number | null; quickUntil: number;
-  credentialsUntil: number; batteryMeasured: boolean; diagState: number; webClient: boolean;
+  credentialsUntil: number; batteryMeasured: boolean; diagState: number; webClient: boolean; internetOk: boolean;
 }
 export type SimulationEvent = {type:'scan-fixture';outcome:'networks'|'empty'|'failed'} | {type:'input-held';held:boolean} | { type: 'web-client'; connected: boolean } | { type: 'rotate'; delta: -1 | 1 } | { type: 'press'; kind: 'short' | 'long' } | { type: 'tick'; ms: number } | { type: 'inspect'; code: string };
 const sampleNetworks = Array.from({ length: 16 }, (_, i) => `Red demo ${i + 1}`);
@@ -31,11 +31,11 @@ const persistent = [115,116,117,118,119,120,121,122,123,124,4, 6, 7, 14, 25, 26,
 const dirty = (u: UiSimulation) => persistent.some(key => u.values[key] !== u.saved[key]) || u.lineCalibrated !== u.savedLineCalibrated;
 const radarDirty = (u: UiSimulation) => [70, 71].some(key => u.values[key] !== u.saved[key]);
 const poseReady = (u: UiSimulation) => !!(u.values[39] && u.hallCpr.every(Boolean) && u.values[40]);
-const actionState = (u: UiSimulation, action: number) => action === 74 ? u.radar : action === 75 ? u.servoEnabled : action === 76 ? !!u.values[36] : action === 77 ? !u.stopped && u.mode === MODE.line : action === 71 ? !!u.values[71] : action === 86 ? !u.stopped && u.mode === MODE.wheel : action === 87 ? !u.stopped && u.mode === MODE.goto : action === 107 ? !!u.values[107] : action === 108 ? !!u.values[108] : false;
+const actionState = (u: UiSimulation, action: number) => action === 74 ? u.radar : action === 75 ? u.servoEnabled : action === 76 ? !!u.values[36] : action === 77 ? !u.stopped && u.mode === MODE.line : action === 71 ? !!u.values[71] : action === 86 ? !u.stopped && u.mode === MODE.wheel : action === 87 ? !u.stopped && u.mode === MODE.goto : action === 107 ? !!u.values[107] : action === 108 ? !!u.values[108] : action === 126 ? !!u.values[126] : false;
 /** Snapshot subset shared by option resolution and OLED drawing; no recursion. */
 function menuSnapshot(u: UiSimulation): FirmwareSnapshot {
   return { networkScanState:u.pending?.kind==='scan'?1:u.scanFailed?3:u.scanned?2:0,wifiDraftReady:u.wifiDraftReady,hallPending:u.hallPending,configDirty: dirty(u),networkAskFallback:!!u.values[109],networkPolicyValid:true,networkAp:u.values[110]!==0,networkMode:u.values[44],networkBusy:!!u.pending && ['scan','mode','wifi'].includes(u.pending.kind), wifiConnected: u.connected, networkCount: u.scanned && u.scanFixture!=='empty' && u.pending?.kind!=='scan' ? 8 : 0,networkPage:u.wifiPage,networkTotal:u.scanned && u.scanFixture!=='empty'?16:0,
-    actionStates: Object.fromEntries([74, 75, 76, 77, 71, 86, 87, 107, 108].map(key => [key, actionState(u, key)])),
+    actionStates: Object.fromEntries([74, 75, 76, 77, 71, 86, 87, 107, 108, 126].map(key => [key, actionState(u, key)])),
   } as FirmwareSnapshot;
 }
 export const simulationScreenCode = (u: UiSimulation) => {
@@ -66,7 +66,7 @@ export function createUiSimulation(scenario: SimulationScenario = 'ready'): UiSi
   const values: Record<number, number> = {115:1000,116:1000,117:775,118:775,119:1000,120:1000,121:1000,122:1000,123:1000,124:1000,4:150, 6:80, 7:100, 9:0, 10:0, 12:0, 13:40, 14:500, 20:1500,
     25:1, 26:31, 27:0, 28:0, 29:Number(ready), 30:0, 31:255, 32:4, 33:128, 34:8, 35:0,
     36:Number(ready), 37:80, 38:150, 39:Number(ready), 40:1, 41:4, 42:0, 44:3, 109:0, 110:1, 53:200, 54:0,
-    59:90, 63:0, 64:180, 65:15, 66:100, 67:150, 68:0, 70:2, 71:1, 81:800, 83:100, 85:2000, 106:30 }; // AFR2-20261108-06: Reintento Wi-Fi s
+    59:90, 63:0, 64:180, 65:15, 66:100, 67:150, 68:0, 70:2, 71:1, 81:800, 83:100, 85:2000, 106:30, 126:0 }; // AFR2-20261108-06: Reintento Wi-Fi s
   return {
     dashboardInputMs:0,dashboardHeld:false,
     node:S.AFR2_N_HOME, selection:0, firstVisible:0, clockMs:0, noticeStartedMs:0, scrollStartedMs:0,
@@ -77,7 +77,7 @@ export function createUiSimulation(scenario: SimulationScenario = 'ready'): UiSi
     lineCalibrated:ready, savedLineCalibrated:ready, prefsLoaded:false, turns:0, clicks:0, holds:0,
     servoEnabled:true, radar:false, resumeRadar:false, quickSelection:0,
     radarPosition:{node:S.AFR2_N_RADAR_CONFIG, selection:0, firstVisible:0}, confirmSave:23, confirmDiscard:24, confirmTarget:0,
-    pending:null, noticeTarget:null, quickUntil:0, credentialsUntil:0, batteryMeasured:ready, diagState:0, webClient:ready,
+    pending:null, noticeTarget:null, quickUntil:0, credentialsUntil:0, batteryMeasured:ready, diagState:0, webClient:ready, internetOk:ready,
     feedback:'Inicio: corto abre Menu principal; largo abre Controles rapidos al soltar.',
   };
 }
@@ -202,6 +202,7 @@ export function simulationUnavailable(u:UiSimulation,item:FirmwareMenuItem):stri
   if([12,13,9,10].includes(a) && (!u.stopped || u.hallMeasuring))return 'Servicio ocupado';
   if((persistent.includes(a) || [63,64,65,66,67].includes(a)) && (!u.stopped || u.hallMeasuring) && !(a===36 && u.values[36]))return 'Servicio ocupado';
   if([59,60,61,74,75,78].includes(a) && (!u.stopped || u.hallMeasuring))return 'Servicio ocupado';
+  if(a===126){if(u.scenario!=='ready')return 'Sin estado ESP';if(!u.values[126] && !u.internetOk)return 'Sin Internet';}
   if(a===68 && (u.servoEnabled || u.radar))return 'Desactivar servo';
   return null;
 }
@@ -242,6 +243,8 @@ function invoke(u:UiSimulation,item:FirmwareMenuItem,value:number):boolean{
     case 109:u.values[109]=Number(!u.values[109]);u.saved[109]=u.values[109];break;
     case 110:u.values[110]=Number(!u.values[110]);if(u.values[110])u.values[44]=u.values[44]&1?3:2;else u.values[44]=u.values[44]&1?1:0;break;
     case 52:case 92:schedule(u,'mode',value);break;
+    case 125:if(value){u.values[126]=0;notify(u,'Desactivada',false,'Sincronizacion',2500);}break;
+    case 126:u.values[126]=Number(!u.values[126]);break;
     case 93:schedule(u,'credentials');break;
     case 60:u.values[59]=90;u.servoEnabled=true;u.radar=false;break;
     case 21:u.values[59]=Math.round((u.values[20]-1000)*180/1000);u.servoEnabled=true;break;
@@ -283,7 +286,7 @@ function tick(u:UiSimulation,ms:number){
       case 'scan':u.scanFailed=u.scanFixture==='failed';u.scanned=!u.scanFailed;if(!u.scanFailed && u.scanFixture!=='empty' && u.node===S.AFR2_N_WIFI_SEARCH)open(u,S.AFR2_N_WIFI_NETWORKS);notify(u,u.scanFailed?'Operacion fallida':u.scanFixture==='empty'?'Sin redes':'Redes listas',u.scanFailed,'Wi-Fi',2500);break;
       case 'web':if(!u.draftSsid)u.draftSsid='Red demo Web';u.wifiDraftReady=false;schedule(u,'wifi',1);if(u.node===S.AFR2_N_WIFI_SETUP || u.node===S.AFR2_N_WIFI_REVIEW)back(u,S.AFR2_N_WIFI);notify(u,'Conectando...',false,'Wi-Fi',2500);break;
       case 'wifi':u.connected=!!pending.value;u.wifiDraftReady=false;notify(u,u.connected?'Conectado':'Red desconectada',false,'Operacion exitosa',2500);break;
-      case 'mode':u.saved[44]=pending.value;u.saved[110]=Number(pending.value!==1);u.values[110]=u.saved[110];if(pending.value===1){u.saved[109]=0;u.values[109]=0;}u.values[44]=pending.value;u.wifiRequestedMode=pending.value;u.connected=false;u.scanned=false;u.wifiDraftReady=false;u.password='';if(u.node===S.AFR2_N_WIFI_MODE_SELECT || u.node===S.AFR2_N_WIFI_REVIEW)back(u,S.AFR2_N_WIFI);notify(u,'Cambiando Wi-Fi',false,'Operacion exitosa',2500);break;
+      case 'mode':u.saved[44]=pending.value;u.saved[110]=Number(pending.value!==1);u.values[110]=u.saved[110];if(pending.value===1){u.saved[109]=0;u.values[109]=0;}u.values[44]=pending.value;u.wifiRequestedMode=pending.value;u.connected=false;u.internetOk=u.scenario==='ready' && pending.value!==2;u.scanned=false;u.wifiDraftReady=false;u.password='';if(u.node===S.AFR2_N_WIFI_MODE_SELECT || u.node===S.AFR2_N_WIFI_REVIEW)back(u,S.AFR2_N_WIFI);notify(u,'Cambiando Wi-Fi',false,'Operacion exitosa',2500);break;
       case 'credentials':u.draftSsid='Red demo guardada';u.password='demo1234';u.credentialsUntil=u.clockMs+30000;open(u,S.AFR2_N_WIFI_DATA);break;
       case 'esp':u.diagState=2;notify(u,'Respuesta recibida',false,'Prueba ESP',2500);break;
     }
@@ -375,8 +378,8 @@ export function reduceUiSimulation(previous:UiSimulation,event:SimulationEvent):
   }
   if(u.node===S.AFR2_N_QUICK){
     if(u.quickPending)return u;
-    if(rotation){u.selection=limit(u.selection+rotation,0,7);u.quickSelection=u.selection;sync(u);}
-    if(click){if(u.selection===7)open(u,S.AFR2_N_MENU);else if(u.selection===0)open(u,S.AFR2_N_QUICK_MODES);
+    if(rotation){u.selection=limit(u.selection+rotation,0,8);u.quickSelection=u.selection;sync(u);}
+    if(click){if(u.selection===8)open(u,S.AFR2_N_MENU);else if(u.selection===0)open(u,S.AFR2_N_QUICK_MODES);
       else{const item=simulationItems(u)[u.selection],expected=!actionState(u,item.action);
         if(invoke(u,item,Number(expected))){u.quickPending=true;u.quickExpected=expected;u.quickUntil=u.clockMs+40;}}}return u;
   }
@@ -407,7 +410,8 @@ export function reduceUiSimulation(previous:UiSimulation,event:SimulationEvent):
     else if(item.step){u.edit=true;u.editing=item;u.editingAction=item.action;u.editingLabel=item.label;u.draft=u.values[item.action]??item.min;}
     else if(invoke(u,item,item.arg)){
       if(item.action===49)open(u,S.AFR2_N_WIFI_SETUP);
-      else if(item.action===80)notify(u,item.arg?'Manual':'Reposo',false,'Modo seleccionado',2500);
+      // AFR2-20261117-11: Seguir linea / Ir fijan el modo y abren su control, como afr2_screens.c.
+      else if(item.action===80){if(item.target!==255)open(u,item.target);else notify(u,item.arg===1?'Manual':item.arg===2?'Seguir linea':item.arg===4?'Ir':'Reposo',false,'Modo seleccionado',2500);}
       else if(item.action===70)back(u,S.AFR2_N_RADAR_OPTIONS);
       else if(![18,51,84].includes(item.action))notify(u);
     }
@@ -467,7 +471,7 @@ export function simulationSnapshot(u: UiSimulation): FirmwareSnapshot {
     labels: u.node === S.AFR2_N_WIFI_DATA ? [u.draftSsid || 'AFR2-DEMO',u.credentialsUntil?u.password:'',''] : u.node === S.AFR2_N_WIFI_NETWORKS ? items.map(item => item.action === S.AFR2_A_WIFI_NETWORK && u.scanned ? item.label : '') : ['', '', ''],
     rowSecurity: u.node===S.AFR2_N_WIFI_NETWORKS ? items.map(item=>item.action===49?4:0) : [4,0,0],
     hallCpr: u.hallCpr.map((value,i)=>u.hallPending&(1<<i)?u.hallDraft[i]:value), hallPending:u.hallPending,
-    quickFlags:[76,107,74,75,108,71].reduce((bits,action,i)=>bits|(Number(actionState(u,action))<<(i+1)),0), // AFR2-20261108-12: bit = carousel page
+    quickFlags:[76,107,74,75,108,71,126].reduce((bits,action,i)=>bits|(Number(actionState(u,action))<<(i+1)),0), // AFR2-20261117-10: bit = carousel page
     radarRange:v[70],radarTrace:!!v[71],powerKnown:true,powerPercent:v[83],
     dashboardValid:true,dashboardMode:u.mode,dashboardMoving:!u.stopped,dashboardFault:u.mode===MODE.fault,
     batteryValid:u.batteryMeasured && ready,batteryMv:u.batteryMeasured && ready?7400:undefined,
@@ -476,7 +480,7 @@ export function simulationSnapshot(u: UiSimulation): FirmwareSnapshot {
     sequenceIndex: Math.min(2, Math.floor((u.clockMs - u.scrollStartedMs) / 3000)),
     sequenceKind: Math.min(2, Math.floor((u.clockMs - u.scrollStartedMs) / 3000)),
     sequenceDurationMs: 3000, sequenceElapsedMs: (u.clockMs - u.scrollStartedMs) % 3000,
-    networkServer: ready,qrAllowed:u.stopped && !u.radar,networkValid: ready, networkSta: u.connected && v[S.AFR2_A_WIFI_MODE] !== 2, networkAp: v[110]!==0,
+    networkServer: ready,qrAllowed:u.stopped && !u.radar,networkValid: ready, internetOk: ready && u.internetOk, syncOnline: ready && !!v[126] && u.internetOk, networkSta: u.connected && v[S.AFR2_A_WIFI_MODE] !== 2, networkAp: v[110]!==0,
     networkSsid: u.draftSsid, networkApSsid: 'AFR2-DEMO', networkPassword: 'demo1234', networkIp: '192.0.2.2', networkApIp: '192.0.2.1',
     irRaw: ready ? (u.lineSamples===1?[1,1,1,1,1]:u.lineSamples===3?[0,0,0,0,0]:[1,1,0,1,1]) : [],
     lineBits:u.lineSamples===1?0:u.lineSamples===3?31:4,irKind: v[S.AFR2_A_LINE_KIND], irValid: ready && v[S.AFR2_A_LINE_KIND] !== 0, lineValid: ready && u.lineCalibrated,

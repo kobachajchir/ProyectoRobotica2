@@ -48,7 +48,9 @@ bool Broker::validSyncKey(const char *key) {
 void Broker::syncStatus(JsonObject out) const {
     out["schema"]="afr2-cloud-sync-1";
     out["enabled"]=syncEnabled_;
-    out["online"]=syncEnabled_ && syncOnline_ && WiFi.status()==WL_CONNECTED;
+    out["internetOk"]=internetOk_;
+    out["online"]=syncEnabled_ && syncOnline_ && internetOk_;
+    out["configRev"]=syncConfigRev_;
     out["staConnected"]=WiFi.status()==WL_CONNECTED;
     out["failCount"]=syncFailCount_;
     out["failNotice"]=syncFailNotice_;
@@ -115,10 +117,11 @@ void Broker::syncLayers(JsonObject out,bool full,bool includeSimulators) const {
 }
 void Broker::noteSyncAttempt(bool ok,uint32_t ackRev) {
     syncLastTryAt_=millis();
+    recomputeInternet(syncLastTryAt_);
     if(!syncEnabled_)return;
     bool prevOnline=syncOnline_;
     if(ok){
-        syncOnline_=WiFi.status()==WL_CONNECTED;
+        syncOnline_=internetOk_;
         syncFailCount_=0;syncFailNotice_=false;syncLastOkAt_=syncLastTryAt_;
         if(ackRev){syncAckRev_=ackRev;syncDirtyMask_&=~0x01ffu;}
     } else {
@@ -139,6 +142,55 @@ void Broker::noteSyncAttempt(bool ok,uint32_t ackRev) {
         if(!++networkRevision_)++networkRevision_;
     }
     publishStatus();
+}
+void Broker::recomputeInternet(uint32_t now) {
+    bool webFresh=sessions_[0].used && webInternetKnown_ && (uint32_t)(now-webInternetAt_)<=25000u;
+    bool next=webFresh?webInternetOk_:(WiFi.status()==WL_CONNECTED && espInternetOk_);
+    if(next!=internetOk_) {
+        internetOk_=next;
+        if(!internetOk_ && syncOnline_)syncOnline_=false;
+        networkPending_=true;networkPage_=0;
+        if(!++networkRevision_)++networkRevision_;
+    }
+}
+void Broker::tickInternetProbe(uint32_t now) {
+    if(!internetProbeInit_) {
+        internetProbeInit_=true;
+        internetProbe_.onConnect([](void *arg,AsyncClient *c) {
+            auto *b=static_cast<Broker *>(arg);
+            b->espInternetOk_=true;b->internetProbeBusy_=false;c->close(true);
+        },this);
+        internetProbe_.onError([](void *arg,AsyncClient *,err_t) {
+            auto *b=static_cast<Broker *>(arg);
+            b->espInternetOk_=false;b->internetProbeBusy_=false;
+        },this);
+        internetProbe_.onTimeout([](void *arg,AsyncClient *c,uint32_t) {
+            auto *b=static_cast<Broker *>(arg);
+            b->espInternetOk_=false;b->internetProbeBusy_=false;c->close(true);
+        },this);
+        internetProbe_.onDisconnect([](void *arg,AsyncClient *) {
+            auto *b=static_cast<Broker *>(arg);
+            b->internetProbeBusy_=false;
+        },this);
+    }
+    if(WiFi.status()!=WL_CONNECTED) {
+        espInternetOk_=false;internetProbeAt_=0;
+        if(internetProbeBusy_){internetProbeBusy_=false;internetProbe_.abort();}
+    } else {
+        if(internetProbeBusy_ && (uint32_t)(now-internetProbeStartedAt_)>=5000u) {
+            internetProbeBusy_=false;espInternetOk_=false;internetProbe_.abort();
+        }
+        uint32_t interval=espInternetOk_?20000u:10000u;
+        if(!internetProbeBusy_ && (internetProbeAt_==0 || (uint32_t)(now-internetProbeAt_)>=interval) && internetProbe_.freeable()) {
+            internetProbeAt_=now;internetProbeStartedAt_=now;internetProbeBusy_=true;
+            if(!internetProbe_.connect("firestore.googleapis.com",443)) {
+                internetProbeBusy_=false;espInternetOk_=false;
+            }
+        }
+    }
+    bool before=internetOk_;
+    recomputeInternet(now);
+    if(internetOk_!=before)publishStatus();
 }
 void Broker::begin() {
     apJoin_=WiFi.onSoftAPModeStationConnected([this](const WiFiEventSoftAPModeStationConnected &e){networkEvent(AFR2_NET_CLIENT_JOIN,e.aid);});
@@ -169,7 +221,9 @@ void Broker::event(AsyncWebSocketClient *client, AwsEventType type, void *arg, u
         if(scanEventClient_==id){scanEventClient_=0;scanEvent_.reset();}
         if(delayedErrorClient_==id)delayedErrorPending_=false;
         helloNotices_=0;
-        *s=Session{}; return;
+        *s=Session{};
+        webInternetKnown_=false;webInternetOk_=false;webInternetAt_=0;recomputeInternet(millis());
+        return;
     }
     if (type!=WS_EVT_DATA) return;
     auto *info=static_cast<AwsFrameInfo *>(arg);
@@ -243,7 +297,9 @@ void Broker::ingest(Session &s) {
     }
     if(!strcmp(command,"system.hello"))strlcpy((char *)req.body,payload["clientVersion"].as<const char *>(),16);
     if(!strcmp(command,"sync.configure")){
-        req.body[0]=payload["enabled"].is<bool>()?(payload["enabled"].as<bool>()?1:0):2;
+        uint8_t en=payload["enabled"].is<bool>()?(payload["enabled"].as<bool>()?1u:0u):2u;
+        uint8_t net=payload["internetOk"].is<bool>()?(payload["internetOk"].as<bool>()?1u:0u):2u;
+        req.body[0]=(uint8_t)(en|(net<<2u));
         uint16_t interval=payload["intervalMs"]|0;
         if(interval && (interval<5000 || interval>10000)){error(req,"BAD_REQUEST","intervalMs fuera de 5000..10000.");return;}
         afr2_put_u16(req.body+1,interval);
@@ -500,8 +556,23 @@ void Broker::dispatch(const BrokerRequest &req,uint32_t now) {
         syncStatus(payload);answer(req,frame);return;
     }
     if(!strcmp(req.command,"sync.configure")){
-        if(req.body[0]<2){
-            syncEnabled_=req.body[0]!=0;
+        uint8_t en=req.body[0]&3u,net=(req.body[0]>>2u)&3u;
+        bool netChanged=false;
+        if(net<2u){
+            webInternetKnown_=true;webInternetOk_=net!=0;webInternetAt_=now;
+            bool beforeNet=internetOk_;
+            recomputeInternet(now);
+            netChanged=internetOk_!=beforeNet;
+        }else recomputeInternet(now);
+        if(en==1u && !internetOk_){
+            error(req,"INTERNET_UNAVAILABLE","Sin conexion a Internet para activar la sincronizacion.");
+            if(netChanged)publishStatus();
+            return;
+        }
+        if(en<2u){
+            bool nextEnabled=en!=0;
+            if(nextEnabled!=syncEnabled_)++syncConfigRev_;
+            syncEnabled_=nextEnabled;
             if(!syncEnabled_){syncOnline_=false;syncFailCount_=0;syncFailNotice_=false;}
         }
         uint16_t interval=afr2_get_u16(req.body+1);
@@ -514,7 +585,7 @@ void Broker::dispatch(const BrokerRequest &req,uint32_t now) {
     if(!strcmp(req.command,"sync.dismiss")){
         bool disable=req.body[0]!=0;
         syncFailCount_=0;syncFailNotice_=false;
-        if(disable){syncEnabled_=false;syncOnline_=false;}
+        if(disable){if(syncEnabled_)++syncConfigRev_;syncEnabled_=false;syncOnline_=false;}
         networkPending_=true;networkPage_=0;if(!++networkRevision_)++networkRevision_;
         syncStatus(payload);answer(req,frame);publishStatus();return;
     }
@@ -773,7 +844,7 @@ void Broker::tick(uint32_t now) {
         BrokerRequest req=queue_[tail_]; queue_[tail_]=BrokerRequest{};
         tail_=(tail_+1)%4; --count_; dispatch(req,now); req.wifi=WifiConfig{};
     }
-    tickProduct(now);tickSystem(now);
+    tickProduct(now);tickSystem(now);tickInternetProbe(now);
     for (auto &s:sessions_) if (s.used && (int32_t)(now-s.lastSeen)>30000) {
         if (auto *client=ws_.client(s.id)) closeWs(client,1001,"Heartbeat expired");
     }

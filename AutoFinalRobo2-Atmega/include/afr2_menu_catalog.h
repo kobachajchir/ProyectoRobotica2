@@ -138,7 +138,7 @@ enum {
  AFR2_A_SCALE_RIGHT = 118, AFR2_A_SCALE_CW = 119, AFR2_A_SCALE_CCW = 120,
  /* AFR2-20261116-01: per-motor compensation trims (permille 500..1500) and sync failure response (0 close, 1 disable). */
  AFR2_A_MOTOR_TRIM_FL = 121, AFR2_A_MOTOR_TRIM_FR = 122, AFR2_A_MOTOR_TRIM_RL = 123, AFR2_A_MOTOR_TRIM_RR = 124,
- AFR2_A_SYNC_ASK = 125 };
+ AFR2_A_SYNC_ASK = 125, AFR2_A_SYNC_TOGGLE = 126 };
 typedef struct { char label[33]; uint8_t target,action; int16_t arg,min,max,step; } Afr2MenuItem;
 typedef struct { char title[18]; uint8_t parent,view,count; uint16_t first; uint32_t code; } Afr2MenuNode;
 void Afr2Menu_Node(uint8_t index,Afr2MenuNode *out);

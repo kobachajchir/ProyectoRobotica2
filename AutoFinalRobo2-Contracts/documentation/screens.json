@@ -2646,6 +2646,9 @@
         "selection",
         "firstVisible",
         "snapshot",
+        "snapshot.network_valid",
+        "snapshot.internet_ok",
+        "snapshot.sync_online",
         "revision"
       ],
       "actions": [
@@ -2653,11 +2656,11 @@
         "select",
         "long-release-back"
       ],
-      "variant": "Eight quick-action cards (AFR2-20261108-12 order: Modo, Motores, Ultrasonido, Radar, Servo, Linea, Rastro, Ajustes; quick_flags bit = page; AFR2-20261108-13: Linea = IR sensors on/off without motors, radar turns servo and HC-SR04 on); title and n/8 counter in inverted header, framed status and inverted action band, turn glyph and long/back footer. Ultrasonido toggles HC-SR04 sampling (MIDIENDO/APAGADO), off after reset.",
-      "item_count": 8,
-      "state": "source-integrated-compiled-runtime-unverified",
+      "variant": "Nine quick-action cards (AFR2-20261117-10 order: Modo, Motores, Ultrasonido, Radar, Servo, Linea, Rastro, Sincronizacion, Ajustes; quick_flags bit = page; bit 7 = Sincronizacion, activable via WIFI_POLL op18 solo si internet_ok=1, sino muestra Sin Internet / No activable); title and n/9 counter in inverted header, framed status and inverted action band, turn glyph and long/back footer.",
+      "item_count": 9,
+      "state": "source-linked-uncompiled-runtime-unverified",
       "physical_evidence": false,
-      "change_id": "AFR2-20261106-01",
+      "change_id": "AFR2-20261117-10",
       "wire_status": "EX01v13 compiled, EEPROMv9; unflashed; RAM optimized, physical stack/acceptance pending",
       "visible_rows": 0,
       "navigation_mode": "carousel",

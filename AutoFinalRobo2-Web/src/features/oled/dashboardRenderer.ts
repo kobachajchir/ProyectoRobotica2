@@ -7,17 +7,18 @@ import { FIRMWARE_LIBRARY as L } from './generated/firmwareLibrary';
 const S=L.symbols,IDLE_MS=3000,PAGE_MS=4000;
 // AFR2-20261109-05: same geometry and shared-center arithmetic as the AVR.
 const CARD_X=54,CARD_Y=27,CARD_W=72,CARD_H=22,CARD_ICON=18,CARD_GAP=4,MODE_W=52;
-const modes=['REPOSO','MANUAL','LINEA','RUEDA','GOTO','FALLO','SECUENC','PWM'];
+// AFR2-20261117-11: mismos nombres que afr2_dashboard.c (SEGUIR LINEA se desplaza en los 50 px de la columna).
+const modes=['REPOSO','MANUAL','SEGUIR LINEA','RUEDA','IR','FALLO','SECUENC','PWM'];
 // AFR2-20261108-12: same items, order and texts as afr2_dashboard.c (1 Motores .. 6 Rastro, 7 fallo).
 const labels=[['--','--','--'],['OFF','ON','RUN'],['US OFF','US ON','US ON'],['OFF','ON','ON'],['OFF','ON','ON'],['IR OFF','IR ON','IR ON'],['RS OFF','RS ON','RS ON'],['FALLO','FALLO','FALLO']];
 const icons=[S.AFR2_ICON_INFO,S.AFR2_ICON_MOTOR,S.AFR2_ICON_SENSORS,S.AFR2_ICON_RADAR,S.AFR2_ICON_SERVO,S.AFR2_ICON_SENSORS,S.AFR2_ICON_RADAR,S.AFR2_ICON_WARNING];
 const itemState=(item:number,bits:number)=>item<1 || item>6 || !(bits&(1<<(item-1)))?0:item===1 && (bits&0x40)?2:1;
-interface Runtime{inputMs:number;sourceInputMs:number;rotateMs:number;armed:boolean;mask:number;selected:number;drawn:number;mode:number;header:string;ssidOffset:number;ipOffset:number}
+interface Runtime{inputMs:number;sourceInputMs:number;rotateMs:number;armed:boolean;mask:number;selected:number;drawn:number;mode:number;header:string;ssidOffset:number;ipOffset:number;modeOffset:number}
 const states=new WeakMap<Afr2OledBuffer,Runtime>();
 const age=(now:number,then:number)=>(now-then)>>>0;
 export function clearDashboard(o:Afr2OledBuffer){states.delete(o);}
-function offset(text:string,elapsed:number){
-  const end=text.length*7-70;if(end<=0)return 0;const travel=end*40;let phase=(elapsed>>>0)%(1600+2*travel);
+function offset(text:string,elapsed:number,width=70){
+  const end=text.length*7-width;if(end<=0)return 0;const travel=end*40;let phase=(elapsed>>>0)%(1600+2*travel);
   if(phase<800)return 0;phase-=800;if(phase<travel)return Math.trunc(phase/40);phase-=travel;
   return phase<800?end:end-Math.trunc((phase-800)/40);
 }
@@ -42,7 +43,7 @@ function status(d:Runtime,u:FirmwareUiState,s:FirmwareSnapshot,full:boolean){
 function lane(o:Afr2OledBuffer,y:number,text:string,shift:number){o.fillRect(21,y,70,10,'black');o.textWindow(21,91,y,text,shift);o.fillRect(21,y,70,10,'invert');}
 export function renderDashboard(o:Afr2OledBuffer,u:FirmwareUiState,s:FirmwareSnapshot):boolean{
   let d=states.get(o);const full=!d;
-  if(!d){d={inputMs:u.clockMs,sourceInputMs:u.dashboardInputMs??0,rotateMs:u.clockMs,armed:false,mask:0,selected:0,drawn:0,mode:255,header:'',ssidOffset:0,ipOffset:0};states.set(o,d);}
+  if(!d){d={inputMs:u.clockMs,sourceInputMs:u.dashboardInputMs??0,rotateMs:u.clockMs,armed:false,mask:0,selected:0,drawn:0,mode:255,header:'',ssidOffset:0,ipOffset:0,modeOffset:0};states.set(o,d);}
   let changed=full;const connected=s.networkValid && (s.networkSta || s.networkAp);
   const ssid=(connected?(s.networkSta?s.networkSsid:s.networkApSsid):'') || (connected?s.networkSta?'Wi-Fi':'AP':s.networkValid?'Sin Wi-Fi':'Red: --');
   const ip=(connected?(s.networkSta?s.networkIp:s.networkApIp):'') || 'IP: --';
@@ -60,7 +61,8 @@ export function renderDashboard(o:Afr2OledBuffer,u:FirmwareUiState,s:FirmwareSna
   if(header || d.ssidOffset!==ss){lane(o,2,ssid,ss);changed=true;}
   if(header || d.ipOffset!==is){lane(o,14,ip,is);changed=true;}
   const mode=s.dashboardValid && s.dashboardMode!==undefined && s.dashboardMode<8?s.dashboardMode:255;
-  if(full || mode!==d.mode){o.fillRect(0,27,MODE_W,23,'black');o.drawText(2,28,'MODO');o.drawText(2,40,modes[mode]??'--');changed=true;}
+  const modeName=modes[mode]??'--',mo=offset(modeName,age(u.clockMs,u.scrollStartedMs),MODE_W-2);
+  if(full || mode!==d.mode || mo!==d.modeOffset){o.fillRect(0,27,MODE_W,23,'black');o.drawText(2,28,'MODO');o.textWindow(2,MODE_W,40,modeName,mo);changed=true;}
   const selected=status(d,u,s,full),shown=selected|(itemState(selected,d.mask)<<3);
   // AFR2-20261108-10: same long-press icon and position as afr2_dashboard.c.
   if(full){componentRoundedPanel(o,CARD_X,CARD_Y,CARD_W,CARD_H);gestureHint(o,0,52,false,'Menu');icon(o,L.symbols.AFR2_ICON_ENCODER_LONG,47,51,11);o.drawText(60,52,'Rapidas');}
@@ -72,5 +74,5 @@ export function renderDashboard(o:Afr2OledBuffer,u:FirmwareUiState,s:FirmwareSna
     o.fillRect(CARD_X+1,CARD_Y+2,CARD_W-2,CARD_H-4,'black');
     icon(o,icons[selected],left,iconY,CARD_ICON);o.drawText(left+CARD_ICON+CARD_GAP,textY,label);changed=true;
   }
-  d.header=key;d.ssidOffset=ss;d.ipOffset=is;d.mode=mode;d.drawn=shown;return changed;
+  d.header=key;d.ssidOffset=ss;d.ipOffset=is;d.mode=mode;d.modeOffset=mo;d.drawn=shown;return changed;
 }

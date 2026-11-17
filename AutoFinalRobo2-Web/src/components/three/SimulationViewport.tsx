@@ -56,8 +56,10 @@ function SimulationFloor({ size, center, ground, grid, axes }: {
 /** One accessible zoom control for standalone simulators, sequences and GOTO. */
 /** AFR2-20261111-08: hasta 250 % (antes 100 %). */
 export const SIMULATION_ZOOM_MAX = 250;
-export function SimulationZoom({ percent, onChange, max = SIMULATION_ZOOM_MAX }: {
+export function SimulationZoom({ percent, onChange, max = SIMULATION_ZOOM_MAX, info = '1 unidad = 1 m · Cuadrícula de 0,05 m' }: {
   percent: number; onChange: (percent: number) => void; max?: number;
+  /** AFR2-20261117-17: texto de escala propio de cada vista; null lo oculta. */
+  info?: string | null;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
@@ -73,7 +75,7 @@ export function SimulationZoom({ percent, onChange, max = SIMULATION_ZOOM_MAX }:
     setEditing(false);
   };
   return <div className="afr2-simulation-overlays">
-    <div className="afr2-simulation-info" aria-label="Escala y cuadrícula">1 unidad = 1 m · Cuadrícula de 0,05 m</div>
+    {info !== null && <div className="afr2-simulation-info" aria-label="Escala y cuadrícula">{info}</div>}
     <div className="afr2-simulation-zoom" role="group" aria-label="Zoom de la simulación">
       <button type="button" aria-label="Alejar" disabled={percent <= 0} onClick={() => onChange(Math.max(0, percent - 10))}><UiIcon name="minus" size={20} /></button>
       {editing ? <input autoFocus type="text" inputMode="decimal" aria-label={`Porcentaje de zoom, de 0 a ${max}`} value={draft}

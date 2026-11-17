@@ -23,7 +23,16 @@ export interface StopStatusRecord {
   detail: string | null;
 }
 
+export interface EspCloudSyncSnapshot {
+  enabled: boolean;
+  online: boolean;
+  internetOk: boolean;
+  configRev: number;
+  failCount: number;
+}
+
 interface ConnectionContextValue extends Afr2ClientStateSnapshot {
+  espCloudSync: EspCloudSyncSnapshot | null;
   battery: BatteryReading | null;
   refreshBattery: (measure?: boolean) => Promise<void>;
   systemInfo: Record<string, unknown> | null;
@@ -120,6 +129,20 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
   const [wifiStatus, setWifiStatus] = useState<WifiStatusSnapshot>(EMPTY_WIFI_SNAPSHOT);
   const [wifiNetworks, setWifiNetworks] = useState<WifiNetworkCandidate[]>([]);
   const [wifiDraft,setWifiDraft] = useState<ConnectionContextValue['wifiDraft']>(null);
+  const [espCloudSync, setEspCloudSync] = useState<EspCloudSyncSnapshot | null>(null);
+  const applyCloudSync = useCallback((raw: unknown) => {
+    const cs = raw as Record<string, unknown> | undefined;
+    if (!cs || typeof cs !== 'object' || typeof cs.enabled !== 'boolean') return;
+    const next: EspCloudSyncSnapshot = {
+      enabled: cs.enabled,
+      online: cs.online === true,
+      internetOk: cs.internetOk === true,
+      configRev: typeof cs.configRev === 'number' ? cs.configRev : 0,
+      failCount: typeof cs.failCount === 'number' ? cs.failCount : 0,
+    };
+    setEspCloudSync(prev => prev && prev.enabled === next.enabled && prev.online === next.online &&
+      prev.internetOk === next.internetOk && prev.configRev === next.configRev && prev.failCount === next.failCount ? prev : next);
+  }, []);
   const lastNotifiedDraftJob = useRef<number | null>(null);
   const applyWifiDraft = useCallback((raw: unknown) => {
     const draft = raw as Record<string, unknown> | undefined;
@@ -170,7 +193,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       setSnapshot(next);
       if (prev === 'ready' && next.wsState !== 'ready') {
         ++requestEpoch.current; expectedScanId.current=null;
-        lastNotifiedDraftJob.current=null;setWifiDraft(null);setSensors(EMPTY_SENSORS_SNAPSHOT);
+        lastNotifiedDraftJob.current=null;setWifiDraft(null);setEspCloudSync(null);setSensors(EMPTY_SENSORS_SNAPSHOT);
         wifiScanGeneration.current++;
         wifiScanPending.current = false;
         if (wifiScanTimer.current) clearTimeout(wifiScanTimer.current);
@@ -204,6 +227,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
         const h=evt.payload?.sensorHead as {known?:boolean;running?:boolean;enabled?:boolean}|undefined;
         if(h?.known){setOperationActivity('radar',h.running===true);setOperationActivity('servo',h.enabled===true);}
         applyWifiDraft(evt.payload?.wifiDraft);
+        applyCloudSync(evt.payload?.cloudSync);
       }
       if (evt.event === 'robot.sensors.snapshot' && evt.payload) {
         const p = evt.payload as Partial<SensorsSnapshot>;
@@ -236,7 +260,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       if (wifiScanTimer.current) clearTimeout(wifiScanTimer.current);
       wifiScanGeneration.current++; wifiScanPending.current = false;
     };
-  }, [client,setOperationActivity,applyWifiDraft,notify]);
+  }, [client,setOperationActivity,applyWifiDraft,applyCloudSync,notify]);
 
   // Radio status is an ESP-only service: it remains available without Mega.
   useEffect(() => {
@@ -634,6 +658,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
   const value = useMemo<ConnectionContextValue>(
     () => ({
       ...snapshot,
+      espCloudSync,
       battery, refreshBattery,
       systemInfo, systemInfoUpdatedAtMs, bootReports, refreshSystemInfo, stopAvailable, webOperationActive, hasWebOperation, setOperationActivity,
       wifiDraft,
@@ -658,7 +683,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
       scanWifiNetworks,
     }),
     [
-      snapshot, battery, refreshBattery, systemInfo, systemInfoUpdatedAtMs, bootReports, refreshSystemInfo, stopAvailable, webOperationActive, hasWebOperation, setOperationActivity,
+      snapshot, espCloudSync, battery, refreshBattery, systemInfo, systemInfoUpdatedAtMs, bootReports, refreshSystemInfo, stopAvailable, webOperationActive, hasWebOperation, setOperationActivity,
       wifiDraft,
       robotState,
       sensors, headReading, screenStatus, registerScreenViewer, registerHeadViewer, screenSubscribed,

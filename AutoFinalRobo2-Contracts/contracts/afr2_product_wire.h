@@ -44,7 +44,8 @@
 #define AFR2_WIFI_OP_ASK_FALLBACK 15u
 #define AFR2_WIFI_OP_AP_STOP 16u
 #define AFR2_WIFI_OP_SYNC_DISABLE 17u
-#define AFR2_WIFI_OP_MAX 17u
+#define AFR2_WIFI_OP_SYNC_ENABLE 18u
+#define AFR2_WIFI_OP_MAX 18u
 #define AFR2_EXT_DIAG_POLL 0x32u
 #define AFR2_EXT_DIAG_RESULT 0x33u
 /* AFR2-20261024-01: sequence range does not replace EX01 product IDs. */
@@ -87,7 +88,8 @@
 #define AFR2_EXT_F_WHEEL 0x800UL
 #define AFR2_EXT_F_SYSTEM 0x1000UL
 #define AFR2_EXT_F_NETWORK_UI 0x2000UL
-#define AFR2_EXT_FEATURE_MASK 0xfffffUL
+#define AFR2_EXT_F_SYNC_CONTROL 0x100000UL
+#define AFR2_EXT_FEATURE_MASK 0x1fffffUL
 /* Result byte retains legacy 0..4. Busy/denied are mapped to unavailable and
  * never OK; detailed requirement/status can be read through EX_STATE.
  */

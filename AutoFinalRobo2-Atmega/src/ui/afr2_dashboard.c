@@ -11,7 +11,7 @@ enum { DASH_NONE,DASH_MOTOR,DASH_US,DASH_RADAR,DASH_SERVO,DASH_LINE,DASH_TRACE,D
 /* AFR2-20261109-05: wider to the left, taller below, same right edge/footer.
  * Reserve x=0..51 for the longest mode name (SECUENC). No extra framebuffer. */
 enum { DASH_CARD_X=54,DASH_CARD_Y=27,DASH_CARD_W=72,DASH_CARD_H=22,DASH_CARD_ICON=18,DASH_CARD_GAP=4,DASH_MODE_W=52 };
-static const char mode_names[8][9] PROGMEM={"REPOSO","MANUAL","LINEA","RUEDA","GOTO","FALLO","SECUENC","PWM"};
+static const char mode_names[8][13] PROGMEM={"REPOSO","MANUAL","SEGUIR LINEA","RUEDA","IR","FALLO","SECUENC","PWM"};
 /* [item][0 off,1 on,2 run]; max 6 characters (card text area 48 px). US/IR/RS share an icon. */
 static const char status_names[8][3][7] PROGMEM={
     {"--","--","--"},{"OFF","ON","RUN"},{"US OFF","US ON","US ON"},{"OFF","ON","ON"},
@@ -23,9 +23,9 @@ static uint8_t item_state(uint8_t item,uint8_t bits){
     if(!(bits&(1u<<(item-1))))return 0;
     return item==DASH_MOTOR && (bits&0x40u)?2:1;
 }
-static uint16_t offset(const char *text,uint32_t elapsed){
-    uint16_t pixels=strlen(text)*7u;if(pixels<=70)return 0;
-    uint16_t end=pixels-70;uint32_t travel=(uint32_t)end*40u,phase=elapsed%(1600u+2u*travel);
+static uint16_t offset(const char *text,uint32_t elapsed,uint16_t width){
+    uint16_t pixels=strlen(text)*7u;if(pixels<=width)return 0;
+    uint16_t end=pixels-width;uint32_t travel=(uint32_t)end*40u,phase=elapsed%(1600u+2u*travel);
     if(phase<800)return 0;
     phase-=800;
     if(phase<travel)return phase/40u;
@@ -63,7 +63,7 @@ uint8_t Afr2Dashboard_Render(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s){
     char fallback[12];strcpy_P(fallback,s->network_valid?PSTR("Sin Wi-Fi"):PSTR("Red: --"));
     if(!ssid || !*ssid){if(connected)strcpy_P(fallback,s->network_sta?PSTR("Wi-Fi"):PSTR("AP"));ssid=fallback;}
     char ip_fallback[8];if(!ip || !*ip){strcpy_P(ip_fallback,PSTR("IP: --"));ip=ip_fallback;}
-    uint16_t ss=offset(ssid,u->clock_ms-u->scroll_started_ms),is=offset(ip,u->clock_ms-u->scroll_started_ms);
+    uint16_t ss=offset(ssid,u->clock_ms-u->scroll_started_ms,70u),is=offset(ip,u->clock_ms-u->scroll_started_ms,70u);
     uint8_t flags=(!!s->network_valid) | (!!s->network_sta<<1) | (!!s->network_ap<<2) | (!!s->battery_valid<<3) | ((s->network_mode==2)<<4) | (!!s->sync_online<<5);
     uint8_t header=full || d->header_flags!=flags || d->network_boot!=s->network_boot || d->network_revision!=s->network_revision || d->battery_mv!=s->battery_mv;
     if(full)Afr2Oled_Clear(o);
@@ -80,9 +80,10 @@ uint8_t Afr2Dashboard_Render(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s){
     if(header || d->ssid_offset!=ss){lane(o,2,ssid,ss);changed=1;}
     if(header || d->ip_offset!=is){lane(o,14,ip,is);changed=1;}
     uint8_t mode=s->dashboard_valid && s->dashboard_mode<8?s->dashboard_mode:255;
-    if(full || d->mode!=mode){
-        char name[9];if(mode<8)strcpy_P(name,mode_names[mode]);else strcpy_P(name,PSTR("--"));
-        Afr2Oled_FillRect(o,0,27,DASH_MODE_W,23,AFR2_BLACK);Afr2Oled_TextFlash(o,2,28,PSTR("MODO"),AFR2_WHITE);Afr2Oled_Text(o,2,40,name,AFR2_WHITE);changed=1;
+    char mode_name[13];if(mode<8)strcpy_P(mode_name,mode_names[mode]);else strcpy_P(mode_name,PSTR("--"));
+    uint16_t mo=offset(mode_name,u->clock_ms-u->scroll_started_ms,DASH_MODE_W-2u);
+    if(full || d->mode!=mode || d->mode_offset!=mo){
+        Afr2Oled_FillRect(o,0,27,DASH_MODE_W,23,AFR2_BLACK);Afr2Oled_TextFlash(o,2,28,PSTR("MODO"),AFR2_WHITE);Afr2Oled_TextWindow(o,2,DASH_MODE_W,40,mode_name,mo,AFR2_WHITE);changed=1;
     }
     uint8_t selected=status(u,s,full),shown=(uint8_t)(selected|(item_state(selected,d->mask)<<3));
     /* Fixed footer: long-press icon plus "Rapidas", text ending at x=109.
@@ -102,6 +103,6 @@ uint8_t Afr2Dashboard_Render(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s){
         Afr2Oled_Text(o,left+DASH_CARD_ICON+DASH_CARD_GAP,text_y,name,AFR2_WHITE);changed=1;
     }
     d->header_flags=flags;d->network_boot=s->network_boot;d->network_revision=s->network_revision;d->battery_mv=s->battery_mv;
-    d->ssid_offset=ss;d->ip_offset=is;d->mode=mode;d->drawn=shown;d->valid=1;
+    d->ssid_offset=ss;d->ip_offset=is;d->mode=mode;d->mode_offset=mo;d->drawn=shown;d->valid=1;
     return changed;
 }

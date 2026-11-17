@@ -31,7 +31,7 @@ enum { AFR2_WIFI_STATUS=1, AFR2_WIFI_SCAN, AFR2_WIFI_WEB_DRAFT,
        /* AFR2-20261108-06: respuesta al selector sin Wi-Fi. WAIT lleva 2 bytes: segundos u16LE. */
        AFR2_WIFI_AP_START, AFR2_WIFI_WAIT,
        AFR2_WIFI_ASK_FALLBACK=AFR2_WIFI_OP_ASK_FALLBACK, AFR2_WIFI_AP_STOP=AFR2_WIFI_OP_AP_STOP,
-       AFR2_WIFI_SYNC_DISABLE=AFR2_WIFI_OP_SYNC_DISABLE };
+       AFR2_WIFI_SYNC_DISABLE=AFR2_WIFI_OP_SYNC_DISABLE, AFR2_WIFI_SYNC_ENABLE=AFR2_WIFI_OP_SYNC_ENABLE };
 typedef struct {
     uint8_t line_kind, line_invert, line_calibrated, motor_signs, motor_ready;
     uint8_t hall_wired, hall_signs, geometry_ready, encoder_steps, encoder_invert, contrast, rotation;
@@ -75,7 +75,7 @@ typedef struct {
     uint8_t credential_length, credentials_visible;
     uint32_t display_boot,display_event,display_ms;
     uint16_t display_revision;
-    uint8_t display_page,display_ready,ap_active,ap_clients,web_ready,sync_online;
+    uint8_t display_page,display_ready,ap_active,ap_clients,web_ready,sync_online,sync_enabled,internet_ok;
     uint8_t ask_fallback,policy_valid,policy_requested;
     uint8_t link_phase; /* AFR2-20261109-01: 0 idle/connected, 1 STA connecting, 2 AP starting (notices) */
     char ap_ssid[33],ap_password[64];
@@ -97,10 +97,9 @@ typedef struct Afr2Product {
     uint8_t mode, origin, fault, stopped, selected_wheel, web_seen;
     uint8_t prefs_state, prefs_loaded, reset_cause, goto_state, hall_measuring, hall_bad;
     uint8_t notice, extension_ready;
-    /* AFR2-20261111-04: modo Manual elegido (pill de la Web u OLED). Se conserva al detenerse (el auto queda en Manual, no
-     * vuelve a Reposo) y habilita el PWM manual saltando los permisos: detiene radar/secuencia/Hall, limpia fallo y habilita
-     * motores. Se borra al elegir Reposo, Linea, GOTO, prueba de rueda o secuencia. */
-    uint8_t manual_selected;
+    /* AFR2-20261117-11: modo operativo persistente (AFR2_IDLE=0, AFR2_MANUAL=1, AFR2_LINE=2, AFR2_GOTO=4) elegido desde Web u OLED.
+     * Se conserva al detenerse (el auto queda en ese modo con stopped=1) y habilita solo las acciones propias de ese modo. */
+    uint8_t selected_mode;
     uint16_t local_timeout_ms;
     uint32_t now, control_ms, command_ms, local_started_ms, session, web_ms;
     uint32_t test_started_ms, mission_started_ms;
@@ -133,6 +132,7 @@ void Afr2Product_Init(Afr2Product *p,uint8_t reset_cause);
 void Afr2Product_Task(Afr2Product *p,uint32_t now);
 uint8_t Afr2Product_Stop(void *ctx);
 uint8_t Afr2Product_ClearFault(Afr2Product *p);
+uint8_t Afr2Product_SetMode(Afr2Product *p,uint8_t mode);
 uint8_t Afr2Product_HaltMotion(void *ctx); /* transport supervision preserves autonomous radar */
 void Afr2Product_Snapshot(void *ctx,uint32_t now,Afr2LinkSnapshot *out);
 void Afr2Product_WebPulse(Afr2Product *p,uint16_t age);

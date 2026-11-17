@@ -42,7 +42,7 @@ export const COMMANDS: StudioCommand[] = [
   { id: 0x22, name: 'UI_ACTION', description: 'Giro o SW con revisión de captura; largo abre menú.', requestBytes: 6, replyBytes: 5 },
   { id: 0x23, name: 'UI_RELEASE', description: 'Libera una captura OLED.', requestBytes: 4, replyBytes: 0 },
   { id: 0x24, name: 'TOUCH_UI', description: 'Vista táctil en el OLED: activa, dirección, rumbo, magnitud.', requestBytes: 4, replyBytes: 1 },
-  { id: 0x30, name: 'WIFI_POLL', description: 'AFR2-20261109-02: op15 ask:u8 persistente, op16 detener AP; ESP consulta trabajo Wi-Fi iniciado localmente.', requestBytes: 1 },
+  { id: 0x30, name: 'WIFI_POLL', description: 'AFR2-20261117-10: op15 ask:u8, op16 detener AP, op17/18 desactivar/activar sincronizacion; ESP consulta trabajo Wi-Fi iniciado localmente.', requestBytes: 1 },
   { id: 0x31, name: 'WIFI_UPDATE', description: 'AFR2-20261109-02: detalle tipo4 admite 18/19 B (ask opcional); ESP actualiza el trabajo Wi-Fi local.' },
   { id: 0x32, name: 'DIAG_POLL', description: 'ESP consulta si hay una prueba de enlace pedida en el OLED.', requestBytes: 0, replyBytes: 9 },
   { id: 0x33, name: 'DIAG_RESULT', description: 'ESP responde la prueba de enlace.', requestBytes: 8, replyBytes: 0 },
@@ -60,7 +60,7 @@ export const COMMANDS: StudioCommand[] = [
   { id: 0x50, name: 'INFO', description: 'Página de identidad de compilación (0..4).', requestBytes: 1, example: '00' },
   { id: 0x51, name: 'REBOOT', description: 'Solicitud explícita de reinicio ATmega.', requestBytes: 1, replyBytes: 5, example: 'A5' },
   { id: 0x52, name: 'BOOT', description: 'Evento BT01 de arranque, sin sesión/transacción; solo lectura.', readOnly: true },
-  { id: 0x53, name: 'NETWORK_STATE', description: 'Estado de red ESP → ATmega para la interfaz local.' },
+  { id: 0x53, name: 'NETWORK_STATE', description: 'Estado de red ESP → ATmega para la interfaz local (p[4] bits web_ready, sync_online, sync_enabled, internet_ok).' },
   { id: 0x54, name: 'NETWORK_EVENT', description: 'Aviso de red ESP → ATmega para la interfaz local.' },
   // AFR2-20261117-05: sensible; el TAP lo redacta y el estudio no lo arma (lo envía el ESP).
   { id: 0x57, name: 'SYNC_PAIR', description: 'Código de vinculación de la copia web ESP → ATmega: boot u32, ttl_s u8, código ascii:7. Se muestra en el OLED.' },

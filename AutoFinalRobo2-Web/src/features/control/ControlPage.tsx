@@ -431,7 +431,7 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
           },
           {
             id: 'goto',
-            label: 'GOTO',
+            label: 'Ir',
             content: (
               <div className="afr2-page-stack">
               <GotoSimulatorPanel commands={gotoCommands} onCommandsChange={setGotoCommands} speedMmS={gotoSimSpeedMmS} onSpeedChange={setGotoSimSpeedMmS}
@@ -490,7 +490,7 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
       {area === 'drive' && task('drive')}
       {area === 'programs' && <TaskSections ariaLabel="Tipos de programa" value={activeTask} onValueChange={changeTask} items={[
         { id: 'sequences', label: 'Secuencias', content: task('sequences') },
-        { id: 'goto', label: 'GOTO', content: task('goto') },
+        { id: 'goto', label: 'Ir', content: task('goto') },
         { id: 'line', label: 'Seguidor de línea', content: task('line') },
       ]} />}
       {area === 'setup' && <TaskSections ariaLabel="Puesta a punto" value={activeTask} onValueChange={changeTask} items={[

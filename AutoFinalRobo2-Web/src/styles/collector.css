@@ -194,3 +194,36 @@
 .afr2-collector-boxes__confirm { border: 1px solid var(--warning-border, var(--border-default)); background: var(--warning-subtle, var(--surface-subtle)); border-radius: var(--radius-md); padding: 10px; display: grid; gap: 8px; }
 .afr2-collector-progress { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center; }
 .afr2-collector-progress progress { grid-column: 1 / -1; width: 100%; }
+
+/* AFR2-20261117-13: matemática de los simuladores en un panel flotante arrastrable (posición fija, dentro de #afr2-main). */
+.afr2-math-float {
+  position: fixed; z-index: 40; display: grid; grid-template-rows: auto minmax(0, 1fr);
+  width: min(380px, calc(100vw - 24px)); max-height: min(78vh, 720px);
+  border: 1px solid var(--border-strong); border-radius: 18px; overflow: hidden;
+  background: var(--surface-solid); color: var(--text);
+  box-shadow: 0 18px 48px rgba(2, 6, 23, .38), 0 2px 8px rgba(2, 6, 23, .2);
+  animation: afr2-math-float-in 180ms var(--ease-out);
+}
+.afr2-math-float[data-dragging] { box-shadow: 0 26px 64px rgba(2, 6, 23, .5), 0 0 0 2px var(--action-border); user-select: none; }
+.afr2-math-float__header {
+  display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 14px;
+  border-bottom: 1px solid var(--border-subtle); background: var(--surface-subtle);
+  cursor: grab; touch-action: none; user-select: none;
+}
+.afr2-math-float[data-dragging] .afr2-math-float__header { cursor: grabbing; }
+.afr2-math-float__header:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.afr2-math-float__grip { display: inline-grid; place-items: center; color: var(--text-muted); }
+.afr2-math-float__title { display: grid; flex: 1; min-width: 0; }
+.afr2-math-float__title strong { font-size: 15px; font-weight: 650; color: var(--text-strong); }
+.afr2-math-float__title small { font-size: var(--type-caption-size); color: var(--text-muted); }
+.afr2-math-float__close {
+  display: inline-grid; place-items: center; width: 40px; height: 40px; flex: none;
+  border: 1px solid var(--border-default); border-radius: 999px; background: transparent; color: var(--text); cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+@media (hover: hover) and (pointer: fine) { .afr2-math-float__close:hover { background: var(--action); border-color: var(--action); color: var(--text-on-action); } }
+.afr2-math-float__close:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.afr2-math-float__body { overflow: auto; overscroll-behavior: contain; padding: 14px 16px 16px; }
+.afr2-math-float .afr2-sim-matrix { display: grid; gap: 12px; }
+@keyframes afr2-math-float-in { from { opacity: 0; transform: translateY(6px) scale(.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .afr2-math-float { animation: none; } .afr2-math-float__close { transition: none; } }

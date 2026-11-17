@@ -1,3 +1,71 @@
+## AFR2-20261117-17 — 17/11/2026
+
+Web: la vista completa del seguidor suma el selector de zoom de los simuladores (`SimulationZoom`: −, porcentaje editable, +). Arranca en 60 %, el zoom por defecto; 100 % es el encuadre ajustado y va de 10 % a 250 %. Queda a la izquierda del riel lateral. `SimulationZoom` acepta un texto de escala propio.
+
+Versión: 1.39.5 (subversión mínima). Web en fuente. [Ficha](changes/2026-11-17-17-vista-completa-selector-zoom.md). Revisado en `npm run dev`; sin compilar.
+
+## AFR2-20261117-16 — 17/11/2026
+
+Web: en la vista completa del seguidor la cámara se aleja (zoom ×0,6), así el auto se ve de más lejos y con más cinta alrededor. El piso, la pista y la cinta pasan a 4 m para no mostrar el borde en pantallas anchas. La vista normal no cambia.
+
+Versión: 1.39.4 (subversión mínima). Web en fuente. [Ficha](changes/2026-11-17-16-vista-completa-mas-lejos.md). Revisado en `npm run dev`; sin compilar.
+
+## AFR2-20261117-15 — 17/11/2026
+
+Web, Programas → Seguidor de línea: la vista del auto sobre la cinta va primero, y debajo las tarjetas del seguidor y de ajuste y calibración, plegadas al entrar. El enlace a la vista completa pasa a ser el botón «Vista completa», con el encabezado y la ubicación de «Control táctil» en Conducir; abre el visor de seguimiento inmersivo.
+
+Versión: 1.39.3 (subversión mínima). Web en fuente. [Ficha](changes/2026-11-17-15-programas-seguidor-orden-vista-completa.md). Revisado en `npm run dev`; sin compilar.
+
+## AFR2-20261117-14 — 17/11/2026
+
+Web: se desbloquea `npm run dev`. El control de huellas del OLED se detenía porque AFR2-20261117-10/11 cambiaron `afr2_screens.c`, `afr2_menu_catalog.c` y `afr2_dashboard.c/.h` sin revisar la copia Web. Se portó lo que faltaba:
+
+- dashboard con «SEGUIR LINEA» e «IR» y el nombre de modo que se desplaza en su columna de 50 px;
+- selector de modo «Seguir linea» / «Ir» con la acción 80 (arg 2/4);
+- en la simulación, abrir el control del modo elegido.
+
+Se actualizaron las cuatro huellas.
+
+Versión: 1.39.2 (subversión mínima). Web en fuente; ATmega y ESP solo versión. [Ficha](changes/2026-11-17-14-oled-web-port-dashboard-modos.md). `npm run dev` arranca; sin compilar.
+
+## AFR2-20261117-13 — 17/11/2026
+
+Web: la matemática de los simuladores pasa a un **panel flotante arrastrable**.
+
+- Mantiene el selector de transformación, la matriz 4×4 en tiempo real y el ángulo/seno/coseno.
+- Tiene posición fija, se arrastra desde el encabezado y queda limitado al área de contenido, debajo de la barra superior y encima de la barra inferior del celular. Recuerda la posición.
+- La ✕ lo cierra; el botón del simulador alterna «Mostrar matemáticas» / «Ocultar matemáticas».
+- Se quita el panel inferior plegable.
+
+Versión: 1.39.1 (subversión mínima). Web en fuente; ATmega y ESP solo versión. [Ficha](changes/2026-11-17-13-matematica-flotante-simuladores.md). Revisado en Vite; sin compilar.
+
+## AFR2-20261117-12 — 17/11/2026
+
+Web: **visor de seguimiento** a pantalla completa con la interfaz del control táctil: encabezado, escenario, pie con estado y mandos, y riel lateral con hojas. Se abre desde Seguidor de línea.
+
+- **Vista:** el auto sobre la cinta con IR1…IR5 (`LineFollowerLiveView fill`).
+- **Mandos:**
+  - Iniciar movimiento / Reanudar: `robot.mode line-follow` con `start`.
+  - Pausar: STOP más `line-follow` armado, sin `start`.
+  - Detener: STOP más Reposo.
+- **Riel:** Información, Parámetros (velocidad, Kp, ancho de la cinta) y Calibrar (fondo, línea, confirmar).
+
+Versión: 1.39.0 (subversión). Web en fuente; ATmega y ESP solo versión. [Ficha](changes/2026-11-17-12-visor-seguimiento.md). Revisado en Vite sin auto; sin compilar ni probar con el auto.
+
+## AFR2-20261117-11 - 17/11/2026
+
+Web: Seguidor de línea y Ajuste y calibración van en filas plegables; con el seguidor activo aparece «Iniciar movimiento» y, en marcha, Detener arriba y abajo. El ancho de la cinta pasa a Ajuste y calibración. Pill «Auto detenido» centrada con overlay en degradado. Nuevo modo «Ir» (banner de GOTO y pill de modo; Línea queda preparada sin mover el auto). GOTO se muestra como «Ir». Modales con desenfoque también en el ::backdrop.
+
+Versión: producto 1.38.0 (subversión). Web en fuente; ATmega y ESP solo versión. [Ficha](changes/2026-11-17-11-seguidor-filas-modo-ir.md). Sin compilar ni probar.
+
+## AFR2-20261117-10 — 17/11/2026
+
+Card de sincronización activable solo con conexión real a Internet, en ATmega (**Controles rápidos** `010003` como tarjeta 8/9 `Sincroniz.`, pasando `Ajustes` a 9/9) y en la barra superior Web dentro del modal **Sincronización web** (`CloudSyncCard`), mostrando **«Sin Internet»** y bloqueando la activación cuando no hay salida a Internet.
+
+ESP: sondeo TCP asíncrono (`ESPAsyncTCP`) a `firestore.googleapis.com:443` combinado con verificación real HTTPS del navegador (`sync.configure`), inicio apagado por defecto (`syncEnabled_ = false`), `configRev` bidireccional, operación `AFR2_WIFI_OP_SYNC_ENABLE (18)` en `0x30 WIFI_POLL` y bits `sync_enabled`/`internet_ok` en `0x53 NETWORK_STATE` bajo `AFR2_EXT_F_SYNC_CONTROL (0x100000)` conservando `EX01 v13`. Web vincula también `firmwareRenderer.ts`, `uiSimulation.ts` y `firmwareRenderer.sources.json`.
+
+Versión: 1.37.0 (subversión; tope del workspace 1.38.0 compartido con `AFR2-20261117-11` en `afr2_build_info.h` y `Web/package.json`). ATmega, ESP y Web en fuente en rama `fix/loader-esp-bridge-boot`. [Ficha](changes/2026-11-17-10-card-sincronizacion-internet.md). Sin generar, compilar, probar ni flashear.
+
 ## AFR2-20261117-09 — 17/11/2026
 
 La autodetección del Loader ahora informa las versiones. Ante `#AFR2 TAP ?`, el ATmega responde, después de la confirmación del TAP, `VER mega=… ext=… esp=… web=…`. La versión del ESP y la de la Web salen de lo que el ESP le informa, o del `BT01` de su arranque.

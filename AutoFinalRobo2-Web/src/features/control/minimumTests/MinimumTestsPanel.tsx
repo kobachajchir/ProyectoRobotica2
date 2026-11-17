@@ -88,7 +88,7 @@ export function MinimumTestsPanel({ gotoCommands, onGotoCommandsChange, maxSpeed
   // Cada requisito pasa a verde al cumplirse; «Enviar al robot» se habilita con todos los obligatorios en verde.
   const checks: Readiness[] = [
     { id: 'link', label: 'Conexión con el auto', state: linkReady ? 'ok' : 'bad', detail: linkReady ? 'Web, ESP y ATmega enlazados' : 'Conectá el robot o confirmá el STOP pendiente' },
-    { id: 'goto', label: 'GOTO disponible', state: gotoCapable ? 'ok' : 'bad', detail: gotoCapable ? 'El auto acepta GOTO relativo' : (capabilities.goto_relative.reason || 'El auto no informa GOTO disponible') },
+    { id: 'goto', label: 'Ir disponible', state: gotoCapable ? 'ok' : 'bad', detail: gotoCapable ? 'El auto acepta GOTO relativo' : (capabilities.goto_relative.reason || 'El auto no informa GOTO disponible') },
     { id: 'motors', label: 'Motores habilitados', state: motorsEnabled === true ? 'ok' : motorsEnabled === false ? 'bad' : 'pending',
       detail: motorsEnabled === true ? 'Habilitados en el auto' : motorsEnabled === false ? 'Habilitalos en Controles rápidos del auto (Motores)' : 'Sin confirmar: el auto todavía no informó su estado' },
     { id: 'hall', label: 'Sensores Hall configurados', state: hallConfigured ? 'ok' : 'bad', detail: hallConfigured ? 'Hall conectados y habilitados' : (capabilities.wheel_odometry.reason || 'Habilitá los Hall en Preferencias') },
@@ -212,7 +212,7 @@ export function MinimumTestsPanel({ gotoCommands, onGotoCommandsChange, maxSpeed
             <input disabled={running} className="afr2-glass-field min-h-11 px-3" type="number" min={100} max={5000} step={50} value={boxMm} onChange={event => setBoxMm(Number(event.target.value))} />
           </label>
           <Button type="button" disabled={running || !(boxMm >= 100 && boxMm <= 5000)} onClick={loadDefaultTrajectory}>Cargar ir a la caja y volver al drop</Button>
-          <Button type="button" disabled={running} onClick={() => navigate('/programas?tarea=goto')}>Editar en GOTO</Button>
+          <Button type="button" disabled={running} onClick={() => navigate('/programas?tarea=goto')}>Editar en Ir</Button>
         </div>
       </div>}
       <div className="md:col-span-2 afr2-action-row">

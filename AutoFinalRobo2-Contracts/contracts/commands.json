@@ -1,7 +1,7 @@
 {
   "schema": "afr2-command-3",
   "envelope_schema": "afr2-ws-1",
-  "updated_by": "AFR2-20261117-05",
+  "updated_by": "AFR2-20261117-10",
   "commands": [
     {
       "name": "system.hello",
@@ -1998,6 +1998,38 @@
         }
       },
       "notes": "AFR2-20261117-05. El ESP encola el codigo y lo envia al ATmega con SYNC_PAIR (0x57); el OLED lo muestra ttlS segundos como aviso. La validez de 5 min la controla Firebase."
+    },
+    {
+      "name": "sync.configure",
+      "owner": "esp",
+      "wire_id": "0x30",
+      "status": "source-integrated-uncompiled-runtime-unverified",
+      "module_status": {
+        "atmega": "source-uncompiled-unverified",
+        "esp": "source-uncompiled-unverified",
+        "web": "source-uncompiled-unverified"
+      },
+      "timeout_ms": 2000,
+      "idempotent": false,
+      "payload_schema": {
+        "req": {
+          "enabled": "boolean optional",
+          "internetOk": "boolean optional",
+          "intervalMs": "integer 5000..10000 optional",
+          "attemptOk": "boolean optional",
+          "ackRev": "uint32 optional",
+          "endpoint": "string <=46 optional"
+        },
+        "res": {
+          "enabled": "boolean",
+          "internetOk": "boolean",
+          "online": "boolean",
+          "configRev": "uint32",
+          "staConnected": "boolean",
+          "failCount": "uint8"
+        }
+      },
+      "notes": "AFR2-20261117-10. Control bidireccional de sincronizacion web ATmega (0x30 WIFI_POLL op 17/18 y 0x53 NETWORK_STATE bits 2..3 bajo AFR2_EXT_F_SYNC_CONTROL) <-> ESP <-> Web. Rechaza enabled=true sin Internet con error INTERNET_UNAVAILABLE."
     }
   ],
   "uart_profile": "UART_PROFILE_2.md",

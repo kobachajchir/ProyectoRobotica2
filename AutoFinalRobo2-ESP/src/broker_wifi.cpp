@@ -122,10 +122,23 @@ bool Broker::finishWifi(const BrokerRequest &req,const MegaResult &r) {
     else if(op==13){wifiResult_=wifi_.startAp()?3:4;wifiStatusAt_=0;}
     else if(op==AFR2_WIFI_OP_ASK_FALLBACK){wifiResult_=total==1 && (uint8_t)wifiCredentials_[0]<=1 && wifi_.setAskFallback(wifiCredentials_[0]!=0)?3:4;wifiStatusAt_=0;}
     else if(op==AFR2_WIFI_OP_AP_STOP){wifiResult_=wifi_.stopAp()?3:4;wifiStatusAt_=0;}
-    else if(op==AFR2_WIFI_OP_SYNC_DISABLE){
-        syncEnabled_=false;syncOnline_=false;syncFailCount_=0;syncFailNotice_=false;
+    else if(op==AFR2_WIFI_OP_SYNC_DISABLE || op==AFR2_WIFI_OP_SYNC_ENABLE){
+        uint32_t now=millis();
+        recomputeInternet(now);
+        if(op==AFR2_WIFI_OP_SYNC_ENABLE){
+            if(!internetOk_){wifiResult_=4;}
+            else {
+                if(!syncEnabled_)++syncConfigRev_;
+                syncEnabled_=true;syncFailCount_=0;syncFailNotice_=false;
+                wifiResult_=3;
+            }
+        }else{
+            if(syncEnabled_)++syncConfigRev_;
+            syncEnabled_=false;syncOnline_=false;syncFailCount_=0;syncFailNotice_=false;
+            wifiResult_=3;
+        }
         networkPending_=true;networkPage_=0;if(!++networkRevision_)++networkRevision_;
-        wifiResult_=3;publishStatus();
+        publishStatus();
     }
     else if(op==14){wifiResult_=total==2 && wifi_.answerAsk(false,afr2_get_u16((const uint8_t *)wifiCredentials_),millis())?3:4;}
     else if(op==8) {

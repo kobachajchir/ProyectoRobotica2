@@ -1,6 +1,6 @@
 {
   "schema": "afr2-wire-catalog-1",
-  "updated_by": "AFR2-20261117-05",
+  "updated_by": "AFR2-20261117-11",
   "notes": "Catalogo de comandos UART ROBO2/perfil 2 + EX01 v13 para interpretes (Loader, Protocol Studio). Autoridad de IDs: afr2_wire.h, afr2_product_wire.h, afr2_sensor_wire.h, afr2_network_wire.h, afr2_battery_wire.h. Largos cotejados con el despachador del ATmega (afr2_link.c, afr2_app_wire.c, afr2_sensor_commands.c, afr2_network.c, afr2_sequence.c) el 08/11/2026; sin prueba en placa. Toda alta/baja/modificacion de un CMD actualiza este archivo (skill afr2-wire-commands). 'bytes' cuenta el cuerpo de aplicacion, sin sesion/transaccion/resultado. 'variable' indica largo dependiente del contenido.",
   "envelope": {
     "header": "52 4F 42 4F 32",
@@ -73,8 +73,8 @@
       "request": { "bytes": 9, "fields": [ { "name": "reserved", "type": "u32le" }, { "name": "wheel", "type": "u8" }, { "name": "pwm", "type": "i16le" }, { "name": "duration", "type": "u16le", "unit": "ms" } ] },
       "reply": { "bytes": 0 } },
     { "id": "0x15", "name": "MODE", "family": "EX01", "ws": "robot.mode",
-      "does": "Modo de operacion (idle, manual, linea).",
-      "request": { "bytes": 5, "fields": [ { "name": "reserved", "type": "u32le" }, { "name": "mode", "type": "u8" } ] },
+      "does": "Modo de operacion persistente (0=reposo, 1=manual, 2=seguir linea, 4=ir); start opcional (1=iniciar movimiento en seguir linea).",
+      "request": { "bytes": [5, 6], "fields": [ { "name": "reserved", "type": "u32le" }, { "name": "mode", "type": "u8" }, { "name": "start", "type": "u8", "optional": true } ] },
       "reply": { "bytes": 0 } },
     { "id": "0x16", "name": "GOTO", "family": "EX01", "ws": "robot.goto.start",
       "does": "Destino relativo X/Y; opcional giro y velocidad (16 B).",
@@ -134,7 +134,7 @@
       "reply": { "bytes": 1, "fields": [ { "name": "magnitude", "type": "u8", "unit": "%" } ] } },
 
     { "id": "0x30", "name": "WIFI_POLL", "family": "WIFI", "ws": null, "sensitive": true,
-      "does": "El ESP consulta trabajo Wi-Fi iniciado en el OLED. La respuesta puede llevar SSID y clave. AFR2-20261109-02: op15 guarda preguntar-AP (total1 ask:u8 0/1), op16 detiene AP (total0); op13 inicia AP explicitamente sin habilitar STA en AP puro. op14 espera segundos u16LE. Mismo jobId y resultados existentes.",
+      "does": "El ESP consulta trabajo Wi-Fi iniciado en el OLED. La respuesta puede llevar SSID y clave. AFR2-20261109-02: op15 guarda preguntar-AP (total1 ask:u8 0/1), op16 detiene AP (total0); op13 inicia AP explicitamente sin habilitar STA en AP puro. op14 espera segundos u16LE. AFR2-20261117-10: op17 desactiva sincronizacion web, op18 la activa solo si internet_ok=1. Mismo jobId y resultados existentes.",
       "request": { "bytes": 1, "fields": [ { "name": "offset", "type": "u8" } ] },
       "reply": { "bytes": "variable", "min": 14, "max": 54 } },
     { "id": "0x31", "name": "WIFI_UPDATE", "family": "WIFI", "ws": null, "sensitive": true,
@@ -198,7 +198,7 @@
       "request": { "bytes": 14, "fields": [ { "name": "magic", "type": "ascii:4" }, { "name": "node", "type": "u8" }, { "name": "boot_id", "type": "u32le", "format": "hex" }, { "name": "reset_reason", "type": "u8", "enum": "esp_reset_reason" }, { "name": "fw_major", "type": "u8" }, { "name": "fw_minor", "type": "u8" }, { "name": "fw_patch", "type": "u8" }, { "name": "ext", "type": "u8" } ] },
       "reply": { "bytes": 14, "fields": [ { "name": "magic", "type": "ascii:4" }, { "name": "node", "type": "u8" }, { "name": "boot_id", "type": "u32le", "format": "hex" }, { "name": "reset_cause", "type": "u8", "format": "hex", "enum": "avr_reset_bits" }, { "name": "fw_major", "type": "u8" }, { "name": "fw_minor", "type": "u8" }, { "name": "fw_patch", "type": "u8" }, { "name": "ext", "type": "u8" } ] } },
     { "id": "0x53", "name": "NETWORK_STATE", "family": "NETWORK", "ws": null, "sensitive": true,
-      "does": "Estado de red ESP -> ATmega para el OLED. Puede llevar la clave del AP.",
+      "does": "Estado de red ESP -> ATmega para el OLED (p[4] bits 2=sync_enabled y 3=internet_ok con AFR2_EXT_F_SYNC_CONTROL). Puede llevar la clave del AP.",
       "request": { "bytes": "variable", "min": 8, "max": 40 },
       "reply": { "bytes": 7 } },
     { "id": "0x54", "name": "NETWORK_EVENT", "family": "NETWORK", "ws": null,

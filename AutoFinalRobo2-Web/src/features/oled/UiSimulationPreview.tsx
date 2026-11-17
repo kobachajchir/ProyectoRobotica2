@@ -27,7 +27,7 @@ export function UiSimulationPreview({initialCode,onNavigate,active=true}:{initia
     return ()=>window.clearInterval(timer);
   },[active,dispatch]);
   const snapshot=useMemo(()=>simulationSnapshot(u),[u]);
-  const buffer=useMemo(()=>{const key=u.node===L.symbols.AFR2_N_QUICK && !u.notice?JSON.stringify([u.selection,snapshot.quickFlags,u.quickPending,u.quickExpected,u.holdProgress]):'';
+  const buffer=useMemo(()=>{const key=u.node===L.symbols.AFR2_N_QUICK && !u.notice?JSON.stringify([u.selection,snapshot.quickFlags,snapshot.networkValid,snapshot.internetOk,snapshot.syncOnline,u.quickPending,u.quickExpected,u.holdProgress]):'';
     if(key && quickFrameKey.current===key)return lastFrame.current;quickFrameKey.current=key;
     const changed=renderFirmwareScreen({...u,redraw:true,scrollRedraw:false},raster.current,snapshot);if(changed===false)return lastFrame.current;const frame=new Afr2OledBuffer();frame.buffer.set(raster.current.buffer);lastFrame.current=frame;return frame;},[u,snapshot]);
   const items=simulationItems(u),gestures=simulationGestures(u);

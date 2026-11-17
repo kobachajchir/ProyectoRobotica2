@@ -20,7 +20,7 @@ static uint8_t web_command(Afr2Product *p,const uint8_t *d) {
     Afr2Product_WebPulse(p,0);p->origin=AFR2_SOURCE_WEB;return 1;
 }
 static uint32_t features(const Afr2Product *p) {
-    uint32_t f=AFR2_EXT_F_TOUCH_UI|AFR2_EXT_F_UI|AFR2_EXT_F_STOP|AFR2_EXT_F_WIFI|AFR2_EXT_F_PREFS|AFR2_EXT_F_CONFIG|AFR2_EXT_F_SYSTEM|AFR2_EXT_F_NETWORK_UI|AFR2_EXT_F_SENSOR_HEAD|AFR2_EXT_F_RADAR;
+    uint32_t f=AFR2_EXT_F_TOUCH_UI|AFR2_EXT_F_UI|AFR2_EXT_F_STOP|AFR2_EXT_F_WIFI|AFR2_EXT_F_PREFS|AFR2_EXT_F_CONFIG|AFR2_EXT_F_SYSTEM|AFR2_EXT_F_NETWORK_UI|AFR2_EXT_F_SENSOR_HEAD|AFR2_EXT_F_RADAR|AFR2_EXT_F_SYNC_CONTROL;
     f|=AFR2_EXT_F_BATTERY;
     if(Afr2Product_PwmStatus(p)==AFR2_OK && (p->stopped || p->origin!=AFR2_SOURCE_LOCAL))f|=AFR2_EXT_F_MANUAL_PWM;
     if(p->config.motor_ready && !p->fault && !p->hall_measuring)f|=AFR2_EXT_F_WHEEL;
@@ -129,29 +129,27 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         if(n!=9)return AFR2_RESULT_BAD_REQUEST;
         if(!web_command(p,d))return AFR2_RESULT_UNAVAILABLE;
         return wire_result(Afr2Product_Wheel(p,d[4],(int16_t)afr2_get_u16(d+5),afr2_get_u16(d+7)));
-    case AFR2_EXT_MODE:
-        if(n!=5 || afr2_get_u32(d)!=0)return AFR2_RESULT_BAD_REQUEST;
-        /* AFR2-20261111-04: la pill de modo siempre cambia el modo. Manual salta los controles: corta lo que este andando
-         * (tarea local, radar, secuencia, medicion Hall), limpia el fallo y habilita motores; Linea habilita motores y
-         * detiene el radar antes de iniciar el seguimiento. */
-        if(d[4]==AFR2_IDLE){p->manual_selected=0;Afr2Product_Stop(p);break;}
-        if(d[4]==AFR2_MANUAL){
-            if(!p->stopped || Afr2Head_State()->running || p->hall_measuring || (p->sequence.state>=1 && p->sequence.state<=3))Afr2Product_Stop(p);
-            p->manual_selected=1;p->fault=0;p->hall_measuring=0;p->config.motor_ready=1;
-            if(!web_command(p,d))return AFR2_RESULT_UNAVAILABLE;
-            p->mode=AFR2_MANUAL;break;
-        }
-        if(d[4]!=AFR2_LINE)return AFR2_RESULT_BAD_REQUEST;
-        if(Afr2Head_State()->running)Afr2Head_Stop();
-        if(!p->stopped && p->origin==AFR2_SOURCE_LOCAL)Afr2Product_Stop(p);
-        p->manual_selected=0;p->config.motor_ready=1;
+    case AFR2_EXT_MODE: {
+        if((n!=5 && n!=6) || afr2_get_u32(d)!=0)return AFR2_RESULT_BAD_REQUEST;
+        uint8_t mode=d[4],start=n==6?d[5]:0;
+        if(start>1 || (start && mode!=AFR2_LINE))return AFR2_RESULT_BAD_REQUEST;
+        if(mode!=AFR2_IDLE && mode!=AFR2_MANUAL && mode!=AFR2_LINE && mode!=AFR2_GOTO)return AFR2_RESULT_BAD_REQUEST;
+        /* AFR2-20261117-11: los 4 modos (Reposo, Manual, Seguir linea, Ir) se pueden fijar desde Web u OLED sin arrancar
+         * movimiento; start=1 con AFR2_LINE inicia el seguimiento cuando ya esta o pasa a modo Seguir linea. */
+        if(mode==AFR2_IDLE){Afr2Product_SetMode(p,AFR2_IDLE);break;}
         if(!web_command(p,d))return AFR2_RESULT_UNAVAILABLE;
+        uint8_t r=Afr2Product_SetMode(p,mode);if(r)return wire_result(r);
+        if(!start){Afr2Product_WebPulse(p,0);break;}
+        p->origin=AFR2_SOURCE_WEB;
         return wire_result(Afr2Product_StartLine(p));
+    }
     case AFR2_EXT_GOTO:
         if(n!=12 && n!=16)return AFR2_RESULT_BAD_REQUEST;
         if(!web_command(p,d))return AFR2_RESULT_UNAVAILABLE;
         {
-            uint8_t rc=Afr2Product_StartGotoFull(p,(int32_t)afr2_get_u32(d+4),(int32_t)afr2_get_u32(d+8),
+            int32_t x=(int32_t)afr2_get_u32(d+4),y=(int32_t)afr2_get_u32(d+8);
+            if(p->selected_mode!=AFR2_GOTO && !(p->selected_mode==AFR2_MANUAL && !x && !y))return AFR2_RESULT_UNAVAILABLE;
+            uint8_t rc=Afr2Product_StartGotoFull(p,x,y,
                 n==16?(int16_t)afr2_get_u16(d+12):0,n==16?afr2_get_u16(d+14):p->config.speed_limit);
             /* AFR2-20261111-06: un GOTO aceptado de la Web (pruebas minimas, recorrido) sigue solo aunque se corte el WebSocket:
              * pasa a origen local con el mismo tope que el GOTO (60 s), fuera del corte de 1,5 s sin pulso Web. STOP,
@@ -168,7 +166,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
         if(n!=11 || afr2_get_u32(d))return AFR2_RESULT_BAD_REQUEST;
         uint32_t token=afr2_get_u32(d+4);uint8_t count=d[8];uint16_t speed=afr2_get_u16(d+9);
         if(!token || !count || count>AFR2_ROUTE_MAX || speed<10 || speed>p->config.speed_limit)return AFR2_RESULT_BAD_REQUEST;
-        if(a->route_state==3 || !p->stopped || p->hall_measuring || (p->sequence.state>=1 && p->sequence.state<=3))return AFR2_RESULT_UNAVAILABLE;
+        if(p->selected_mode!=AFR2_GOTO || a->route_state==3 || !p->stopped || p->hall_measuring || (p->sequence.state>=1 && p->sequence.state<=3))return AFR2_RESULT_UNAVAILABLE;
         p->sequence.state=0;p->sequence.loaded=0;p->sequence.count=0;
         a->route_token=token;a->route_count=count;a->route_speed=speed;a->route_loaded=0;a->route_state=1;
         a->route_index=a->route_done=a->route_fault=0;a->route_elapsed=0;
@@ -187,9 +185,8 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
     case AFR2_EXT_ROUTE_START: {
         if(n!=8 || afr2_get_u32(d))return AFR2_RESULT_BAD_REQUEST;
         uint32_t token=afr2_get_u32(d+4),full=a->route_count>=32?0xffffffffUL:((1UL<<a->route_count)-1UL);
-        if(a->route_state!=1 || token!=a->route_token || a->route_loaded!=full)return AFR2_RESULT_UNAVAILABLE;
+        if(p->selected_mode!=AFR2_GOTO || a->route_state!=1 || token!=a->route_token || a->route_loaded!=full)return AFR2_RESULT_UNAVAILABLE;
         if(p->hall_measuring || (!p->stopped && p->origin==AFR2_SOURCE_LOCAL))return AFR2_RESULT_UNAVAILABLE;
-        p->manual_selected=0;
         uint8_t rc=Afr2App_RouteStart(a);if(rc)return wire_result(rc);
         afr2_put_u32(out,token);out[4]=a->route_state;*length=5;break;
     }
@@ -389,7 +386,7 @@ uint8_t Afr2App_Command(void *ctx,uint8_t cmd,const uint8_t *d,uint8_t n,uint8_t
                 if((w->op==AFR2_WIFI_SCAN || w->op==AFR2_WIFI_PAGE) && w->state>=4)w->network_count=0;
                 /* AFR2-20261108-06: la respuesta al selector sin Wi-Fi no agrega aviso propio si salio bien: Iniciar AP
                  * muestra el aviso "Red AP creada" del ESP y Seguir esperando ya aviso al elegir. */
-                if((w->op==AFR2_WIFI_AP_START || w->op==AFR2_WIFI_WAIT || w->op==AFR2_WIFI_AP_STOP || w->op==AFR2_WIFI_SYNC_DISABLE) && w->state==3){}
+                if((w->op==AFR2_WIFI_AP_START || w->op==AFR2_WIFI_WAIT || w->op==AFR2_WIFI_AP_STOP || w->op==AFR2_WIFI_SYNC_DISABLE || w->op==AFR2_WIFI_SYNC_ENABLE) && w->state==3){}
                 else if(w->state==6){
                     Afr2Ui_NotifyFlash(a->ui,1,PSTR("No hay clientes"),PSTR("Conectados"),3000);
                 }else {

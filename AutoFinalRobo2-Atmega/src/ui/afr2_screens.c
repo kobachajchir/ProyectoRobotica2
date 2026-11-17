@@ -357,15 +357,16 @@ void Afr2Ui_Tick(Afr2Ui *u,uint32_t now) {
         if(signature!=u->menu_signature){u->menu_signature=signature;sync_code(u);}
     }
     if(u->node==AFR2_N_QUICK && u->ops.value){
-        /* AFR2-20261108-12: bit = pagina del carrusel (1 Motores .. 6 Rastro). */
-        uint8_t flags=0;static const uint8_t actions[6] PROGMEM={AFR2_A_MOTOR_TOGGLE,AFR2_A_US_TOGGLE,AFR2_A_RADAR_TOGGLE,AFR2_A_SERVO_TOGGLE,AFR2_A_IR_TOGGLE,AFR2_A_RADAR_TRACE};
-        for(uint8_t i=0;i<6;i++)if(u->ops.value(u->ops.ctx,pgm_read_byte(actions+i)))flags|=(2u<<i);
+        /* AFR2-20261117-10: bit = pagina del carrusel (1 Motores .. 6 Rastro, 7 Sincronizacion). */
+        uint8_t flags=0;static const uint8_t actions[7] PROGMEM={AFR2_A_MOTOR_TOGGLE,AFR2_A_US_TOGGLE,AFR2_A_RADAR_TOGGLE,AFR2_A_SERVO_TOGGLE,AFR2_A_IR_TOGGLE,AFR2_A_RADAR_TRACE,AFR2_A_SYNC_TOGGLE};
+        for(uint8_t i=0;i<7;i++)if(u->ops.value(u->ops.ctx,pgm_read_byte(actions+i)))flags|=(2u<<i);
         if(flags!=u->quick_signature){u->quick_signature=flags;u->redraw=true;}
     }
     if(u->quick_pending){
         Afr2MenuItem item;Afr2Menu_Item(AFR2_N_QUICK,u->quick_pending-1u,&item);
+        uint16_t timeout_ms=item.action==AFR2_A_SYNC_TOGGLE?2000u:500u;
         if(u->ops.value && !!u->ops.value(u->ops.ctx,item.action)==u->quick_expected){u->quick_pending=0;u->redraw=true;}
-        else if((uint32_t)(now-u->quick_started_ms)>500u){u->quick_pending=0;Afr2Ui_NotifyFlash(u,1,PSTR("Sin confirmar"),PSTR("Ver estado real"),2500);}
+        else if((uint32_t)(now-u->quick_started_ms)>timeout_ms){u->quick_pending=0;Afr2Ui_NotifyFlash(u,1,PSTR("Sin confirmar"),PSTR("Ver estado real"),2500);}
     }
 
     if(u->touch_active) {
@@ -584,11 +585,11 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
     }
     if(u->node==AFR2_N_QUICK){
         if(u->quick_pending)return;
-        /* AFR2-20261108-12: 0 Modo, 1 Motores, 2 Ultrasonido, 3 Radar, 4 Servo, 5 Linea, 6 Rastro, 7 Ajustes. */
-        if(in.rotation){int16_t index=(int16_t)u->selection+in.rotation;if(index<0)index=0;if(index>7)index=7;u->selection=(uint8_t)index;u->quick_selection=u->selection;u->scroll_started_ms=u->clock_ms;u->redraw=true;}
+        /* AFR2-20261117-10: 0 Modo, 1 Motores, 2 Ultrasonido, 3 Radar, 4 Servo, 5 Linea, 6 Rastro, 7 Sincronizacion, 8 Ajustes. */
+        if(in.rotation){int16_t index=(int16_t)u->selection+in.rotation;if(index<0)index=0;if(index>8)index=8;u->selection=(uint8_t)index;u->quick_selection=u->selection;u->scroll_started_ms=u->clock_ms;u->redraw=true;}
         if(in.click){
             if(u->selection==0){Afr2Ui_Open(u,AFR2_N_QUICK_MODES);return;}
-            if(u->selection==7){Afr2Ui_Open(u,AFR2_N_MENU);return;}
+            if(u->selection==8){Afr2Ui_Open(u,AFR2_N_MENU);return;}
             Afr2MenuItem item;Afr2Ui_MenuItem(u,u->selection,&item);
             uint8_t expected=!(u->ops.value && u->ops.value(u->ops.ctx,item.action));
             uint8_t r=invoke(u,item.action,expected,0);
@@ -643,7 +644,8 @@ void Afr2Ui_Apply(Afr2Ui *u,Afr2UiInput in) {
         } else if(i.action==AFR2_A_QUICK_MODE){
             uint8_t r=invoke(u,i.action,i.arg,0);
             if(r)action_result(u,r,i.action);
-            else Afr2Ui_NotifyFlash(u,0,PSTR("Modo seleccionado"),i.arg?PSTR("Manual"):PSTR("Reposo"),2500);
+            else if(i.target!=255)Afr2Ui_Open(u,i.target);
+            else Afr2Ui_NotifyFlash(u,0,PSTR("Modo seleccionado"),i.arg==1?PSTR("Manual"):i.arg==2?PSTR("Seguir linea"):i.arg==4?PSTR("Ir"):PSTR("Reposo"),2500);
         } else if(i.action==AFR2_A_RADAR_RANGE){
             uint8_t r=invoke(u,i.action,i.arg,0);if(r)result(u,r);else back(u,AFR2_N_RADAR_OPTIONS);
         } else if(i.action==AFR2_A_EXAM_START){
@@ -753,11 +755,24 @@ static void centered(Afr2Oled *o,uint8_t y,const char *text){
 }
 static void render_quick(Afr2Ui *u,Afr2Oled *o,const Afr2UiSnapshot *s){
     Afr2MenuItem item;Afr2Menu_Item(AFR2_N_QUICK,u->selection,&item);Afr2Oled_Clear(o);
-    char title[18];static const char titles[8][18] PROGMEM={"Modo de robot","Motores","Ultrasonido","Radar","Servo","Linea","Rastro","Ajustes"};strcpy_P(title,titles[u->selection]);
-    Afr2Component_Header(o,Afr2Menu_Icon(AFR2_N_QUICK,item.target,item.action,item.label),title,u->selection+1,8);Afr2Component_Panel(o,0,16,128,34);
+    char title[18];static const char titles[9][18] PROGMEM={"Modo de robot","Motores","Ultrasonido","Radar","Servo","Linea","Rastro","Sincroniz.","Ajustes"};strcpy_P(title,titles[u->selection]);
+    Afr2Component_Header(o,Afr2Menu_Icon(AFR2_N_QUICK,item.target,item.action,item.label),title,u->selection+1,9);Afr2Component_Panel(o,0,16,128,34);
     uint8_t on=!!(s->quick_flags&(1u<<u->selection));
-    if(u->selection==0 || u->selection==7){centered(o,20,u->selection==7?PSTR("AJUSTES Y PRUEBAS"):PSTR("MODO DEL ROBOT"));Afr2Ui_GestureHint(o,28,36,0,PSTR("Entrar"));}
-    else {
+    if(u->selection==0 || u->selection==8){centered(o,20,u->selection==8?PSTR("AJUSTES Y PRUEBAS"):PSTR("MODO DEL ROBOT"));Afr2Ui_GestureHint(o,28,36,0,PSTR("Entrar"));}
+    else if(u->selection==7){
+        if(!s->network_valid){centered(o,20,PSTR("SIN ESTADO"));centered(o,36,PSTR("Sin ESP"));}
+        else if(u->quick_pending){
+            centered(o,20,!s->internet_ok?PSTR("Sin Internet"):on?(s->sync_online?PSTR("ONLINE"):PSTR("ACTIVA")):PSTR("APAGADA"));
+            centered(o,36,u->quick_expected?PSTR("Activando..."):PSTR("Desactivando..."));
+        }else if(!s->internet_ok){
+            centered(o,20,PSTR("Sin Internet"));
+            if(on)Afr2Ui_GestureHint(o,20,36,0,PSTR("Desactivar"));
+            else centered(o,36,PSTR("No activable"));
+        }else{
+            centered(o,20,on?(s->sync_online?PSTR("ONLINE"):PSTR("ACTIVA")):PSTR("APAGADA"));
+            Afr2Ui_GestureHint(o,on?20:28,36,0,on?PSTR("Desactivar"):PSTR("Activar"));
+        }
+    }else {
         /* AFR2-20261108-12: 1 Motores, 2 Ultrasonido, 3 Radar, 4 Servo, 5 Linea, 6 Rastro. */
         const char *state=u->selection==1?(on?PSTR("HABILITADOS"):PSTR("BLOQUEADOS")):u->selection==2?(on?PSTR("MIDIENDO"):PSTR("APAGADO")):u->selection==3?(on?PSTR("ACTIVO"):PSTR("DETENIDO")):u->selection==5?(on?PSTR("LEYENDO"):PSTR("APAGADO")):u->selection==6?(on?PSTR("VISIBLE"):PSTR("OCULTO")):(on?PSTR("ACTIVADO"):PSTR("DESACTIVADO"));
         centered(o,20,state);

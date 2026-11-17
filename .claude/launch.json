@@ -4,8 +4,31 @@
     {
       "name": "afr2-web",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "AutoFinalRobo2-Web", "run", "dev", "--", "--port", "5173", "--strictPort"],
+      "runtimeArgs": [
+        "--prefix",
+        "AutoFinalRobo2-Web",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5173",
+        "--strictPort"
+      ],
       "port": 5173
+    },
+    {
+      "name": "afr2-web-vite",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "--prefix",
+        "AutoFinalRobo2-Web",
+        "vite",
+        "AutoFinalRobo2-Web",
+        "--port",
+        "5175",
+        "--strictPort"
+      ],
+      "port": 5175
     }
   ]
 }

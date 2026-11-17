@@ -104,7 +104,9 @@
 .afr2-line-live[data-tall="true"] .afr2-line-live__stage { height: clamp(22rem, 62vh, 40rem); }
 .afr2-line-live__stage .afr2-simulation-viewport { position: absolute; inset: 0; height: 100%; }
 .afr2-line-live__loading { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
-.afr2-line-live__hud { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; pointer-events: none; }
+/* AFR2-20261117-11: pill centrada; un degradado oscuro que se desvanece hacia abajo le da contraste sobre el piso claro. */
+.afr2-line-live__stage::before { content: ''; position: absolute; inset: 0 0 auto; height: 6.5rem; z-index: 1; pointer-events: none; background: linear-gradient(to bottom, rgba(15, 23, 42, .62), rgba(15, 23, 42, .3) 55%, transparent); }
+.afr2-line-live__hud { position: absolute; z-index: 2; top: 12px; left: 12px; right: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; pointer-events: none; }
 .afr2-line-live__pill { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; color: #fff; background: rgba(15, 23, 42, .78); backdrop-filter: blur(6px); }
 .afr2-line-live__pill[data-state="run"] { background: var(--action); }
 .afr2-line-live__pill[data-state="preview"] { background: rgba(71, 85, 105, .82); }
@@ -169,4 +171,40 @@
 .afr2-remote-pair ol { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
 .afr2-remote-code { display: grid; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text-strong); }
 .afr2-remote-code input { min-height: 56px; padding: 0 14px; font-family: ui-monospace, monospace; font-size: 28px; letter-spacing: .14em; text-transform: uppercase; }
+.afr2-sync-card { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--border-default); border-radius: var(--radius-md, 12px); background: var(--glass-field-bg); }
+.afr2-sync-card[data-state="offline"] { border-color: color-mix(in srgb, var(--warning, #f5a623) 55%, var(--border-default)); }
+.afr2-sync-card[data-state="on"] { border-color: color-mix(in srgb, var(--success, #30a46c) 55%, var(--border-default)); }
+.afr2-sync-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.afr2-sync-card__title { display: flex; align-items: flex-start; gap: 10px; min-width: 0; }
+.afr2-sync-card__title strong { display: block; font-size: 14px; color: var(--text-strong); }
+.afr2-sync-card__title span { display: block; font-size: 13px; color: var(--text-muted); }
+.afr2-sync-card__badge { flex: none; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--border-default); font-size: 12px; font-weight: 650; color: var(--text-strong); }
+.afr2-sync-card[data-state="offline"] .afr2-sync-card__badge { color: var(--warning, #f5a623); border-color: color-mix(in srgb, var(--warning, #f5a623) 60%, transparent); }
+.afr2-sync-card[data-state="on"] .afr2-sync-card__badge { color: var(--success, #30a46c); border-color: color-mix(in srgb, var(--success, #30a46c) 60%, transparent); }
+.afr2-sync-card__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .afr2-remote-error { margin: 0; font-size: 13px; color: var(--danger, #e5484d); }
+
+/* AFR2-20261117-11: tarjetas del seguidor, una debajo de otra y plegables. */
+.afr2-line-card { display: grid; gap: 0; min-width: 0; }
+.afr2-line-card__header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
+.afr2-line-card__toggle { flex: 1 1 18rem; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.afr2-line-card__toggle:focus-visible { outline: 2px solid var(--action); outline-offset: 4px; border-radius: var(--radius-sm); }
+.afr2-line-card__title { display: grid; gap: 2px; min-width: 0; }
+.afr2-line-card__aside { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+.afr2-line-card__body { margin-top: 16px; }
+/* AFR2-20261117-12: visor de seguimiento a pantalla completa (estructura del control táctil). */
+.afr2-line-live[data-fill="true"] { height: 100%; gap: 0; }
+.afr2-line-live[data-fill="true"] .afr2-line-live__stage { height: 100%; border: 0; border-radius: 0; }
+.afr2-line-live[data-fill="true"] .afr2-line-live__hud { top: 56px; }
+.afr2-line-live[data-fill="true"] .afr2-line-live__caption { display: none; } /* el pie del visor ya muestra el estado */
+.afr2-line-visor .afr2-line-visor__stage { cursor: default; touch-action: auto; }
+.afr2-line-visor .afr2-line-visor__stage .afr2-line-live { position: absolute; inset: 0; }
+.afr2-line-visor__controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.afr2-line-visor__controls > button { min-width: 9.5rem; }
+@media (max-width: 599.98px) {
+  .afr2-line-visor__controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .afr2-line-visor__controls > button { min-width: 0; padding-inline: 8px; }
+}
+/* AFR2-20261117-17: selector de zoom de la vista completa a la izquierda del riel lateral, sin taparlo. */
+.afr2-line-visor .afr2-line-live[data-fill="true"] .afr2-simulation-overlays { right: calc(max(12px, env(safe-area-inset-right)) + 100px); }
+@media (max-width: 599.98px) { .afr2-line-visor .afr2-line-live[data-fill="true"] .afr2-simulation-overlays { right: 84px; } .afr2-line-visor .afr2-line-live[data-fill="true"] .afr2-simulation-info { display: none; } }

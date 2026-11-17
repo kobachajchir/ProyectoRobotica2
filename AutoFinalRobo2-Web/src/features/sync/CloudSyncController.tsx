@@ -49,7 +49,7 @@ function loadSyncSettings(): PersistedSyncSettings {
     if (raw) {
       const parsed = JSON.parse(raw) as Partial<PersistedSyncSettings>;
       return {
-        enabled: typeof parsed.enabled === 'boolean' ? parsed.enabled : true,
+        enabled: typeof parsed.enabled === 'boolean' ? parsed.enabled : false,
         intervalMs:
           typeof parsed.intervalMs === 'number' && parsed.intervalMs >= 5000 && parsed.intervalMs <= 10000
             ? parsed.intervalMs
@@ -60,7 +60,7 @@ function loadSyncSettings(): PersistedSyncSettings {
   } catch {
     /* Optional storage */
   }
-  return { enabled: true, intervalMs: 5000, endpointUrl: '' };
+  return { enabled: false, intervalMs: 5000, endpointUrl: '' };
 }
 
 export type FirebaseWriterState = 'no-car' | 'loading' | 'off' | 'registering' | 'ready' | 'claimed' | 'error';
@@ -68,6 +68,9 @@ export type FirebaseWriterState = 'no-car' | 'loading' | 'off' | 'registering' |
 export interface CloudSyncContextValue {
   enabled: boolean;
   online: boolean;
+  internetOnline: boolean;
+  checkingInternet: boolean;
+  checkInternet: () => Promise<boolean>;
   /** false cuando no hay endpoint ni auto conectado: no hay a dónde enviar. */
   hasTarget: boolean;
   syncing: boolean;
@@ -115,6 +118,7 @@ export function CloudSyncProvider({ children }: { children: React.ReactNode }) {
     wsState,
     megaLinkState,
     wifiStatus,
+    espCloudSync,
     robotState,
     battery,
     capabilities,
@@ -126,6 +130,65 @@ export function CloudSyncProvider({ children }: { children: React.ReactNode }) {
   const [enabled, setEnabledState] = useState<boolean>(initial.enabled);
   const [intervalMs, setIntervalMsState] = useState<number>(initial.intervalMs);
   const [endpointUrl, setEndpointUrlState] = useState<string>(initial.endpointUrl);
+  const [internetOnline, setInternetOnline] = useState<boolean>(() => typeof navigator !== 'undefined' ? navigator.onLine !== false : false);
+  const [checkingInternet, setCheckingInternet] = useState<boolean>(false);
+  const internetOnlineRef = useRef<boolean>(internetOnline);
+  internetOnlineRef.current = internetOnline;
+  const internetProbeSeq = useRef<number>(0);
+
+  const checkInternet = useCallback(async (): Promise<boolean> => {
+    const seq = ++internetProbeSeq.current;
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      internetOnlineRef.current = false;
+      setInternetOnline(false);
+      setCheckingInternet(false);
+      return false;
+    }
+    setCheckingInternet(true);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 3000);
+    try {
+      await fetch('https://firestore.googleapis.com/', { mode: 'no-cors', cache: 'no-store', signal: controller.signal });
+      window.clearTimeout(timeout);
+      if (seq !== internetProbeSeq.current) return internetOnlineRef.current;
+      internetOnlineRef.current = true;
+      setInternetOnline(true);
+      setCheckingInternet(false);
+      return true;
+    } catch {
+      window.clearTimeout(timeout);
+      if (seq !== internetProbeSeq.current) return internetOnlineRef.current;
+      internetOnlineRef.current = false;
+      setInternetOnline(false);
+      setCheckingInternet(false);
+      return false;
+    }
+  }, []);
+
+  useEffect(() => {
+    const probe = () => { void checkInternet(); };
+    const onOffline = () => {
+      ++internetProbeSeq.current;
+      internetOnlineRef.current = false;
+      setInternetOnline(false);
+      setCheckingInternet(false);
+    };
+    probe();
+    window.addEventListener('online', probe);
+    window.addEventListener('offline', onOffline);
+    const onVis = () => { if (document.visibilityState === 'visible') probe(); };
+    document.addEventListener('visibilitychange', onVis);
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === 'visible') probe();
+    }, 15000);
+    return () => {
+      window.removeEventListener('online', probe);
+      window.removeEventListener('offline', onOffline);
+      document.removeEventListener('visibilitychange', onVis);
+      window.clearInterval(timer);
+    };
+  }, [checkInternet, wsState, wifiStatus.staConnected, wifiStatus.mode]);
+
   // AFR2-20261117-05: la clave de escritura la guarda el ESP (sync.key.get/set), así todos los navegadores
   // conectados al auto publican en el mismo lugar. Nunca se guarda en el navegador.
   const [firebaseKey, setFirebaseKey] = useState<string>('');
@@ -165,6 +228,14 @@ export function CloudSyncProvider({ children }: { children: React.ReactNode }) {
 
   const activateFirebase = useCallback(async () => {
     if (wsState !== 'ready') return;
+    if (!await checkInternet()) {
+      notify.warning({
+        id: 'afr2-sync-no-internet',
+        title: 'Sin Internet',
+        description: 'Conectate a Internet para activar la copia en Firebase.',
+      });
+      return;
+    }
     const key = firebaseKey || generateWriteKey();
     if (!firebaseKey) {
       try {
@@ -178,7 +249,7 @@ export function CloudSyncProvider({ children }: { children: React.ReactNode }) {
     }
     firebaseLastWriteRef.current = 0;
     await registerWriter(key);
-  }, [firebaseKey, registerWriter, requestCommand, wsState]);
+  }, [checkInternet, firebaseKey, registerWriter, requestCommand, wsState]);
 
   const deactivateFirebase = useCallback(async () => {
     if (wsState !== 'ready') return;
@@ -338,7 +409,7 @@ export function CloudSyncProvider({ children }: { children: React.ReactNode }) {
           await requestCommand(
             'sync.configure',
             {
-              enabled,
+              internetOk: internetOnlineRef.current,
               intervalMs,
               attemptOk: ok,
               ackRev: ok ? nextAckRev : ackRevRef.current,
@@ -351,7 +422,7 @@ export function CloudSyncProvider({ children }: { children: React.ReactNode }) {
         }
       }
     },
-    [enabled, endpointUrl, intervalMs, requestCommand, wsState]
+    [endpointUrl, intervalMs, requestCommand, wsState]
   );
 
   const performSync = useCallback(
@@ -381,13 +452,7 @@ export function CloudSyncProvider({ children }: { children: React.ReactNode }) {
       setLastPayloadBytes(byteSize);
       setLastChangedKeys(changedKeys);
 
-      // Si no hubo cambios y no es snapshot ni envío explícito de simulador, verificamos conectividad sin reenviar todo.
-      const hasInternetAndLink =
-        typeof navigator !== 'undefined' &&
-        navigator.onLine !== false &&
-        (wsState === 'ready' ? wifiStatus.staConnected || wifiStatus.mode === 'unknown' : true);
-
-      let attemptOk = hasInternetAndLink;
+      let attemptOk = internetOnlineRef.current;
 
       if (attemptOk && endpointUrl.trim()) {
         try {
@@ -405,7 +470,7 @@ export function CloudSyncProvider({ children }: { children: React.ReactNode }) {
           attemptOk = false;
         }
       } else if (wsState === 'ready' && !wifiStatus.staConnected && wifiStatus.mode === 'AP' && !firebaseWritable) {
-        // En modo AP puro sin STA ni internet, la sincronización online falla tras cada intento.
+        // En modo AP puro sin copia Firebase ni endpoint configurado, no hay destino online activo.
         attemptOk = false;
       }
 
@@ -448,6 +513,47 @@ export function CloudSyncProvider({ children }: { children: React.ReactNode }) {
     [currentLayeredState, enabled, endpointUrl, firebaseWritable, hasTarget, recordSyncOutcome, wifiStatus.espBootId, wifiStatus.mode, wifiStatus.staConnected, wsState]
   );
 
+  const performSyncRef = useRef(performSync);
+  performSyncRef.current = performSync;
+  const pushedNetRef = useRef<boolean | null>(null);
+  const lastEspRevRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (HOSTED_REMOTE) return;
+    if (wsState !== 'ready') { pushedNetRef.current = null; lastEspRevRef.current = null; return; }
+    if (pushedNetRef.current === internetOnline) return;
+    pushedNetRef.current = internetOnline;
+    void requestCommand('sync.configure', { internetOk: internetOnline, intervalMs }, 2000).catch(() => {
+      if (pushedNetRef.current === internetOnline) pushedNetRef.current = null;
+    });
+  }, [internetOnline, intervalMs, requestCommand, wsState]);
+
+  useEffect(() => {
+    if (HOSTED_REMOTE || wsState !== 'ready' || !espCloudSync) return;
+    const prevRev = lastEspRevRef.current;
+    if (prevRev === null) {
+      lastEspRevRef.current = espCloudSync.configRev;
+      if (espCloudSync.configRev > 0 || !internetOnlineRef.current) {
+        setEnabledState(espCloudSync.enabled);
+        if (!espCloudSync.enabled) setOnline(false);
+      } else if (enabled && internetOnlineRef.current) {
+        void requestCommand('sync.configure', { enabled: true, internetOk: true, intervalMs }, 2000).catch(() => undefined);
+      }
+      return;
+    }
+    if (espCloudSync.configRev !== prevRev) {
+      lastEspRevRef.current = espCloudSync.configRev;
+      setEnabledState(espCloudSync.enabled);
+      failCountRef.current = 0;
+      setFailCount(0);
+      setFailModalOpen(false);
+      if (!espCloudSync.enabled) setOnline(false);
+      else if (internetOnlineRef.current) {
+        window.setTimeout(() => { void performSyncRef.current(); }, 0);
+      }
+    }
+  }, [enabled, espCloudSync, intervalMs, requestCommand, wsState]);
+
   // Ciclo periódico: 5 s si hay cambios pendientes (delta), 10 s de latido si no cambiaron capas; se detiene si acumula 5 fallas hasta acción del usuario.
   useEffect(() => {
     if (!enabled || failModalOpen) {
@@ -464,26 +570,34 @@ export function CloudSyncProvider({ children }: { children: React.ReactNode }) {
 
   const setEnabled = useCallback(
     async (next: boolean) => {
-      setEnabledState(next);
-      if (!next) {
-        setOnline(false);
-        failCountRef.current = 0;
-        setFailCount(0);
-        setFailModalOpen(false);
-      } else {
-        failCountRef.current = 0;
-        setFailCount(0);
-        setFailModalOpen(false);
+      if (next && !await checkInternet()) {
+        notify.warning({
+          id: 'afr2-sync-no-internet',
+          title: 'Sin Internet',
+          description: 'Conectate a Internet para activar la sincronización web.',
+        });
+        return;
       }
+      setEnabledState(next);
+      failCountRef.current = 0;
+      setFailCount(0);
+      setFailModalOpen(false);
+      if (!next) setOnline(false);
       if (wsState === 'ready') {
         try {
-          await requestCommand('sync.configure', { enabled: next, intervalMs }, 2000);
+          const res = await requestCommand('sync.configure', { enabled: next, internetOk: internetOnlineRef.current, intervalMs }, 2000);
+          if (next && res.status !== 'completed') {
+            setEnabledState(false);
+            setOnline(false);
+          } else if (next && res.status === 'completed' && (firebaseWriter === 'off' || firebaseWriter === 'error')) {
+            await activateFirebase();
+          }
         } catch {
           /* Ignore */
         }
       }
     },
-    [intervalMs, requestCommand, wsState]
+    [activateFirebase, checkInternet, firebaseWriter, intervalMs, requestCommand, wsState]
   );
 
   const dismissFailureKeepSync = useCallback(async () => {
@@ -523,6 +637,14 @@ export function CloudSyncProvider({ children }: { children: React.ReactNode }) {
 
   const triggerSyncNow = useCallback(
     async (options?: { forceSnapshot?: boolean }) => {
+      if (!await checkInternet()) {
+        notify.warning({
+          id: 'afr2-sync-no-internet',
+          title: 'Sin Internet',
+          description: 'Conectate a Internet para sincronizar con la nube.',
+        });
+        return false;
+      }
       const ok = await performSync({ forceSnapshot: options?.forceSnapshot ?? true });
       if (ok) {
         notify.info({
@@ -533,7 +655,7 @@ export function CloudSyncProvider({ children }: { children: React.ReactNode }) {
       }
       return ok;
     },
-    [performSync]
+    [checkInternet, performSync]
   );
 
   const syncSimulatorToWeb = useCallback(
@@ -576,6 +698,9 @@ export function CloudSyncProvider({ children }: { children: React.ReactNode }) {
     () => ({
       enabled,
       online,
+      internetOnline,
+      checkingInternet,
+      checkInternet,
       hasTarget,
       syncing,
       failCount,
@@ -606,6 +731,9 @@ export function CloudSyncProvider({ children }: { children: React.ReactNode }) {
     [
       enabled,
       online,
+      internetOnline,
+      checkingInternet,
+      checkInternet,
       hasTarget,
       syncing,
       failCount,
@@ -641,7 +769,8 @@ export function CloudSyncProvider({ children }: { children: React.ReactNode }) {
 }
 
 /** AFR2-20261117-01: estado legible de la sincronización, compartido por la pill y su modal. */
-function syncStatusText(enabled: boolean, online: boolean, syncing: boolean, failCount: number, hasTarget = true) {
+function syncStatusText(enabled: boolean, online: boolean, syncing: boolean, failCount: number, hasTarget = true, internetOnline = true) {
+  if (!internetOnline) return { short: 'Sin Internet', mode: 'off' as const };
   if (HOSTED_REMOTE) return { short: 'Solo lectura', mode: 'idle' as const };
   if (!enabled) return { short: 'Apagada', mode: 'off' as const };
   if (!hasTarget) return { short: 'Sin destino', mode: 'off' as const };
@@ -656,14 +785,14 @@ function syncStatusText(enabled: boolean, online: boolean, syncing: boolean, fai
  * (lo administra la barra, como los demás modales de estado).
  */
 export function CloudSyncPill({ onOpen, open = false }: { onOpen: (origin: ModalOrigin) => void; open?: boolean }) {
-  const { enabled, online, syncing, failCount, hasTarget } = useCloudSync();
-  const status = syncStatusText(enabled, online, syncing, failCount, hasTarget);
+  const { enabled, online, syncing, failCount, hasTarget, internetOnline } = useCloudSync();
+  const status = syncStatusText(enabled, online, syncing, failCount, hasTarget, internetOnline);
   return (
     <button type="button" className="afr2-network-pill afr2-sync-pill" data-sync={status.mode} data-busy={syncing ? 'true' : 'false'}
       aria-haspopup="dialog" aria-expanded={open} aria-label={`Sincronización web: ${status.short}. Abrir ajustes de sincronización`}
       title={`Sync web · ${status.short}`}
       onClick={(e) => onOpen({ element: e.currentTarget, keyboard: e.detail === 0 })}>
-      <UiIcon name={!enabled ? 'wifi-off' : 'refresh'} />
+      <UiIcon name={!internetOnline || !enabled ? 'wifi-off' : 'refresh'} />
       <span>Sync web</span>
       <strong>{status.short}</strong>
     </button>
@@ -672,24 +801,90 @@ export function CloudSyncPill({ onOpen, open = false }: { onOpen: (origin: Modal
 
 const SYNC_INTERVALS_S = [5, 6, 7, 8, 9, 10] as const;
 
-/** Contenido del modal de sincronización: estado, parámetros editables y acciones. */
-export function CloudSyncDetails() {
-  return HOSTED_REMOTE ? <HostedSyncDetails /> : <LocalSyncDetails />;
+/** AFR2-20261117-10: tarjeta principal de sincronización web; activable solo con conexión real a Internet. */
+function CloudSyncCard({ onClose }: { onClose?: () => void }) {
+  const { wsState } = useConnection();
+  const {
+    enabled, online, syncing, failCount, hasTarget, internetOnline, checkingInternet, checkInternet,
+    endpointUrl, firebaseWriter, setEnabled,
+  } = useCloudSync();
+  const status = syncStatusText(enabled, online, syncing, failCount, hasTarget, internetOnline);
+  const subtitle = !internetOnline
+    ? 'No se detectó salida a Internet. La sincronización no puede activarse sin Internet.'
+    : HOSTED_REMOTE
+      ? 'Copia online disponible para consultar el último estado del auto.'
+      : wsState === 'ready'
+        ? (firebaseWriter === 'ready' ? 'Auto conectado · sincronización y Copia en Firebase activas.' : 'Auto conectado · listo para publicar en la nube.')
+        : endpointUrl
+          ? 'Usando endpoint personalizado configurado.'
+          : 'Conectá el auto o cargá un endpoint para publicar.';
+
+  return (
+    <section className="afr2-sync-card" data-state={internetOnline ? status.mode : 'offline'} aria-label="Tarjeta de sincronización">
+      <div className="afr2-sync-card__top">
+        <div className="afr2-sync-card__title">
+          <UiIcon name={!internetOnline || !enabled ? 'wifi-off' : 'refresh'} size={18} />
+          <div>
+            <strong>Sincronización web</strong>
+            <span>{subtitle}</span>
+          </div>
+        </div>
+        <span className="afr2-sync-card__badge">{!internetOnline ? 'Sin Internet' : HOSTED_REMOTE ? 'Online' : status.short}</span>
+      </div>
+      <div className="afr2-sync-card__actions">
+        {!internetOnline ? (
+          <>
+            {!HOSTED_REMOTE && enabled ? (
+              <Button variant="secondary" size="sm" onClick={() => void setEnabled(false)}>
+                Desactivar
+              </Button>
+            ) : (
+              <Button variant="primary" size="sm" disabled>
+                Sin Internet
+              </Button>
+            )}
+            <Button variant="secondary" size="sm" loading={checkingInternet} onClick={() => void checkInternet()}>
+              Comprobar Internet
+            </Button>
+          </>
+        ) : HOSTED_REMOTE ? (
+          <a className="afr2-button afr2-button--primary afr2-button--sm" href="#/remoto" onClick={() => onClose?.()}>
+            Abrir vista remota
+          </a>
+        ) : (
+          <>
+            <Button variant={enabled ? 'secondary' : 'primary'} size="sm" onClick={() => void setEnabled(!enabled)}>
+              {enabled ? 'Desactivar' : 'Activar'}
+            </Button>
+            <a className="afr2-button afr2-button--ghost afr2-button--sm" href="#/remoto" onClick={() => onClose?.()}>
+              Vista remota
+            </a>
+          </>
+        )}
+      </div>
+    </section>
+  );
 }
 
-function LocalSyncDetails() {
+/** Contenido del modal de sincronización: estado, parámetros editables y acciones. */
+export function CloudSyncDetails({ onClose }: { onClose?: () => void } = {}) {
+  return HOSTED_REMOTE ? <HostedSyncDetails onClose={onClose} /> : <LocalSyncDetails onClose={onClose} />;
+}
+
+function LocalSyncDetails({ onClose }: { onClose?: () => void }) {
   const {
-    enabled, online, hasTarget, syncing, failCount, intervalMs, endpointUrl, rev, ackRev,
+    enabled, online, hasTarget, internetOnline, syncing, failCount, intervalMs, endpointUrl, rev, ackRev,
     lastSyncAtMs, lastPayloadBytes, lastChangedKeys,
-    setEnabled, setIntervalMs, setEndpointUrl, triggerSyncNow,
+    setIntervalMs, setEndpointUrl, triggerSyncNow,
   } = useCloudSync();
-  const status = syncStatusText(enabled, online, syncing, failCount, hasTarget);
+  const status = syncStatusText(enabled, online, syncing, failCount, hasTarget, internetOnline);
   const [endpointDraft, setEndpointDraft] = useState(endpointUrl);
   useEffect(() => setEndpointDraft(endpointUrl), [endpointUrl]);
   const endpointValid = endpointDraft.trim() === '' || /^https?:\/\/\S+$/i.test(endpointDraft.trim());
   const commitEndpoint = () => { if (endpointValid) setEndpointUrl(endpointDraft.trim()); };
   const rows: [string, string][] = [
     ['Estado', status.short],
+    ['Internet', internetOnline ? 'Disponible' : 'Sin Internet'],
     ['Fallas seguidas', `${failCount} de ${MAX_CONSECUTIVE_FAILS}`],
     ['Última sincronización', lastSyncAtMs ? new Date(lastSyncAtMs).toLocaleTimeString() : '—'],
     ['Último envío', lastPayloadBytes ? `${lastPayloadBytes} B` : '—'],
@@ -698,16 +893,8 @@ function LocalSyncDetails() {
   ];
   return (
     <div className="afr2-page-stack">
+      <CloudSyncCard onClose={onClose} />
       <p className="afr2-help">Envía solo las capas que cambiaron (hash por capa). Los simuladores se envían únicamente con su botón «Sincronizar a web».{!hasTarget && enabled ? ' Ahora no hay destino: conectá el auto o cargá un endpoint.' : ''}</p>
-      <div className="afr2-sync-toggle">
-        <div>
-          <strong>Sincronización automática</strong>
-          <span>{enabled ? 'Activa: intenta cada intervalo.' : 'Apagada: no hace intentos.'}</span>
-        </div>
-        <Button variant={enabled ? 'secondary' : 'primary'} size="sm" onClick={() => void setEnabled(!enabled)}>
-          {enabled ? 'Desactivar' : 'Activar'}
-        </Button>
-      </div>
       <fieldset className="afr2-sync-interval" disabled={!enabled}>
         <legend>Intervalo</legend>
         <div role="radiogroup" aria-label="Intervalo de sincronización">
@@ -732,11 +919,11 @@ function LocalSyncDetails() {
         {rows.map(([key, value]) => <div key={key}><dt>{key}</dt><dd>{value}</dd></div>)}
       </dl>
       <div className="afr2-action-row">
-        <Button variant="primary" loading={syncing} disabled={!enabled} icon={<UiIcon name="refresh" size={16} />}
+        <Button variant="primary" loading={syncing} disabled={!enabled || !internetOnline} icon={<UiIcon name="refresh" size={16} />}
           onClick={() => void triggerSyncNow({ forceSnapshot: false })}>
           Sincronizar cambios ahora
         </Button>
-        <Button variant="secondary" disabled={!enabled || syncing} onClick={() => void triggerSyncNow({ forceSnapshot: true })}>
+        <Button variant="secondary" disabled={!enabled || !internetOnline || syncing} onClick={() => void triggerSyncNow({ forceSnapshot: true })}>
           Enviar todo
         </Button>
       </div>
@@ -768,7 +955,7 @@ const WRITER_TEXT: Record<FirebaseWriterState, string> = {
  * el estado con el código de 6 caracteres que aparece en el OLED.
  */
 function FirebaseSection() {
-  const { firebaseWriter, firebaseKeySet, firebaseLastAtMs, activateFirebase, deactivateFirebase } = useCloudSync();
+  const { firebaseWriter, firebaseKeySet, firebaseLastAtMs, internetOnline, activateFirebase, deactivateFirebase } = useCloudSync();
   const [busy, setBusy] = useState(false);
   const run = async (fn: () => Promise<void>) => { setBusy(true); try { await fn(); } finally { setBusy(false); } };
   return (
@@ -777,13 +964,15 @@ function FirebaseSection() {
         <div>
           <strong>Copia en Firebase</strong>
           <span>
-            {WRITER_TEXT[firebaseWriter]}
+            {!internetOnline && firebaseWriter !== 'ready'
+              ? 'Sin Internet: conectate a Internet para activar la copia online.'
+              : WRITER_TEXT[firebaseWriter]}
             {firebaseWriter === 'ready' && firebaseLastAtMs ? ` Última escritura ${new Date(firebaseLastAtMs).toLocaleTimeString()}.` : ''}
           </span>
         </div>
         {(firebaseWriter === 'off' || firebaseWriter === 'error' || firebaseWriter === 'claimed') && (
-          <Button variant="primary" size="sm" loading={busy} onClick={() => void run(activateFirebase)}>
-            {firebaseKeySet ? 'Reintentar' : 'Activar'}
+          <Button variant="primary" size="sm" loading={busy} disabled={!internetOnline} onClick={() => void run(activateFirebase)}>
+            {!internetOnline ? 'Sin Internet' : firebaseKeySet ? 'Reintentar' : 'Activar'}
           </Button>
         )}
         {firebaseWriter === 'ready' && (
@@ -900,16 +1089,14 @@ function PairingPanel() {
 }
 
 /** Modal de sincronización en la copia de Firebase Hosting: no escribe; lleva a la vista remota. */
-function HostedSyncDetails() {
+function HostedSyncDetails({ onClose }: { onClose?: () => void }) {
   return (
     <div className="afr2-page-stack">
+      <CloudSyncCard onClose={onClose} />
       <p className="afr2-help">
         Esta es la copia online de la Web, sin auto conectado. No envía datos: muestra el último estado que publicó
         el auto. Para verlo, vinculá esta compu con el código que aparece en la pantalla del auto.
       </p>
-      <div className="afr2-action-row">
-        <a className="afr2-button afr2-button--primary afr2-button--md" href="#/remoto">Abrir vista remota</a>
-      </div>
     </div>
   );
 }

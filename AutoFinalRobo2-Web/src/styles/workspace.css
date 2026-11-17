@@ -102,7 +102,7 @@ html[data-input="keyboard"] .afr2-chevron { transition: none; }
 .afr2-floating-modal[open] { display: flex; flex-direction: column; align-items: center; }
 /* AFR2-20261110-16: the scrim and blur live on a fixed element inside the dialog (top layer);
  * ::backdrop stays transparent so the page is not darkened twice. */
-.afr2-floating-modal::backdrop { background: transparent; }
+.afr2-floating-modal::backdrop { background: transparent; backdrop-filter: blur(var(--floating-backdrop-blur)); -webkit-backdrop-filter: blur(var(--floating-backdrop-blur)); }
 .afr2-floating-modal__scrim { position: fixed; inset: 0; z-index: 0; background: var(--scrim); backdrop-filter: blur(var(--floating-backdrop-blur)) saturate(1.2); -webkit-backdrop-filter: blur(var(--floating-backdrop-blur)) saturate(1.2); opacity: 0; transition: opacity var(--floating-backdrop-duration) var(--ease-out); }
 .afr2-floating-modal[data-expanded="true"] .afr2-floating-modal__scrim { opacity: 1; }
 .afr2-floating-modal[data-motion="instant"] .afr2-floating-modal__scrim { transition: none; }

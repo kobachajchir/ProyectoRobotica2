@@ -53,9 +53,10 @@ bool Broker::encodeProduct(BrokerRequest &q,JsonObjectConst p) {
         int16_t pwm=p["pwmPct"].as<int32_t>()*255/100;if(!strcmp(dir,"reverse"))pwm=-pwm;if(!strcmp(dir,"stop"))pwm=0;
         q.wireCommand=AFR2_EXT_WHEEL;q.bodyLength=9;q.body[4]=i;afr2_put_u16(q.body+5,pwm);afr2_put_u16(q.body+7,p["durationMs"].as<uint16_t>());
     } else if(!strcmp(c,"robot.mode")) {
-        const char *m=p["mode"]|"";uint8_t value=!strcmp(m,"idle")?0:!strcmp(m,"manual")?1:!strcmp(m,"line-follow")?2:255;
-        if(value==255)return fail();
-        q.wireCommand=AFR2_EXT_MODE;q.bodyLength=5;q.body[4]=value;
+        const char *m=p["mode"]|"";uint8_t value=!strcmp(m,"idle")?0:!strcmp(m,"manual")?1:!strcmp(m,"line-follow")?2:!strcmp(m,"goto")?4:255;
+        if(value==255 || (!p["start"].isNull() && (!p["start"].is<bool>() || (p["start"].as<bool>() && value!=2))))return fail();
+        bool start=p["start"].is<bool>() && p["start"].as<bool>();
+        q.wireCommand=AFR2_EXT_MODE;q.bodyLength=start?6:5;q.body[4]=value;q.body[5]=start?1:0;
     } else if(!strcmp(c,"robot.goto.start")) {
         if(!number(p["xMm"],-5000,5000) || !number(p["yMm"],-5000,5000) ||
            !number(p["thetaMrad"],-3140,3140) || !number(p["maxSpeedMmS"],10,1000))return fail();
@@ -289,7 +290,7 @@ bool Broker::finishProduct(const BrokerRequest &q,const MegaResult &r) {
     } else if(q.wireCommand==AFR2_EXT_TOUCH_UI){out["enabled"]=q.body[0]!=0;out["powerPercent"]=p[9];out["confirmed"]=true;
     } else if((q.wireCommand==AFR2_EXT_DRIVE || q.wireCommand==AFR2_EXT_DRIVE_PWM)){out["accepted"]=true;
     } else if(q.wireCommand==AFR2_EXT_WHEEL || q.wireCommand==AFR2_EXT_GOTO){f["status"]="accepted";out["accepted"]=true;
-    } else if(q.wireCommand==AFR2_EXT_MODE){out["confirmed"]=true;if(q.body[4]==0){productOrigin_=0;publishStatus();}
+    } else if(q.wireCommand==AFR2_EXT_MODE){out["confirmed"]=true;if(q.body[4]==0 || q.bodyLength==5){productOrigin_=0;publishStatus();}
     /* AFR2-20261111-08: respuestas del recorrido GOTO local. */
     } else if(q.wireCommand==AFR2_EXT_ROUTE_BEGIN){out["token"]=afr2_get_u32(p+9);out["count"]=p[13];
     } else if(q.wireCommand==AFR2_EXT_ROUTE_LEG){out["token"]=afr2_get_u32(p+9);out["index"]=p[13];out["loaded"]=p[14];

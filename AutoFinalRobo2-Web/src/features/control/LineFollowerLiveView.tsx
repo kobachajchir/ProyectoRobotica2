@@ -5,28 +5,16 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { CanvasTexture, RepeatWrapping, SRGBColorSpace, type Group } from 'three';
-import { SimulationViewport } from '../../components/three/SimulationViewport';
+import { SimulationViewport, SimulationZoom } from '../../components/three/SimulationViewport';
 import { ModelSpinner } from '../../components/three/ModelSpinner';
 import { useRobotModel } from '../../components/three/RobotModel';
 import { SimulationRobot } from '../collector/SimulationModel';
-import { LINE_TAPE_DEFAULT_MM, LINE_TAPE_MAX_MM, LINE_TAPE_MIN_MM, useSensorBar } from '../sensors/LineTopView';
+import { useSensorBar } from '../sensors/LineTopView';
+import { clampTape, useLineTapeMm } from './lineTape';
 import { analyzeLine, LINE_CENTER_TEXT, LINE_HISTORY_MS, type LineAnalysis, type LineSample } from '../sensors/lineAnalysis';
 import { useConnection } from '../connection/ConnectionContext';
 
 const ZERO_WHEELS = { fl: 0, fr: 0, rl: 0, rr: 0 };
-/** Misma preferencia que Sensores → Línea IR (solo dibujo, por navegador). */
-export const LINE_TAPE_STORAGE_KEY = 'afr2.sensors.lineTapeMm';
-const clampTape = (mm: number) => Math.max(LINE_TAPE_MIN_MM, Math.min(LINE_TAPE_MAX_MM, mm));
-
-export function readLineTapeMm(): number {
-  try {
-    const value = Number(localStorage.getItem(LINE_TAPE_STORAGE_KEY));
-    return Number.isFinite(value) && value > 0 ? clampTape(value) : LINE_TAPE_DEFAULT_MM;
-  } catch { return LINE_TAPE_DEFAULT_MM; }
-}
-export function storeLineTapeMm(mm: number) {
-  try { localStorage.setItem(LINE_TAPE_STORAGE_KEY, String(clampTape(mm))); } catch { /* sin almacenamiento */ }
-}
 
 function readColors() {
   const css = getComputedStyle(document.documentElement), get = (k: string) => css.getPropertyValue(k).trim();
@@ -46,7 +34,7 @@ function liveTarget(line: LineAnalysis | null, spacing: number, lastSide: number
   return { x, yaw };
 }
 
-function Scene({ source, line, tapeMm, moving, speedMmS, onPreviewBits }: SceneProps) {
+function Scene({ source, line, tapeMm, moving, speedMmS, onPreviewBits, distance = 1 }: SceneProps & { distance?: number }) {
   const bar = useSensorBar();
   const { size: model } = useRobotModel();
   const { camera, size, invalidate } = useThree();
@@ -56,7 +44,8 @@ function Scene({ source, line, tapeMm, moving, speedMmS, onPreviewBits }: SceneP
   const state = useRef({ x: 0, yaw: 0, scroll: 0, t: 0, lastSide: 0, bits: -1 });
   const tapeM = clampTape(tapeMm) / 1000;
   // Trama del piso: un punto y una cruz tenue cada 4 cm, en una textura que se desplaza (sin mallas por marca).
-  const FLOOR_SIZE = 1.6, FLOOR_TILE = .04;
+  // AFR2-20261117-16: 4 m para que la vista completa alejada no muestre el borde en pantallas anchas.
+  const FLOOR_SIZE = 4, FLOOR_TILE = .04;
   const floorTexture = useMemo(() => {
     const canvas = document.createElement('canvas'); canvas.width = canvas.height = 64;
     const g = canvas.getContext('2d')!;
@@ -75,9 +64,10 @@ function Scene({ source, line, tapeMm, moving, speedMmS, onPreviewBits }: SceneP
     // Entra el auto completo más su recorrido lateral (±2,8 sensores) a ambos lados.
     const viewW = Math.max(.34, model.x + bar.spacing * 7), viewH = Math.max(model.z, bar.length) * 1.35;
     camera.position.set(0, 5, bar.z * .4); camera.up.set(0, 0, -1); camera.lookAt(0, 0, bar.z * .4);
-    camera.zoom = Math.min(size.width / viewW, size.height / viewH);
+    // AFR2-20261117-16: `distance` < 1 aleja la cámara (vista completa: se ve más cinta alrededor del auto).
+    camera.zoom = Math.min(size.width / viewW, size.height / viewH) * distance;
     camera.updateProjectionMatrix(); invalidate();
-  }, [camera, size.width, size.height, bar, model, invalidate]);
+  }, [camera, size.width, size.height, bar, model, invalidate, distance]);
   useEffect(() => { invalidate(); }, [line, tapeMm, moving, source, invalidate]);
   useEffect(() => {
     if (line?.detected && !line.horizontal && line.position) state.current.lastSide = Math.sign(line.position);
@@ -129,11 +119,11 @@ function Scene({ source, line, tapeMm, moving, speedMmS, onPreviewBits }: SceneP
   const crossed = source === 'live' && !!line?.horizontal;
   return <>
     <mesh position={[0, .0004, bar.z * .4]} rotation={[-Math.PI / 2, 0, 0]}>
-      <planeGeometry args={[1.6, 1.6]} /><meshBasicMaterial color={colors.track} />
+      <planeGeometry args={[FLOOR_SIZE, FLOOR_SIZE]} /><meshBasicMaterial color={colors.track} />
     </mesh>
     {/* Cinta fija en el centro, ancho configurado en escala real. */}
     <mesh position={[0, .001, bar.z * .4]} rotation={[-Math.PI / 2, 0, 0]}>
-      <planeGeometry args={[tapeM, 1.6]} /><meshBasicMaterial color={colors.tape} />
+      <planeGeometry args={[tapeM, FLOOR_SIZE]} /><meshBasicMaterial color={colors.tape} />
     </mesh>
     {crossed && <mesh position={[0, .0012, bar.z]} rotation={[-Math.PI / 2, 0, 0]}>
       <planeGeometry args={[.6, tapeM]} /><meshBasicMaterial color={colors.tape} />
@@ -160,13 +150,13 @@ function ModelReady() { useRobotModel(); return null; }
  * Escenario completo: usa la lectura IR del contexto (la refresca el panel del seguidor) y cae a la vista previa
  * cuando no hay auto o la lectura no es válida.
  */
-export function LineFollowerLiveView({ tall = false, speedMmS = 80, showTapeField = true }: { tall?: boolean; speedMmS?: number; showTapeField?: boolean }) {
+/** AFR2-20261117-12: `fill` ocupa todo el contenedor (visor de seguimiento a pantalla completa). */
+export function LineFollowerLiveView({ tall = false, fill = false, speedMmS = 80 }: { tall?: boolean; fill?: boolean; speedMmS?: number }) {
   const { wsState, megaLinkState, sensors, robotState } = useConnection();
   const online = wsState === 'ready' && megaLinkState === 'ready';
   const live = online && sensors.line.valid && sensors.line.bits !== null;
   const source: Source = live ? 'live' : 'preview';
-  const [tapeMm, setTapeMm] = useState(readLineTapeMm);
-  const [tapeText, setTapeText] = useState(() => String(readLineTapeMm()));
+  const tapeMm = useLineTapeMm();
   const [previewBits, setPreviewBits] = useState(0);
   const history = useRef<LineSample[]>([]);
   const liveBits = live ? sensors.line.bits! : null;
@@ -183,19 +173,19 @@ export function LineFollowerLiveView({ tall = false, speedMmS = 80, showTapeFiel
   const bits = live ? liveBits! : previewBits;
   const shown = live ? line : analyzeLine(previewBits, []);
   const moving = robotState?.mode === 'line-follow' && robotState.stopped === false;
-  const commitTape = (text: string) => {
-    setTapeText(text);
-    const value = Number(text);
-    if (text.trim() !== '' && Number.isFinite(value) && value >= LINE_TAPE_MIN_MM && value <= LINE_TAPE_MAX_MM) { setTapeMm(value); storeLineTapeMm(value); }
-  };
   const label = live ? (shown ? LINE_CENTER_TEXT[shown.center] : 'Sin lectura IR válida') : 'Vista previa local: el auto zigzaguea sobre la cinta';
+  // AFR2-20261117-17: en la vista completa, mismo selector de zoom que los simuladores. 100 % = encuadre ajustado;
+  // arranca en 60 % (el zoom por defecto de la vista completa) y va de 10 % a 250 %.
+  const [zoomPercent, setZoomPercent] = useState(60);
 
-  return <div className="afr2-line-live" data-tall={tall ? 'true' : 'false'} data-source={source}>
+  return <div className="afr2-line-live" data-tall={tall ? 'true' : 'false'} data-fill={fill ? 'true' : undefined} data-source={source}>
     <div className="afr2-line-live__stage" role="img" aria-label={label}>
-      <SimulationViewport floorSize={1.6} camera={{ position: [0, 5, 0], zoom: 600, near: .001, far: 50 }}
+      <SimulationViewport floorSize={4} camera={{ position: [0, 5, 0], zoom: 600, near: .001, far: 50 }}
+        overlay={fill ? <SimulationZoom percent={zoomPercent} info="Escala real · trama cada 4 cm"
+          onChange={value => setZoomPercent(Math.max(10, Math.min(250, Math.round(value))))} /> : undefined}
         fallback={<p className="afr2-help">Sin 3D en este dispositivo.</p>}>
         <Suspense fallback={null}>
-          <Scene source={source} line={line} tapeMm={tapeMm} moving={moving} speedMmS={speedMmS} onPreviewBits={setPreviewBits} />
+          <Scene source={source} line={line} tapeMm={tapeMm} moving={moving} speedMmS={speedMmS} onPreviewBits={setPreviewBits} distance={fill ? zoomPercent / 100 : 1} />
         </Suspense>
       </SimulationViewport>
       <Suspense fallback={<span className="afr2-line-live__loading"><ModelSpinner size="sm" label="" /></span>}><ModelReady /></Suspense>
@@ -209,10 +199,5 @@ export function LineFollowerLiveView({ tall = false, speedMmS = 80, showTapeFiel
       </div>
       <p className="afr2-line-live__caption">{label}</p>
     </div>
-    {showTapeField && <label className="afr2-line-live__tape">Ancho de la cinta (mm)
-      <input className="afr2-glass-field" type="number" inputMode="numeric" min={LINE_TAPE_MIN_MM} max={LINE_TAPE_MAX_MM} step={1}
-        value={tapeText} onChange={event => commitTape(event.target.value)} onBlur={() => setTapeText(String(tapeMm))} />
-      <span className="afr2-help">Escala real; se comparte con Sensores → Línea IR. Solo cambia el dibujo.</span>
-    </label>}
   </div>;
 }

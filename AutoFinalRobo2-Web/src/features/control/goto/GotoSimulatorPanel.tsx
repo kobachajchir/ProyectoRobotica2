@@ -6,6 +6,8 @@ import { Chevron } from '../../../components/ui/Chevron';
 import { StatusNotice } from '../../../components/ui/StatusNotice';
 import { UiIcon } from '../../../components/ui/UiIcon';
 import { useConnection } from '../../connection/ConnectionContext';
+import { useSelectRobotMode } from '../../connection/armedMode';
+import { useRobotModeState } from '../../connection/useRobotMode';
 import { ControlMap } from '../ControlMap';
 import type { MapPoint, MapWaypoint } from '../controlMapTypes';
 import { createSequenceUid } from '../sequences/mecanumKinematics';
@@ -37,6 +39,9 @@ export function GotoSimulatorPanel({ commands, onCommandsChange, speedMmS, onSpe
 }) {
   const runner = useGotoRouteRunner();
   const { stopRecord, setOperationActivity } = useConnection();
+  const { mode: robotMode } = useRobotModeState();
+  const selectMode = useSelectRobotMode();
+  const [switching, setSwitching] = useState(false);
   const [direction, setDirection] = useState<GotoDirection | 'point'>('forward');
   const [metres, setMetres] = useState('2');
   const [xMetres, setXMetres] = useState('0');
@@ -338,8 +343,14 @@ export function GotoSimulatorPanel({ commands, onCommandsChange, speedMmS, onSpe
       <SyncSimulatorButton simulator="goto" data={{ commands, speedMmS, orientation }} disabled={playing} /></div>
     {sendPanel}
   </div>;
+  // AFR2-20261117-11: los recorridos requieren el modo Ir; el banner lo cambia con un toque.
+  const modeBanner = robotMode !== 'none' && robotMode !== 'goto' ? <StatusNotice tone="info" title="Para usar Ir, el auto debe estar en modo Ir"
+    action={<Button variant="primary" size="sm" disabled={switching || robotRunning} onClick={() => { setSwitching(true); void selectMode('goto').finally(() => setSwitching(false)); }}>Cambiar a «Ir»</Button>}>
+    Hoy está en otro modo. Cambiarlo prepara al auto para los recorridos, pero no lo mueve hasta que envíes uno.
+  </StatusNotice> : null;
   return <div className="afr2-goto-workspace">
-    <ControlMap compact title="Simulador GOTO" initialView="top" requestedMotion={null} onViewChange={() => {}}
+    {modeBanner}
+    <ControlMap compact title="Simulador de Ir" initialView="top" requestedMotion={null} onViewChange={() => {}}
       toolPanel={tools}
       routePanel={<GotoCommandList commands={commands} activeIndex={robotTracking ? (robotRunning ? Math.min(commands.length - 1, robotCompleted) : null) : activeIndex} completed={robotTracking ? robotCompleted : completed} playing={playing} follow={follow} onFollow={setFollow} onReorder={reorder} onRemove={remove} onSelect={id => { if (!playing) { setTool('edit'); setSelected({ id, part: 'end' }); setPendingControl(null); } }} selectedId={selected?.id} />}
       sidebarPanel={playback} waypoints={waypoints} plannedRoute={plannedRoute} onSelectPoint={selectPoint} pickingDisabled={playing} drawing={tool === 'pencil'} onDrawStroke={drawStroke}

@@ -225,7 +225,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </FloatingModal>
         {/* AFR2-20261117-01: modal de sincronización web, con el mismo formato que Red y Batería. */}
         <FloatingModal open={modal === 'sync'} origin={origin} onClose={() => setModal(value => value === 'sync' ? null : value)} title="Sincronización web" description="Copia online de la configuración y el estado del auto">
-          <CloudSyncDetails />
+          <CloudSyncDetails onClose={() => setModal(null)} />
         </FloatingModal>
         <FloatingModal open={modal === 'battery'} origin={origin} onClose={() => setModal(value => value === 'battery' ? null : value)} title="Batería" description="Voltaje medido por el controlador">
           <BatteryDetails />

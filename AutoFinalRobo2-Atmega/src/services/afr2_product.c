@@ -68,7 +68,7 @@ uint8_t Afr2Product_ClearFault(Afr2Product *p) {
     /* Keep the odometry interval paired with previous_counts, including the
      * time stopped in fault. No applied PWM can produce a late-motion fault
      * on recovery; the next task consumes those counts with the real dt. */
-    p->fault=0;p->mode=AFR2_IDLE;p->late_burst=0;
+    p->fault=0;p->mode=p->selected_mode;p->late_burst=0;
     memset(p->hp_score,0,sizeof(p->hp_score));
     memset(p->integral,0,sizeof(p->integral));memset(p->last_error,0,sizeof(p->last_error));
     return AFR2_OK;
@@ -78,12 +78,22 @@ uint8_t Afr2Product_HaltMotion(void *ctx) {
     if(p->sequence.state>=1 && p->sequence.state<=3)p->sequence.state=5;
     memset(p->pwm,0,sizeof(p->pwm));memset(p->target,0,sizeof(p->target));
     memset(p->integral,0,sizeof(p->integral));memset(p->last_error,0,sizeof(p->last_error));
-    p->stopped=1;p->mode=p->fault?AFR2_FAULT:p->manual_selected?AFR2_MANUAL:AFR2_IDLE; /* AFR2-20261111-04 */p->origin=AFR2_SOURCE_NONE;p->local_timeout_ms=0;p->web_seen=0;
+    p->stopped=1;p->mode=p->fault?AFR2_FAULT:p->selected_mode; /* AFR2-20261117-11: conserva el modo seleccionado */p->origin=AFR2_SOURCE_NONE;p->local_timeout_ms=0;p->web_seen=0;
     /* AFR2-20261106-34: una detencion de enlace/ESP con el auto ya detenido no es movimiento que abortar.
      * Antes borraba la medicion de pulsos por vuelta (la rueda se gira a mano) y la pantalla quedaba en 0. */
     if(p->hall_measuring && !was_stopped){p->hall_measuring=0;p->hall_bad=1;p->hall_delta=0;}
     if(p->goto_state==1)p->goto_state=3;
     return 1; /* Confirms output/consigna shutdown, not measured zero wheel speed. */
+}
+uint8_t Afr2Product_SetMode(Afr2Product *p,uint8_t mode) {
+    if(mode!=AFR2_IDLE && mode!=AFR2_MANUAL && mode!=AFR2_LINE && mode!=AFR2_GOTO)return AFR2_BAD;
+    if(mode==AFR2_IDLE){p->selected_mode=AFR2_IDLE;Afr2Product_Stop(p);return p->mode==AFR2_IDLE?AFR2_OK:AFR2_FAILED;}
+    if(!p->stopped || Afr2Head_State()->running || p->hall_measuring || (p->sequence.state>=1 && p->sequence.state<=3))Afr2Product_Stop(p);
+    if(mode==AFR2_MANUAL)p->fault=0;
+    else if(p->fault)return AFR2_DENIED;
+    p->hall_measuring=0;p->config.motor_ready=1;p->selected_mode=mode;p->mode=mode;p->stopped=1;
+    if(mode==AFR2_LINE)Afr2Head_SetIr(1);
+    return AFR2_OK;
 }
 void Afr2Product_Snapshot(void *ctx,uint32_t now,Afr2LinkSnapshot *s) {
     Afr2Product *p=ctx;s->mode=p->mode>AFR2_FAULT?AFR2_MANUAL:p->mode;s->stopped=p->stopped;s->state_age_ms=now-p->now;
@@ -107,7 +117,7 @@ static uint8_t scale_allowed(const Afr2Product *p,int32_t x,int32_t y,int32_t ya
     return (!x || p->config.odom_scale[x>0?0:1]) && (!y || p->config.odom_scale[y>0?2:3]) &&
         (!yaw || p->config.odom_scale[yaw<0?4:5]);
 }
-uint8_t Afr2Product_Drive(Afr2Product *p,int16_t vx,int16_t vy,int16_t wz,uint16_t ttl) {
+static uint8_t drive_closed_loop(Afr2Product *p,int16_t vx,int16_t vy,int16_t wz,uint16_t ttl) {
     if(Afr2Head_State()->running)return AFR2_BUSY;
     if(p->fault || p->hall_measuring)return AFR2_DENIED;
     if(!p->config.motor_ready || !calibrated(p))return AFR2_UNAVAILABLE;
@@ -120,18 +130,19 @@ uint8_t Afr2Product_Drive(Afr2Product *p,int16_t vx,int16_t vy,int16_t wz,uint16
     int32_t v[4]={vx-vy-turn,vx+vy+turn,vx+vy-turn,vx-vy+turn},peak=1;
     for(uint8_t i=0;i<4;i++)if(abs32(v[i])>peak)peak=abs32(v[i]);
     for(uint8_t i=0;i<4;i++)p->target[i]=(int16_t)(peak>p->config.speed_limit?v[i]*p->config.speed_limit/peak:v[i]);
+    p->command_ms=p->now;p->local_started_ms=p->now;p->test_started_ms=ttl;p->stopped=0;return AFR2_OK;
+}
+uint8_t Afr2Product_Drive(Afr2Product *p,int16_t vx,int16_t vy,int16_t wz,uint16_t ttl) {
+    if(p->selected_mode!=AFR2_MANUAL)return AFR2_DENIED;
+    uint8_t r=drive_closed_loop(p,vx,vy,wz,ttl);if(r)return r;
     if(p->mode==AFR2_GOTO && p->goto_state==1)p->goto_state=3;
-    p->mode=AFR2_MANUAL;p->command_ms=p->now;p->local_started_ms=p->now;p->test_started_ms=ttl;p->stopped=0;return AFR2_OK;
+    p->mode=AFR2_MANUAL;return AFR2_OK;
 }
 /* AFR2-20261109-03: explicit motor permission and interlocks; no automatic fault clear,
  * task cancellation or configuration changes on a PWM request. Hall/HC calibration is not required. */
 uint8_t Afr2Product_PwmStatus(const Afr2Product *p) {
-    if(p->manual_selected)return AFR2_OK; /* AFR2-20261111-04: en Manual se saltan los permisos (ver DrivePwm) */
-    if(p->fault || p->hall_measuring)return AFR2_DENIED;
-    if(!p->config.motor_ready)return AFR2_UNAVAILABLE;
-    if(p->prefs_state==1 || Afr2Head_State()->running ||
-       (p->sequence.state>=1 && p->sequence.state<=3))return AFR2_BUSY;
-    return AFR2_OK;
+    if(p->selected_mode!=AFR2_MANUAL)return AFR2_DENIED; /* AFR2-20261117-11: Manual requerido para botones/panel tactil */
+    return AFR2_OK; /* AFR2-20261111-04: en Manual se saltan los permisos (ver DrivePwm) */
 }
 /* AFR2-20261029-27: explicit open-loop percentages, independent of odometry/HC. */
 uint8_t Afr2Product_DrivePwm(Afr2Product *p,int16_t forward,int16_t strafe,int16_t turn,uint16_t ttl) {
@@ -139,7 +150,7 @@ uint8_t Afr2Product_DrivePwm(Afr2Product *p,int16_t forward,int16_t strafe,int16
     uint8_t permission=Afr2Product_PwmStatus(p);if(permission)return permission;
     /* AFR2-20261111-04: en Manual, lo que estorbe se anula: radar, secuencia o medicion Hall se detienen, el fallo se limpia y
      * los motores se habilitan. STOP, el TTL de la consigna y el corte de 1,5 s sin pulso Web siguen vigentes. */
-    if(p->manual_selected){
+    if(p->selected_mode==AFR2_MANUAL){
         if(Afr2Head_State()->running || p->hall_measuring || p->fault || (p->sequence.state>=1 && p->sequence.state<=3))Afr2Product_Stop(p);
         p->fault=0;p->hall_measuring=0;p->config.motor_ready=1;
     }
@@ -172,16 +183,17 @@ uint8_t Afr2Product_Wheel(Afr2Product *p,uint8_t wheel,int16_t pwm,uint16_t dura
     Afr2Motor_Stop();memset(p->pwm,0,sizeof(p->pwm));memset(p->integral,0,sizeof(p->integral));memset(p->last_error,0,sizeof(p->last_error));
     if(p->goto_state==1)p->goto_state=3;
     memset(p->target,0,sizeof(p->target));p->target[wheel]=pwm;
-    p->manual_selected=0;p->mode=AFR2_WHEEL_TEST;p->stopped=0;p->command_ms=p->now;p->test_started_ms=duration;return AFR2_OK;
+    p->mode=AFR2_WHEEL_TEST;p->stopped=0;p->command_ms=p->now;p->test_started_ms=duration;return AFR2_OK;
 }
 uint8_t Afr2Product_StartLine(Afr2Product *p) {
+    if(p->selected_mode!=AFR2_LINE)return AFR2_DENIED;
     if(Afr2Head_State()->running)return AFR2_BUSY;
     if(p->fault || p->hall_measuring)return AFR2_DENIED;
     if(!p->config.motor_ready || !p->sensors.line_valid_raw || !calibrated(p))return AFR2_UNAVAILABLE;
     if(p->goto_state==1)p->goto_state=3;
     Afr2Head_SetIr(1);p->sensors.line_valid=1;   /* AFR2-20261108-13: following a line turns its sensors on */
     p->last_line_error=0;p->last_line_ms=p->now;p->line_cross_ms=0;
-    p->manual_selected=0;p->mode=AFR2_LINE;p->stopped=0;p->command_ms=p->now;return AFR2_OK;
+    p->mode=AFR2_LINE;p->stopped=0;p->command_ms=p->now;return AFR2_OK;
 }
 uint8_t Afr2Product_StartGoto(Afr2Product *p,int32_t x,int32_t y) {
     return Afr2Product_StartGotoFull(p,x,y,0,p->config.speed_limit);
@@ -201,7 +213,7 @@ uint8_t Afr2Product_StartGotoFull(Afr2Product *p,int32_t x,int32_t y,int16_t the
     if(p->mission_yaw>3142)p->mission_yaw-=6283;
     if(p->mission_yaw<-3142)p->mission_yaw+=6283;
     p->mission_speed=speed;
-    p->manual_selected=0;p->target_x=x;p->target_y=y;p->mission_started_ms=p->now;p->mode=AFR2_GOTO;
+    p->target_x=x;p->target_y=y;p->mission_started_ms=p->now;p->mode=AFR2_GOTO;
     p->goto_state=1;p->stopped=0;return AFR2_OK;
 }
 void Afr2Product_HallBegin(Afr2Product *p) {
@@ -351,7 +363,7 @@ void Afr2Product_Task(Afr2Product *p,uint32_t now) {
     odometry(p,dt);
     if(p->fault){Afr2Product_Stop(p);return;}
     if(!p->stopped && p->mode!=AFR2_WHEEL_TEST && p->mode!=AFR2_PWM_MANUAL && !calibrated(p)){p->fault=2;Afr2Product_Stop(p);return;}
-    if(p->mode==AFR2_LINE) {
+    if(p->mode==AFR2_LINE && !p->stopped) {
         if(!p->sensors.line_valid){Afr2Product_Stop(p);p->notice=2;return;}
         /* AFR2-20261116-01: cruce transversal completo (5 sensores) sostenido >=150 ms detiene en meta;
          * perdida breve de linea (<=250 ms) mantiene el ultimo giro para recuperar la cinta. */
@@ -370,12 +382,12 @@ void Afr2Product_Task(Afr2Product *p,uint32_t now) {
             wz=(int16_t)((int32_t)error*p->config.line_kp/n);
             p->last_line_error=wz;p->last_line_ms=now;
         }
-        uint8_t mode=p->mode;uint32_t local_timeout_ms=p->local_started_ms;
-        if(Afr2Product_Drive(p,p->config.line_speed,0,wz,500)!=AFR2_OK)Afr2Product_Stop(p);
-        else p->mode=mode;
+        uint32_t local_timeout_ms=p->local_started_ms;
+        if(drive_closed_loop(p,p->config.line_speed,0,wz,500)!=AFR2_OK)Afr2Product_Stop(p);
+        else p->mode=AFR2_LINE;
         p->local_started_ms=local_timeout_ms;
     }
-    if(p->mode==AFR2_GOTO) {
+    if(p->mode==AFR2_GOTO && !p->stopped) {
         if(!p->pose_valid || (uint32_t)(now-p->mission_started_ms)>60000u){p->goto_state=4;Afr2Product_Stop(p);p->notice=2;return;}
         int32_t ex=p->mission_x-p->x_mm,ey=p->mission_y-p->y_mm;
         int32_t eyaw=p->mission_yaw-p->yaw_mrad;
@@ -403,7 +415,7 @@ void Afr2Product_Task(Afr2Product *p,uint32_t now) {
         int32_t peak=abs32(vx)+abs32(vy)+(int32_t)abs32(wz)*p->config.radius_sum_mm/1000;
         if(peak>p->mission_speed){vx=(int32_t)vx*p->mission_speed/peak;vy=(int32_t)vy*p->mission_speed/peak;wz=(int32_t)wz*p->mission_speed/peak;}
         uint32_t local_timeout_ms=p->local_started_ms;
-        if(Afr2Product_Drive(p,vx,vy,wz,500)!=AFR2_OK){Afr2Product_Stop(p);return;}
+        if(drive_closed_loop(p,vx,vy,wz,500)!=AFR2_OK){Afr2Product_Stop(p);return;}
         p->local_started_ms=local_timeout_ms;p->mode=AFR2_GOTO;p->goto_state=1;
     }
     /* AFR2-20261106-13: HC-SR04 is telemetry, not a motion stop condition. */

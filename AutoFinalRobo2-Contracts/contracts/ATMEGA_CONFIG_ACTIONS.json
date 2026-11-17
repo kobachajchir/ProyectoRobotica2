@@ -581,6 +581,17 @@
       "unit": "0 Cerrar (defecto) / 1 Desactivar funcion",
       "section": "wifi",
       "note": "AFR2-20261116-01. Solo la pantalla 0x03005B tras 5 intentos fallidos; 0 cierra el aviso y conserva activa la funcion, 1 genera el trabajo op 17 para desactivar la sincronizacion."
+    },
+    {
+      "id": 126,
+      "symbol": "AFR2_A_SYNC_TOGGLE",
+      "config_access": false,
+      "label": "Sincronizacion web",
+      "min": 0,
+      "max": 1,
+      "unit": "0 Desactivar / 1 Activar (solo si hay Internet)",
+      "section": "wifi",
+      "note": "AFR2-20261117-10. Tarjeta rapida 8 (indice 7) en 0x010003 Controles rapidos; activa (op 18) solo cuando internet_ok=1 o desactiva (op 17) desde el encoder fisico."
     }
   ],
   "retired_action_ids": [

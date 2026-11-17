@@ -3,6 +3,7 @@
 #pragma once
 #include <ESPAsyncWebServer.h>
 #include <ESP8266WiFi.h>
+#include <ESPAsyncTCP.h>
 #include "mega_link.h"
 #include "wifi_service.h"
 struct BrokerRequest {
@@ -121,11 +122,14 @@ private:
     uint16_t networkRevision_=0,networkDropped_=0;
     uint8_t networkHead_=0,networkTail_=0,networkCount_=0,networkPage_=0;
     bool networkLinked_=false,networkPending_=true,networkServer_=false;
-    bool syncEnabled_=true,syncOnline_=false,syncFailNotice_=false;
+    bool syncEnabled_=false,syncOnline_=false,syncFailNotice_=false;
     uint8_t syncFailCount_=0;
     uint16_t syncDirtyMask_=0x01ffu;
-    uint32_t syncRev_=1,syncAckRev_=0,syncLastTryAt_=0,syncLastOkAt_=0,syncIntervalMs_=5000;
+    uint32_t syncRev_=1,syncAckRev_=0,syncLastTryAt_=0,syncLastOkAt_=0,syncIntervalMs_=5000,syncConfigRev_=0;
     char syncEndpoint_[97]={};
+    AsyncClient internetProbe_;
+    bool internetProbeInit_=false,internetProbeBusy_=false,espInternetOk_=false,webInternetKnown_=false,webInternetOk_=false,internetOk_=false;
+    uint32_t internetProbeAt_=0,internetProbeStartedAt_=0,webInternetAt_=0;
     /* AFR2-20261117-05: clave de la copia web (cache de /config/sync.key) y codigo de vinculacion pendiente
      * para el OLED (SYNC_PAIR 0x57). */
     char syncKey_[49]={},pairCode_[8]={};
@@ -133,6 +137,8 @@ private:
     uint8_t pairTtl_=0;
     uint32_t pairUntil_=0;
     static bool validSyncKey(const char *key);
+    void recomputeInternet(uint32_t now);
+    void tickInternetProbe(uint32_t now);
     void syncStatus(JsonObject out) const;
     void syncLayers(JsonObject out,bool full,bool includeSimulators) const;
     void noteSyncAttempt(bool ok,uint32_t ackRev=0);

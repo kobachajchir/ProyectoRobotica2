@@ -14,6 +14,7 @@ import { collectCube, cubeReach, driveVector, halt, initialCollector, manualGras
   PHASE_LABELS, setJoint, setManualWheels, startCollection, startManualScan, COLLECTOR_MIN_BOXES, COLLECTOR_MAX_BOXES } from './collectorSimulation';
 import { useCollector } from './CollectorContext';
 import { SimulationMatrix } from './SimulationMatrix';
+import { FloatingMathPanel } from './FloatingMathPanel';
 import { CollectorScene, type SceneTool, type SceneView } from './CollectorScene';
 import { SavedArmPointsPanel } from './SavedArmPointsPanel';
 import { robotModel, modelProblems } from './robotModel';
@@ -186,6 +187,7 @@ export function SimulationWorkspace() {
   const [revision, setRevision] = useState(0), [task, setTask] = useState('mission');
   const [matrixExpanded, setMatrixExpanded] = useState(false);
   const mathId = useId();
+  // AFR2-20261117-13: la matemática es un panel flotante; al cerrarlo el foco vuelve al botón.
   const toggleMath = () => {
     if (matrixExpanded) document.getElementById(`${mathId}-toggle`)?.focus();
     setMatrixExpanded(v => !v);
@@ -204,10 +206,10 @@ export function SimulationWorkspace() {
     <header className="afr2-sim-workspace-heading">
       <div><span className="afr2-sim-eyebrow">Entorno virtual · escala real</span><h2>{armPanel ? 'Brazo robótico' : carOnly ? 'Auto mecanum' : 'Auto y brazo'}</h2></div>
       <div className="afr2-collector-actions"><span className="afr2-sim-state" data-busy={busy || points.calculating}>{points.calculating ? 'Calculando recorrido' : busy ? 'En movimiento' : 'Listo para explorar'}</span>
-        <Button id={`${mathId}-toggle`} size="sm" aria-expanded={matrixExpanded} aria-controls={mathId} onClick={toggleMath}>Matemática</Button>
+        <Button id={`${mathId}-toggle`} size="sm" aria-expanded={matrixExpanded} aria-pressed={matrixExpanded} aria-controls={matrixExpanded ? mathId : undefined} onClick={toggleMath}>{matrixExpanded ? 'Ocultar matemáticas' : 'Mostrar matemáticas'}</Button>
       </div>
     </header>
-    <div className="afr2-collector-layout" data-matrix-open={matrixExpanded}>
+    <div className="afr2-collector-layout">
     <div className="afr2-collector-main">
       <section className="afr2-collector-stage" aria-label={armPanel ? 'Simulador del brazo' : carOnly ? 'Simulador del auto' : 'Simulador del conjunto'}>
         <div className="afr2-collector-toolbar">
@@ -244,9 +246,9 @@ export function SimulationWorkspace() {
           { id: 'drive', label: 'Auto', content: <RobotControls /> },
         ]} />}
     </aside>
-    <aside id={mathId} className="afr2-sim-math-side" aria-label="Matemática del modelo" hidden={!matrixExpanded}>
-      <SimulationMatrix expanded={matrixExpanded} onToggle={toggleMath} />
-    </aside>
+    <FloatingMathPanel open={matrixExpanded} onClose={toggleMath} title="Matemática en vivo" subtitle="Transformaciones del modelo">
+      <div id={mathId}><SimulationMatrix /></div>
+    </FloatingMathPanel>
     </div>
   </section>;
 }

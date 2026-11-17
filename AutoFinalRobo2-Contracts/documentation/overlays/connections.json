@@ -625,9 +625,23 @@
       "state": "source-integrated-uncompiled-runtime-unverified",
       "note": "Local six-direction odometry scales; linked AVR/TS numeric editors; explicit EEPROM save and mandatory Yes/No; no CMD changes.",
       "changeId": "AFR2-20261111-06"
+    },
+    {
+      "id": "shared:flow/cloud-sync-card-internet",
+      "path": [
+        "web:cloud-sync-card",
+        "ws:sync.configure",
+        "esp:broker-internet-probe",
+        "wire:0x30-op17-op18",
+        "wire:0x53-p4-bits2-3",
+        "shared:screen/010003"
+      ],
+      "state": "source-integrated-uncompiled-runtime-unverified",
+      "note": "Internet-gated sync card in Web topbar modal and ATmega Controles rapidos (card 8/9, AFR2_A_SYNC_TOGGLE=126); real TCP/HTTPS probes block activation and display Sin Internet when offline.",
+      "changeId": "AFR2-20261117-10"
     }
   ],
-  "updated_by": "AFR2-20261109-05",
+  "updated_by": "AFR2-20261117-10",
   "dashboard_20261030_01": {
     "screen": "0x010001",
     "atmega": "src/ui/afr2_screens.c:render_dashboard",

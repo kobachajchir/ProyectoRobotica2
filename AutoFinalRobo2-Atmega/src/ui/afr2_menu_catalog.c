@@ -47,7 +47,7 @@ static const Afr2MenuItem items[] PROGMEM={
  { "Volver", AFR2_N_CONTROL, 0, 0, 0,0,0 },
  { "Reposo/detenido", 255, AFR2_A_STOP, 0, 0,0,0 },
  { "Seguir linea", AFR2_N_LINE_MODE, 0, 0, 0,0,0 },
- { "GOTO relativo", AFR2_N_GOTO_MENU, 0, 0, 0,0,0 },
+ { "Ir", AFR2_N_GOTO_MENU, 0, 0, 0,0,0 },
  { "Volver", AFR2_N_MENU, 0, 0, 0,0,0 },
  { "Estado/requisitos", AFR2_N_LINE_REQ, 0, 0, 0,0,0 },
  { "Velocidad", 255, AFR2_A_LINE_SPEED, 0, 10, 500, 10 },
@@ -247,6 +247,8 @@ static const Afr2MenuItem extra[] PROGMEM={
  { "Ultrasonido", 255, AFR2_A_US_TOGGLE, 0, 0,0,0 },
  /* AFR2-20261108-13: extra[49], Controles rapidos Linea = sensores IR. */
  { "Sensores de linea", 255, AFR2_A_IR_TOGGLE, 0, 0,0,0 },
+ /* AFR2-20261117-10: extra[50], Controles rapidos Sincronizacion. */
+ { "Sincronizacion", 255, AFR2_A_SYNC_TOGGLE, 0, 0,0,0 },
 };
 /* AFR2-20261030-07: explicit reorganized menus; old resource offsets retained. */
 static const Afr2MenuItem reform[] PROGMEM={
@@ -393,12 +395,12 @@ static const Afr2MenuItem motorTrim[] PROGMEM={
  { "Escala motor RR",255,AFR2_A_MOTOR_TRIM_RR,0,500,1500,5 },
  { "Volver",AFR2_N_CALIB,0,0,0,0,0 },
 };
-/* AFR2-20261117-04: one selector shared by Estado and the Modo quick card. */
+/* AFR2-20261117-04 / AFR2-20261117-11: one selector shared by Estado and the Modo quick card. */
 static const Afr2MenuItem robotModes[] PROGMEM={
  { "Reposo",255,AFR2_A_QUICK_MODE,0,0,0,0 },
  { "Manual",255,AFR2_A_QUICK_MODE,1,0,0,0 },
- { "Seguidor de linea",AFR2_N_LINE_MODE,0,0,0,0,0 },
- { "Ir",AFR2_N_GOTO_MENU,0,0,0,0,0 },
+ { "Seguir linea",AFR2_N_LINE_MODE,AFR2_A_QUICK_MODE,2,0,0,0 },
+ { "Ir",AFR2_N_GOTO_MENU,AFR2_A_QUICK_MODE,4,0,0,0 },
  { "Volver",AFR2_N_MENU,0,0,0,0,0 },
 };
 static const Afr2MenuNode nodes[] PROGMEM={
@@ -413,11 +415,11 @@ static const Afr2MenuNode nodes[] PROGMEM={
  { "Control manual", AFR2_N_MENU, 0, 5, 0x4042u, 0x30008UL },
  { "Mecanum", AFR2_N_CONTROL, 0, 12, 27, 0x30009UL },
  { "Modo de robot", AFR2_N_MENU, 0, 5, 39, 0x3000aUL },
- { "Seguimiento linea", AFR2_N_MODES, 0, 5, 0x402cu, 0x3000bUL },
+ { "Seguir linea", AFR2_N_MODES, 0, 5, 0x402cu, 0x3000bUL },
  { "Requisitos linea", AFR2_N_LINE_MODE, 1, 1, 49, 0x3000cUL },
- { "GOTO relativo", AFR2_N_MODES, 0, 8, 0x4037u, 0x3000dUL },
+ { "Ir", AFR2_N_MODES, 0, 8, 0x4037u, 0x3000dUL },
  { "Revisar objetivo", AFR2_N_GOTO_MENU, 1, 1, 59, 0x3000eUL },
- { "Resultado GOTO", AFR2_N_GOTO_MENU, 1, 1, 60, 0x3000fUL },
+ { "Resultado Ir", AFR2_N_GOTO_MENU, 1, 1, 60, 0x3000fUL },
  { "Odometria", AFR2_N_GOTO_MENU, 1, 1, 61, 0x30010UL },
  { "Pruebas", AFR2_N_MENU, 0, 9, 0x4008u, 0x30011UL }, /* AFR2-20261108-02: sin "Hall una vuelta"; AFR2-20261111-02: Pruebas examen primera */
  { "Motor individual", AFR2_N_TESTS, 0, 6, 0x4031u, 0x30012UL },
@@ -460,7 +462,7 @@ static const Afr2MenuNode nodes[] PROGMEM={
  { "Guardar cambios", AFR2_N_HALL_TEST, 1, 1, 85, 0x30038UL },
  { "Bateria", AFR2_N_SYSTEM, 0, 3, 0x801bu, 0x30039UL },
  { "Medicion bateria", AFR2_N_BATTERY, 1, 1, 0x801eu, 0x3003aUL },
- { "Controles rapidos", AFR2_N_HOME, 1, 8, 0x801fu, 0x10003UL },
+ { "Controles rapidos", AFR2_N_HOME, 1, 9, 0x801fu, 0x10003UL },
  { "Opciones radar", AFR2_N_RADAR_VIEW, 0, 2, 0x402au, 0x3003bUL },
  { "Alcance grafico", AFR2_N_RADAR_OPTIONS, 0, 4, 0x8027u, 0x3003cUL },
  { "Modo de robot", AFR2_N_QUICK, 0, 5, 0x802cu, 0x3003dUL },
@@ -529,8 +531,8 @@ void Afr2Menu_Item(uint8_t node,uint8_t index,Afr2MenuItem *out) {
     if(node==AFR2_N_TESTS && index==1){memset(out,0,sizeof(*out));strcpy_P(out->label,PSTR("Prueba Hall"));out->target=AFR2_N_HALL_LIVE;return;}
     if(n.first&0x2000u){memcpy_P(out,&wifiReform[(n.first&0x1fffu)+index],sizeof(*out));return;}
     if(n.first&0x4000u){memcpy_P(out,&reform[(n.first&0x3fffu)+index],sizeof(*out));return;}
-    /* AFR2-20261108-12: orden Modo, Motores, Ultrasonido, Radar, Servo, Linea, Rastro, Ajustes. */
-    if(node==AFR2_N_QUICK){static const uint8_t map[8] PROGMEM={43,33,48,31,32,49,35,36};
+    /* AFR2-20261117-10: orden Modo, Motores, Ultrasonido, Radar, Servo, Linea, Rastro, Sincronizacion, Ajustes. */
+    if(node==AFR2_N_QUICK){static const uint8_t map[9] PROGMEM={43,33,48,31,32,49,35,50,36};
         memcpy_P(out,&extra[pgm_read_byte(&map[index])],sizeof(*out));return;}
     if(node==AFR2_N_MENU) {
         static const uint8_t map[] PROGMEM={1,7,5,4,6,9,10};

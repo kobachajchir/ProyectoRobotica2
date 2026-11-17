@@ -37,7 +37,7 @@ uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n
         if(n<8 || !afr2_get_u32(d) || !afr2_get_u16(d+4) || d[6]>=AFR2_NETWORK_PAGES || d[7]>32 || n!=8+d[7])return AFR2_RESULT_BAD_REQUEST;
         uint32_t boot=afr2_get_u32(d);uint16_t revision=afr2_get_u16(d+4);uint8_t page=d[6],size=d[7];const uint8_t *text=d+8;
         if(page==0) {
-            if(size!=15 || text[0]>3 || text[1]>1 || text[2]>1 || text[4]>3)return AFR2_RESULT_BAD_REQUEST;
+            if(size!=15 || text[0]>3 || text[1]>1 || text[2]>1 || text[4]>15)return AFR2_RESULT_BAD_REQUEST;
             if((text[1] && (!(text[0]&1u) || !(text[7]|text[8]|text[9]|text[10]))) ||
                (text[2] && (!(text[0]&2u) || !(text[11]|text[12]|text[13]|text[14]))) || (!text[2] && text[3]))return AFR2_RESULT_BAD_REQUEST;
             if(boot!=w->display_boot || revision!=w->display_revision) {
@@ -48,6 +48,7 @@ uint8_t Afr2App_NetworkCommand(Afr2App *a,uint8_t cmd,const uint8_t *d,uint8_t n
             w->display_boot=boot;w->display_revision=revision;w->display_page=0;
             w->mode=text[0];w->sta_connected=text[1];w->ap_active=text[2];w->ap_clients=text[3];
             w->web_ready=text[4]&1u;w->sync_online=(text[4]>>1u)&1u;
+            w->sync_enabled=(text[4]>>2u)&1u;w->internet_ok=(text[4]>>3u)&1u;
             w->rssi=(int16_t)afr2_get_u16(text+5);
             Afr2Debug_NetState(text[0],text[1],text[2],text[3],w->web_ready,boot); /* logs only changes */
             snprintf_P(w->ip,sizeof(w->ip),PSTR("%u.%u.%u.%u"),text[7],text[8],text[9],text[10]);
