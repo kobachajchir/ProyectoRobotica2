@@ -1,3 +1,9 @@
+## AFR2-20261118-04 - 18/11/2026
+
+Loader (`2.5.1`): con la autodetección COM activa, pulsar **Actualizar puertos** (*Operación*) o **Actualizar** (*Monitor serie*, con el puerto cerrado) re-enumera los COM, relanza el sondeo `#AFR2 TAP ?` / `VER` y flasher, re-selecciona el puerto detectado y actualiza la leyenda amarilla con el puerto y las versiones.
+
+Versión de producto: sin cambio. Loader en fuente, sin compilar ni probar. [Ficha](changes/2026-11-18-04-loader-refresco-autodetect.md).
+
 ## AFR2-20261118-03 - 18/11/2026
 
 Auditoría de los modos reales. Web: Conducir y Secuencias reconocen manual-pwm y sequence como Manual (antes bloqueaban el pad al conducir y mostraban «Cambiar a Manual» durante una secuencia). ATmega: Afr2Product_SetMode(IDLE) devuelve OK aunque haya fallo activo.

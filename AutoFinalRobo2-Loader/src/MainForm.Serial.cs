@@ -56,7 +56,7 @@ namespace AFR2Loader
             layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 88)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 210));
             var controls = UiRow();
             serialPorts.Width = 115; serialPorts.DropDownStyle = ComboBoxStyle.DropDownList; controls.Controls.Add(UiField("COM", serialPorts));
-            var refresh = new ActionButton { Text = "Actualizar", Width = 140 }; refresh.Click += (s, e) => { try { RefreshSerialPorts(); } catch (Exception error) { QueueFailure("monitor", error); } }; controls.Controls.Add(refresh);
+            var refresh = new ActionButton { Text = "Actualizar", Width = 140 }; refresh.Click += (s, e) => { try { if (serialCapture != null && serialCapture.Active) return; RefreshPortsAndAutoDetect(); } catch (Exception error) { QueueFailure("monitor", error); } }; controls.Controls.Add(refresh);
             serialOpen = new ActionButton { Text = "Abrir puerto", Width = 155 }; serialOpen.Click += async (s, e) => await OpenSerialMonitor(); controls.Controls.Add(serialOpen);
             serialClose = new ActionButton { Text = "Cerrar puerto", Width = 155 }; serialClose.Click += async (s, e) => { try { await StopSerialMonitor("Cierre manual"); } catch (Exception error) { QueueFailure("monitor", error); } }; controls.Controls.Add(serialClose);
             var readMega = new ActionButton { Text = "Leer ATmega", Width = 175 }; readMega.Click += (s, e) => OpenManualSection("leer-atmega"); controls.Controls.Add(readMega);

@@ -31,9 +31,9 @@ namespace AFR2Loader
             var portGroup = UiRow(); portGroup.WrapContents = true; portGroup.Margin = new Padding(0, 0, 24, 0);
             ports.Width = 115; ports.DropDownStyle = ComboBoxStyle.DropDownList;
             portGroup.Controls.Add(UiField("Puerto", ports)); idleControls.Add(ports);
-            AddButton(portGroup, "Actualizar puertos", RefreshPorts, 165).Margin = new Padding(16, 4, 0, 4);
+            AddButton(portGroup, "Actualizar puertos", RefreshPortsAndAutoDetect, 165).Margin = new Padding(16, 4, 0, 4);
             comAutoDetectHint.Click += (s, e) => OpenGeneralConfigurationTab();
-            new ToolTip().SetToolTip(comAutoDetectHint, "Activa o desactiva la autodetección de puerto COM al iniciar desde Configuración -> General.");
+            new ToolTip().SetToolTip(comAutoDetectHint, "Activa o desactiva la autodetección de puerto COM al iniciar y al actualizar puertos desde Configuración -> General.");
             portGroup.Controls.Add(comAutoDetectHint);
             var targetGroup = UiRow(); targetGroup.WrapContents = false; targetGroup.Margin = new Padding(0);
             deviceTarget.Items.AddRange(new object[] { "ATmega", "ESP" }); deviceTarget.SelectedIndex = 0;

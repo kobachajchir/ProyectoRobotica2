@@ -66,7 +66,7 @@ namespace AFR2Loader
             {
                 AutoSize = true,
                 Dock = DockStyle.Top,
-                Text = "Envía un paquete de consulta no destructivo a cada puerto COM disponible al abrir el programa; rige desde el próximo inicio.",
+                Text = "Envía un paquete de consulta no destructivo a cada puerto COM disponible al abrir el programa y al actualizar puertos.",
                 Margin = new Padding(22, 0, 0, 4),
                 ForeColor = LoaderAppearance.Muted
             };
@@ -85,8 +85,8 @@ namespace AFR2Loader
                     MessageBox.Show(this, "No pude guardar la configuración de autodetección COM:\n" + error.Message, "Configuración", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                UpdateComAutoDetectHint();
-                Log("Autodetectar puerto COM al iniciar: " + (desired ? "activado (aplica en el próximo inicio)." : "desactivado."));
+                if (!desired) { comScanGeneration++; CancelStartupComProbe(); startupComScanning = false; startupComScanCompleted = false; startupDetectedPort = ""; startupDetectedSummary = ""; } UpdateComAutoDetectHint();
+                Log("Autodetectar puerto COM al iniciar: " + (desired ? "activado (aplica al iniciar y al actualizar puertos)." : "desactivado."));
             };
             generalOptionsLayout.Controls.Add(autoDetectComCheck, 0, 0);
             generalOptionsLayout.Controls.Add(autoDetectComNote, 0, 1);
@@ -116,7 +116,7 @@ namespace AFR2Loader
             {
                 bool inGeneral = configurationSection.Length == 0 || configurationSection == "General";
                 bool matchesQuery = String.IsNullOrWhiteSpace(query) ||
-                    "Autodetectar puerto COM al iniciar consulta paquete arranque general".IndexOf(query, StringComparison.CurrentCultureIgnoreCase) >= 0;
+                    "Autodetectar puerto COM al iniciar consulta paquete arranque actualizar puertos general".IndexOf(query, StringComparison.CurrentCultureIgnoreCase) >= 0;
                 generalConfigOptionsPanel.Visible = inGeneral && matchesQuery;
             }
         }

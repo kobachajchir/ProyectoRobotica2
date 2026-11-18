@@ -40,8 +40,9 @@ namespace AFR2Loader
         readonly ToolStripMenuItem configMenu = new ToolStripMenuItem("Perfiles");
         CancellationTokenSource startupComCancel;
         ConcurrentDictionary<string, Task> startupPortTasks;
-        string startupDetectedPort = "", startupDetectedSummary = "";
+        string startupDetectedPort = "", startupDetectedSummary = "", comScanTrigger = "startup";
         bool startupComScanning, startupComScanCompleted, manualPortSelected;
+        int comScanGeneration;
 
         public MainForm(string appDir, string requestedProfile = null, string requestedEspMode = null)
         {
@@ -274,6 +275,30 @@ namespace AFR2Loader
             ports.Items.AddRange(SerialPort.GetPortNames().OrderBy(p => p.Length).ThenBy(p => p).Cast<object>().ToArray());
             if (ports.Items.Contains(selected)) ports.SelectedItem = selected;
             else if (ports.Items.Count > 0) ports.SelectedIndex = 0;
+        }
+        void RefreshPortsAndAutoDetect()
+        {
+            RefreshPortsAndAutoDetectAsync();
+        }
+        async void RefreshPortsAndAutoDetectAsync()
+        {
+            try
+            {
+                RefreshPorts();
+                if (serialCapture == null || !serialCapture.Active) RefreshSerialPorts();
+                if (preferences == null || !preferences.AutoDetectComOnStartup || busy || IsDisposed) return;
+                if (serialCapture != null && serialCapture.Active)
+                {
+                    Log("Autodetección COM al actualizar puertos: cerrá el Monitor serie para consultar los puertos.");
+                    return;
+                }
+                manualPortSelected = false;
+                await StartComDetectionAsync(true);
+            }
+            catch (Exception error)
+            {
+                QueueFailure("puertos", error);
+            }
         }
         bool Confirm(string title, string text, string[] checks)
         {
@@ -529,10 +554,11 @@ namespace AFR2Loader
             else
             {
                 ink = LoaderAppearance.YellowHintInk;
-                if (startupComScanning) text = "Autodetectando COM al iniciar...";
+                bool fromRefresh = comScanTrigger == "refresh";
+                if (startupComScanning) text = fromRefresh ? "Autodetectando COM al actualizar..." : "Autodetectando COM al iniciar...";
                 else if (!String.IsNullOrEmpty(startupDetectedPort)) text = "Autodetectar COM activo · " + startupDetectedPort + " (" + startupDetectedSummary + ")";
-                else if (startupComScanCompleted) text = "Autodetectar COM activo · sin respuesta al iniciar";
-                else text = "Autodetectar COM activo · aplica al iniciar";
+                else if (startupComScanCompleted) text = fromRefresh ? "Autodetectar COM activo · sin respuesta al actualizar" : "Autodetectar COM activo · sin respuesta al iniciar";
+                else text = "Autodetectar COM activo · aplica al iniciar y al actualizar";
             }
             bool textChanged = comAutoDetectHint.Text != text;
             if (textChanged) comAutoDetectHint.Text = text;
@@ -593,10 +619,31 @@ namespace AFR2Loader
             }
             return baud;
         }
-        async Task StartStartupComDetectionAsync()
+        Task StartStartupComDetectionAsync()
         {
-            if (preferences == null || !preferences.AutoDetectComOnStartup || startupComScanning || IsDisposed) return;
+            return StartComDetectionAsync(false);
+        }
+        async Task StartComDetectionAsync(bool fromRefresh)
+        {
+            if (preferences == null || !preferences.AutoDetectComOnStartup || IsDisposed) return;
+            if (!fromRefresh && (startupComScanning || startupComCancel != null)) return;
             if (busy || (serialCapture != null && serialCapture.Active)) return;
+
+            int generation = ++comScanGeneration;
+            if (startupComScanning || startupComCancel != null)
+            {
+                await StopStartupComProbeAsync();
+                if (IsDisposed || generation != comScanGeneration) return;
+                if (preferences == null || !preferences.AutoDetectComOnStartup || busy || (serialCapture != null && serialCapture.Active)) return;
+                if (fromRefresh)
+                {
+                    RefreshPorts();
+                    RefreshSerialPorts();
+                }
+            }
+
+            string scopeLabel = fromRefresh ? "al actualizar puertos" : "al iniciar";
+            comScanTrigger = fromRefresh ? "refresh" : "startup";
 
             string[] portNames = SerialPort.GetPortNames()
                 .Where(p => System.Text.RegularExpressions.Regex.IsMatch(p ?? "", @"^COM[1-9][0-9]{0,4}$", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
@@ -610,7 +657,7 @@ namespace AFR2Loader
                 startupDetectedPort = "";
                 startupDetectedSummary = "";
                 UpdateComAutoDetectHint();
-                Log("Autodetección COM al iniciar: no hay puertos COM disponibles.");
+                Log("Autodetección COM " + scopeLabel + ": no hay puertos COM disponibles.");
                 return;
             }
 
@@ -624,14 +671,14 @@ namespace AFR2Loader
             startupDetectedSummary = "";
             UpdateComAutoDetectHint();
             int bridgeBaud = ReadStartupBridgeBaud();
-            Log("Autodetección COM al iniciar: consultando " + String.Join(", ", portNames) + " (flasher @" + bridgeBaud + "/115200 o #AFR2 TAP)...");
+            Log("Autodetección COM " + scopeLabel + ": consultando " + String.Join(", ", portNames) + " (flasher @" + bridgeBaud + "/115200 o #AFR2 TAP)...");
             try
             {
                 StartupComScan scan = await StartupComDetector.ProbeAllAsync(portNames, bridgeBaud, tasks, cts.Token);
                 if (IsDisposed) return;
-                if (cts.IsCancellationRequested)
+                if (cts.IsCancellationRequested || generation != comScanGeneration)
                 {
-                    Log("Autodetección COM al iniciar interrumpida antes de completar.");
+                    Log("Autodetección COM " + scopeLabel + " interrumpida antes de completar.");
                     return;
                 }
                 if (scan.Matches.Count > 0)
@@ -651,31 +698,38 @@ namespace AFR2Loader
                         string matchedItem = ports.Items.Cast<object>()
                             .Select(x => Convert.ToString(x))
                             .FirstOrDefault(x => StringComparer.OrdinalIgnoreCase.Equals(x, chosen.Port));
-                        if (matchedItem != null) ports.SelectedItem = matchedItem;
+                        if (matchedItem != null)
+                        {
+                            ports.SelectedItem = matchedItem;
+                            if (!serialPorts.Items.Cast<object>().Any(x => StringComparer.OrdinalIgnoreCase.Equals(Convert.ToString(x), matchedItem)))
+                                RefreshSerialPorts();
+                            if (serialPorts.Items.Contains(matchedItem))
+                                serialPorts.SelectedItem = matchedItem;
+                        }
                     }
                     LogDetectedVersions(chosen);
                     if (scan.Matches.Count == 1)
                     {
-                        Log("Autodetección COM al iniciar: conectado en " + chosen.Port + " (" + chosen.Detail + ").");
+                        Log("Autodetección COM " + scopeLabel + ": conectado en " + chosen.Port + " (" + chosen.Detail + ").");
                     }
                     else
                     {
                         string allMatches = String.Join(", ", scan.Matches.Select(m => m.Port + " [" + m.Detail + "]"));
-                        Log("Autodetección COM al iniciar: seleccionado " + chosen.Port + " (" + chosen.Detail + "). Respuestas: " + allMatches + ".");
+                        Log("Autodetección COM " + scopeLabel + ": seleccionado " + chosen.Port + " (" + chosen.Detail + "). Respuestas: " + allMatches + ".");
                     }
                 }
                 else
                 {
-                    Log("Autodetección COM al iniciar: sin respuesta AFR2 en " + scan.ProbedCount + " puerto(s) COM.");
+                    Log("Autodetección COM " + scopeLabel + ": sin respuesta AFR2 en " + scan.ProbedCount + " puerto(s) COM.");
                 }
             }
             catch (OperationCanceledException)
             {
-                if (!IsDisposed) Log("Autodetección COM al iniciar cancelada.");
+                if (!IsDisposed) Log("Autodetección COM " + scopeLabel + " cancelada.");
             }
             catch (Exception error)
             {
-                if (!IsDisposed) Log("Autodetección COM al iniciar: " + error.Message);
+                if (!IsDisposed) Log("Autodetección COM " + scopeLabel + ": " + error.Message);
             }
             finally
             {

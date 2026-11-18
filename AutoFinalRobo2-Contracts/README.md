@@ -1,3 +1,4 @@
+> **AFR2-20261118-04 / Loader 2.5.1:** [Refresco de puertos relanza autodetección COM y pedido de versión](changes/2026-11-18-04-loader-refresco-autodetect.md). Loader en fuente; sin compilar ni probar.
 > **AFR2-20261117-17 / 1.39.5:** [Selector de zoom en la vista completa del seguidor](changes/2026-11-17-17-vista-completa-selector-zoom.md). Web en fuente; sin compilar.
 > **AFR2-20261117-16 / 1.39.4:** [Vista completa del seguidor más alejada](changes/2026-11-17-16-vista-completa-mas-lejos.md). Web en fuente; sin compilar.
 > **AFR2-20261117-15 / 1.39.3:** [Seguidor de línea en Programas: vista primero y «Vista completa»](changes/2026-11-17-15-programas-seguidor-orden-vista-completa.md). Web en fuente; sin compilar.

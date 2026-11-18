@@ -59,7 +59,7 @@ namespace AFR2Loader
     }
     public static class LoaderVersion
     {
-        public const string Value = "2.5.0"; // AFR2-20261117-09: versiones del ATmega, ESP y Web en la autodetección (2.5.0); -13: vista Reinicios (2.4.0); AFR2-20261116-02: retención TX1 HIGH / KEY / cierre atómico del puente ESP y re-booteo manual (2.4.1)
+        public const string Value = "2.5.1"; // AFR2-20261118-04: refresco de puertos relanza autodetección y pedido de versiones (2.5.1); AFR2-20261117-09: versiones en autodetección (2.5.0); -13: vista Reinicios (2.4.0); AFR2-20261116-02: retención TX1 HIGH / KEY / cierre atómico del puente ESP y re-booteo manual (2.4.1)
     }
 }
 
