@@ -546,12 +546,10 @@ slide({ id: "F17", ramas: ["M"], t: 45, titulo: "Ensayo por elementos finitos: t
     const fea = (() => { try { return JSON.parse(fs.readFileSync(NEW + "renders/F_fea_torre_v001.json", "utf8")); } catch (e) { return null; } })();
     glass(s, M, 1.45, 7.4, 5.3, { strong: true });
     img(s, A("renders/F_fea_torre_von_mises_v001.png"), M + 0.1, 1.55, 7.2, 5.1, "center", "Mapa de tensiones (von Mises) de la torre con las cargas activadas\npendiente (Fusion Simulation, PC de escritorio)");
-    img(s, A("renders/F_fea_torre_desplazamiento_v001.png"), 8.35, 1.45, 2.1, 2.1, "center", "Desplaza-\nmiento");
-    img(s, A("renders/F_fea_torre_seguridad_v001.png"), 10.55, 1.45, 2.1, 2.1, "center", "Factor de\nseguridad");
     glass(s, 8.35, 3.7, 4.3, 3.05, { tint: C.MEC });
     text(s, "Cómo se lee", 8.55, 3.78, 4, 0.35, { fontFace: HEAD, fontSize: 14, bold: true, color: C.MEC_D });
-    const lines = fea ? [`Material: ${fea.material}`, `Cargas: ${fea.cargas}`, `Tensión máx. von Mises: ${fea.von_mises_max_MPa} MPa`, `Factor de seguridad mín.: ${fea.factor_seguridad_min}`]
-      : ["von Mises: combina N, V, M y T en una sola tensión equivalente", "Azul = poco exigido · rojo = zona más cargada", "Factor de seguridad = resistencia del material / tensión"];
+    const lines = fea ? [`Material: ${fea.material}`, `Cargas: ${fea.cargas}`, `Tensión máx. von Mises: ${fea.von_mises_max_MPa} MPa`]
+      : ["von Mises: tensión equivalente en la pieza", "Azul = menor tensión · rojo = mayor tensión"];
     bullets(s, lines, 8.55, 4.15, 3.95, 2.5, 11.5);
   },
   guion: "La torre que une la base con el hombro es la pieza por la que pasan todos los esfuerzos del brazo. Para ver cómo se reparten, hicimos un ensayo por elementos finitos: el programa divide la pieza en miles de elementos chicos, aplica las cargas y los apoyos, y resuelve el equilibrio en cada uno. El color muestra la tensión equivalente de von Mises: en azul la pieza casi no trabaja, en rojo está lo más exigido. La cruz en el medio está justamente para repartir esa carga.",
