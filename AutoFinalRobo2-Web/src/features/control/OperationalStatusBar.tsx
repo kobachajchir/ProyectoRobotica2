@@ -12,7 +12,7 @@ export function OperationalStatusBar() {
   return <div className="afr2-operational-bar">
     <ul className="afr2-status-chips" aria-label="Estado operativo del robot">
       <li className="afr2-status-chip"><span>Modo</span><strong>{robotState.mode}</strong></li>
-      <li className="afr2-status-chip"><span>GOTO</span><strong>{robotState.gotoState}</strong></li>
+      <li className="afr2-status-chip"><span>Ir</span><strong>{robotState.gotoState}</strong></li>
       <li className="afr2-status-chip"><span>Salidas</span><strong>{robotState.stopped === null ? '—' : robotState.stopped ? 'Apagadas' : 'Activas'}</strong></li>
       <li className="afr2-status-chip" data-tone={robotState.fault ? 'error' : undefined} title={robotState.fault ? FAULT_TEXT[robotState.fault] : undefined}><span>Fallo</span><strong>{robotState.fault ? `${robotState.fault} · ${FAULT_TEXT[robotState.fault] ?? 'código desconocido'}` : '—'}</strong></li>
     </ul>

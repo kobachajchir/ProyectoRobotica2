@@ -12,6 +12,8 @@ import {
   type PhysicalSequenceStatusPayload,
 } from '../../../protocol/wsEnvelope';
 import { useConnection } from '../../connection/ConnectionContext';
+import { useRobotModeState } from '../../connection/useRobotMode';
+import { useSelectRobotMode } from '../../connection/robotModeSelect';
 import { ChassisSpinGraphic } from '../ChassisSpinGraphic';
 import {
   createAdvancedWheelCopy,
@@ -129,6 +131,11 @@ export function SequenceEditorPanel({ preview }: SequenceEditorPanelProps) {
     triggerEmergencyStop,
     setOperationActivity,
   } = useConnection();
+  const { mode: robotMode } = useRobotModeState();
+  const selectRobotMode = useSelectRobotMode();
+  // Durante una secuencia o un PWM manual el modo elegido sigue siendo Manual.
+  const inManual = robotMode === 'manual' || robotMode === 'manual-pwm' || robotMode === 'sequence';
+  const [switchingMode, setSwitchingMode] = useState(false);
 
   const initialStorage = useMemo(() => loadSequenceLibraryFromStorage(), []);
   const [programs, setPrograms] = useState<Afr2SequenceDocument[]>(initialStorage.programs);
@@ -466,6 +473,7 @@ export function SequenceEditorPanel({ preview }: SequenceEditorPanelProps) {
 
   const physicalBlockedReason = !linksReady
     ? 'Sin enlace activo Web↔ESP y ESP↔ATmega2560.'
+    : !inManual ? 'El auto debe estar en modo Manual para ejecutar secuencias.'
       : !motorsReady
         ? capabilities.mecanum_drive.reason || 'Control PWM/dirección de motores y STOP aún no habilitados en firmware.'
         : !sequencesReady
@@ -1492,6 +1500,13 @@ export function SequenceEditorPanel({ preview }: SequenceEditorPanelProps) {
                 Estado: {PHYSICAL_STATE_LABELS[physicalState]}
               </span>
             </div>
+
+            {linksReady && !inManual && (
+              <StatusNotice tone="info" title="Para usar secuencias, el auto debe estar en modo Manual"
+                action={<Button variant="primary" size="sm" disabled={switchingMode || physicalState === 'running'} onClick={() => { setSwitchingMode(true); void selectRobotMode('manual').finally(() => setSwitchingMode(false)); }}>Cambiar a «Manual»</Button>}>
+                Cambiarlo no mueve al auto hasta que envíes e inicies la secuencia.
+              </StatusNotice>
+            )}
 
             <div className="flex flex-wrap gap-2">
               <Button

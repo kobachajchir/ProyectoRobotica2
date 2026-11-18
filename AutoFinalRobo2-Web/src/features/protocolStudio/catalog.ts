@@ -27,7 +27,7 @@ export const COMMANDS: StudioCommand[] = [
   { id: 0x12, name: 'WEB_PULSE', description: 'Edad de presencia Web en ms, u16 LE; no concede permisos.', requestBytes: 2, replyBytes: 2, example: '00 00' },
   { id: 0x13, name: 'DRIVE', description: 'Consigna de movimiento; reserved:u32 debe ser cero.', requestBytes: 12, replyBytes: 0 },
   { id: 0x14, name: 'WHEEL', description: 'Prueba de rueda; reserved:u32 debe ser cero.', requestBytes: 9, replyBytes: 0 },
-  { id: 0x15, name: 'MODE', description: 'Modo de operación; reserved:u32 debe ser cero.', requestBytes: 5, replyBytes: 0 },
+  { id: 0x15, name: 'MODE', description: 'Modo persistente (0 Reposo, 1 Manual, 2 Seguir línea, 4 Ir); start:u8 opcional (1 inicia Seguir línea); reserved:u32 debe ser cero.', requestBytes: [5, 6], replyBytes: 0 },
   { id: 0x16, name: 'GOTO', description: 'Destino relativo; reserved:u32 debe ser cero.', requestBytes: [12, 16], replyBytes: 0 },
   { id: 0x17, name: 'CANCEL', description: 'Cancela una operación de producto.', requestBytes: 0, replyBytes: 1 },
   { id: 0x18, name: 'POSE', description: 'Pose y odometría de producto.', requestBytes: 0, replyBytes: 25 },

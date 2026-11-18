@@ -64,7 +64,7 @@ export function FirmwareLibraryPreview({ screen, onNavigate, active = true }: { 
       noticeStartedMs: 0, redraw: true, scrollRedraw: false, keyboard: false, keyboardField: false,
       key: 0, length: 0, ssid: '', edit: isEditor, editingAction:edAction, editingLabel:edLabel, draft: isEditor?Number.NaN:0, notice: null,
       splashMs: splash ? (clockMs - ((clockMs - scrollStarted.current) >>> 0) % SPLASH_MS) >>> 0 : undefined,
-    }, result, caps ? {...layout,lines:[['UI: encoder/OLED','Dibujo por TWI','Estado: sin datos'],['UART: puente ESP','Wi-Fi/HTTP/WS','Estado: sin datos'],['Sensores: IR/HC','Linea / Hall','Estado: sin datos'],['PWM: sin odometria','STOP corta salidas','Estado: sin datos'],['GOTO requiere pose','CPR y CAD nominal','Estado: sin datos'],['Secuencias: pasos','Guardar explicito','Estado: sin datos']][state.selection]} : batteryView ? { ...layout, lines: ['Bateria: -- V', 'Realizar medicion', 'Desde Bateria'] } : layout);
+    }, result, caps ? {...layout,lines:[['UI: encoder/OLED','Dibujo por TWI','Estado: sin datos'],['UART: puente ESP','Wi-Fi/HTTP/WS','Estado: sin datos'],['Sensores: IR/HC','Linea / Hall','Estado: sin datos'],['PWM: sin odometria','STOP corta salidas','Estado: sin datos'],['Ir requiere pose','CPR y CAD nominal','Estado: sin datos'],['Secuencias: pasos','Guardar explicito','Estado: sin datos']][state.selection]} : batteryView ? { ...layout, lines: ['Bateria: -- V', 'Realizar medicion', 'Desde Bateria'] } : layout);
     return result;
   }, [drawable, state.node, state.selection, state.firstVisible, clockMs, batteryView, scaleIndex, trimIndex]);
   const move = (delta: number) => {

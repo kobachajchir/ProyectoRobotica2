@@ -1,3 +1,21 @@
+## AFR2-20261118-03 - 18/11/2026
+
+Auditoría de los modos reales. Web: Conducir y Secuencias reconocen manual-pwm y sequence como Manual (antes bloqueaban el pad al conducir y mostraban «Cambiar a Manual» durante una secuencia). ATmega: Afr2Product_SetMode(IDLE) devuelve OK aunque haya fallo activo.
+
+Versión: 1.39.8 (subversión mínima). ATmega y Web en fuente; ESP solo versión. [Ficha](changes/2026-11-18-03-auditoria-modos.md). Sin compilar ni probar.
+
+## AFR2-20261118-02 - 18/11/2026
+
+Seguidor de línea: solo se bloquea el botón «Iniciar movimiento» (Web y OLED) mientras ningún sensor ve la cinta; el resto del modo sigue disponible. Web: aviso «Sin línea a la vista» y botón deshabilitado; ATmega: vailable()/eason() de iniciar línea exigen line_bits («Sin linea a la vista»).
+
+Versión: 1.39.7 (subversión mínima). ATmega y Web en fuente; ESP solo versión. [Ficha](changes/2026-11-18-02-iniciar-seguidor-con-linea.md). Sin compilar ni probar.
+
+## AFR2-20261118-01 - 18/11/2026
+
+ATmega: el seguidor de línea frena de inmediato cuando ningún sensor ve la cinta (se quitó la gracia de 250 ms) y queda quieto; para avanzar hay que volver a iniciar y Afr2Product_StartLine exige ver la línea (line_bits != 0).
+
+Versión: 1.39.6 (subversión mínima). ATmega en fuente; ESP y Web solo versión. [Ficha](changes/2026-11-18-01-seguidor-sin-linea-quieto.md). Sin compilar ni probar en el auto.
+
 ## AFR2-20261117-17 — 17/11/2026
 
 Web: la vista completa del seguidor suma el selector de zoom de los simuladores (`SimulationZoom`: −, porcentaje editable, +). Arranca en 60 %, el zoom por defecto; 100 % es el encuadre ajustado y va de 10 % a 250 %. Queda a la izquierda del riel lateral. `SimulationZoom` acepta un texto de escala propio.
@@ -54,9 +72,9 @@ Versión: 1.39.0 (subversión). Web en fuente; ATmega y ESP solo versión. [Fich
 
 ## AFR2-20261117-11 - 17/11/2026
 
-Web: Seguidor de línea y Ajuste y calibración van en filas plegables; con el seguidor activo aparece «Iniciar movimiento» y, en marcha, Detener arriba y abajo. El ancho de la cinta pasa a Ajuste y calibración. Pill «Auto detenido» centrada con overlay en degradado. Nuevo modo «Ir» (banner de GOTO y pill de modo; Línea queda preparada sin mover el auto). GOTO se muestra como «Ir». Modales con desenfoque también en el ::backdrop.
+Modos reales y persistentes Reposo / Manual / Seguir línea / Ir (GOTO pasa a «Ir»), fijables desde el OLED o la Web y reportados en ambos sentidos. ATmega: `selected_mode` sobrevive a STOP; conducir y secuencias solo en Manual, seguidor solo en Seguir línea, rutas solo en Ir. `AFR2_EXT_MODE` acepta 5/6 bytes (modo 0/1/2/4 y `start` opcional con línea); ESP: `robot.mode` con `goto` y `start`. OLED: menú Modo de robot y dashboard con los cuatro nombres. Web: pill y banners «Cambiar a «X»» en Conducir, Secuencias, Pruebas mínimas, Ir y Seguidor; Seguidor y Ajuste en filas plegables con «Iniciar movimiento» y Detener arriba/abajo, ancho de cinta en Ajuste, pill centrada con fade, modales con desenfoque en el ::backdrop, GOTO→Ir.
 
-Versión: producto 1.38.0 (subversión). Web en fuente; ATmega y ESP solo versión. [Ficha](changes/2026-11-17-11-seguidor-filas-modo-ir.md). Sin compilar ni probar.
+Versión: producto 1.38.0 (subversión). ATmega, ESP y Web en fuente. [Ficha](changes/2026-11-17-11-seguidor-filas-modo-ir.md). Sin compilar, generar (`sync-oled-library.mjs` pendiente), probar ni flashear.
 
 ## AFR2-20261117-10 — 17/11/2026
 

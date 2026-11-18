@@ -28,6 +28,8 @@ import { GotoSimulatorPanel } from './goto/GotoSimulatorPanel';
 import type { GotoCommand } from './goto/gotoSimulation';
 import { ManualDriveOverlay, type ManualDirection } from './manual/ManualDriveOverlay';
 import { LineFollowerPanel } from './LineFollowerPanel';
+import { useRobotModeState } from '../connection/useRobotMode';
+import { useSelectRobotMode } from '../connection/robotModeSelect';
 import type { ModalOrigin } from '../../components/ui/FloatingModal';
 
 type WheelId = 'FL' | 'FR' | 'RL' | 'RR';
@@ -58,6 +60,11 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
     stopRecord,
     setOperationActivity,
   } = useConnection();
+  const { mode: robotMode } = useRobotModeState();
+  const selectMode = useSelectRobotMode();
+  // manual-pwm es Manual mientras se conduce.
+  const inManual = robotMode === 'manual' || robotMode === 'manual-pwm';
+  const [switchingMode, setSwitchingMode] = useState(false);
 
   const [activeTask, setActiveTask] = useState<ControlTaskId>(() => initialTask(area, entryParams.get('tarea')));
   const [linearSpeedMmS, setLinearSpeedMmS] = useState(100);
@@ -113,8 +120,9 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
     : megaLinkState !== 'ready' ? 'Falta enlace del ESP con el ATmega.'
     : stopRecord.status === 'sending' ? 'Esperando la confirmación de STOP.'
     : stopRecord.status === 'unconfirmed-offline' ? 'El último STOP sigue sin confirmar. Volvé a enviar STOP con el enlace activo.'
-    // AFR2-20261111-04: elegir «Manual» en la pill de modo salta estos permisos en el auto.
-    : !capabilities.manual_pwm?.implemented ? `${capabilities.manual_pwm?.reason || 'El ESP todavía no informa PWM manual disponible.'} Elegí «Manual» en el modo (arriba) para manejar igual.`
+    // AFR2-20261117-11: conducir exige el modo Manual real del auto.
+    : !inManual ? 'Para conducir, el auto debe estar en modo Manual.'
+    : !capabilities.manual_pwm?.implemented ? `${capabilities.manual_pwm?.reason || 'El ESP todavía no informa PWM manual disponible.'}`
     : null;
   const canDrive = driveBlockedReason === null;
 
@@ -292,6 +300,9 @@ export function ControlPage({ area = 'drive' }: { area?: ControlArea }) {
                     tone="info"
                     title={wsState !== 'ready' || megaLinkState !== 'ready' ? 'Simulación local disponible' : 'Movimiento manual no disponible'}
                     badge="Movimiento manual"
+                    action={canPrepareControl && !inManual ? (
+                      <Button variant="primary" size="sm" disabled={switchingMode} onClick={() => { setSwitchingMode(true); void selectMode('manual').finally(() => setSwitchingMode(false)); }}>Cambiar a «Manual»</Button>
+                    ) : undefined}
                   >
                     {wsState !== 'ready' || megaLinkState !== 'ready'
                       ? 'Abrí Control táctil para simular sin conexión al robot. Las órdenes físicas requieren enlace Web↔ESP↔ATmega2560.'

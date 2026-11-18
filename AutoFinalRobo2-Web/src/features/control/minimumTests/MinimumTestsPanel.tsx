@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../../../components/ui/Button';
 import { Chevron } from '../../../components/ui/Chevron';
 import { useConnection } from '../../connection/ConnectionContext';
+import { useRobotModeState } from '../../connection/useRobotMode';
+import { useSelectRobotMode } from '../../connection/robotModeSelect';
 import { parseRobotState, type RobotPose } from '../../../protocol/robotState';
 import '../../../styles/minimum-tests.css';
 import { version as PRODUCT_VERSION } from '../../../../package.json';
@@ -44,6 +46,9 @@ export function MinimumTestsPanel({ gotoCommands, onGotoCommandsChange, maxSpeed
 }) {
   const { wsState, megaLinkState, capabilities, requestCommand, triggerEmergencyStop, battery, stopRecord, robotState } = useConnection();
   const navigate = useNavigate();
+  const { mode: robotMode } = useRobotModeState();
+  const selectMode = useSelectRobotMode();
+  const [switchingMode, setSwitchingMode] = useState(false);
   const runner = useGotoRouteRunner();
   const [records, setRecords] = useState<MinimumTestRecord[]>(() => loadRecords());
   const [testId, setTestId] = useState<MinimumTestId>('advance');
@@ -88,7 +93,8 @@ export function MinimumTestsPanel({ gotoCommands, onGotoCommandsChange, maxSpeed
   // Cada requisito pasa a verde al cumplirse; «Enviar al robot» se habilita con todos los obligatorios en verde.
   const checks: Readiness[] = [
     { id: 'link', label: 'Conexión con el auto', state: linkReady ? 'ok' : 'bad', detail: linkReady ? 'Web, ESP y ATmega enlazados' : 'Conectá el robot o confirmá el STOP pendiente' },
-    { id: 'goto', label: 'Ir disponible', state: gotoCapable ? 'ok' : 'bad', detail: gotoCapable ? 'El auto acepta GOTO relativo' : (capabilities.goto_relative.reason || 'El auto no informa GOTO disponible') },
+    { id: 'mode', label: 'Modo Ir', state: robotMode === 'goto' ? 'ok' : 'bad', detail: robotMode === 'goto' ? 'El auto está en modo Ir' : 'Los recorridos exigen que el auto esté en modo Ir' },
+    { id: 'goto', label: 'Ir disponible', state: gotoCapable ? 'ok' : 'bad', detail: gotoCapable ? 'El auto acepta Ir relativo' : (capabilities.goto_relative.reason || 'El auto no informa Ir disponible') },
     { id: 'motors', label: 'Motores habilitados', state: motorsEnabled === true ? 'ok' : motorsEnabled === false ? 'bad' : 'pending',
       detail: motorsEnabled === true ? 'Habilitados en el auto' : motorsEnabled === false ? 'Habilitalos en Controles rápidos del auto (Motores)' : 'Sin confirmar: el auto todavía no informó su estado' },
     { id: 'hall', label: 'Sensores Hall configurados', state: hallConfigured ? 'ok' : 'bad', detail: hallConfigured ? 'Hall conectados y habilitados' : (capabilities.wheel_odometry.reason || 'Habilitá los Hall en Preferencias') },
@@ -175,7 +181,8 @@ export function MinimumTestsPanel({ gotoCommands, onGotoCommandsChange, maxSpeed
       <div className="afr2-readiness__grid">
         {checks.map(check => <div key={check.id} className="afr2-readiness__card" data-state={check.state}>
           <span className="afr2-readiness__icon" aria-hidden="true">{check.state === 'ok' ? '✓' : check.state === 'bad' ? '✕' : check.state === 'info' ? 'i' : '…'}</span>
-          <div><strong>{check.label}</strong><small>{check.detail}</small></div>
+          <div><strong>{check.label}</strong><small>{check.detail}</small>
+            {check.id === 'mode' && check.state === 'bad' && linkReady ? <Button type="button" size="sm" variant="primary" disabled={running || switchingMode} onClick={() => { setSwitchingMode(true); void selectMode('goto').finally(() => setSwitchingMode(false)); }}>Cambiar a «Ir»</Button> : null}</div>
         </div>)}
       </div>
     </div>

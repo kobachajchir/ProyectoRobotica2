@@ -168,6 +168,11 @@ function describePayload(command: number, route: number, payload: number[]): Pic
     if (command === 0x10 && hexBytes(body) !== '45 58 30 31') issues.push('EXT_HELLO requiere EX01 ASCII.');
     const reserved = [0x13, 0x14, 0x15, 0x16, 0x1a, 0x1b, 0x1c, 0x40, 0x41, 0x42, 0x43, 0x44];
     if (reserved.includes(command) && (body.length < 4 || u32(body, 0) !== 0)) issues.push('El campo reserved:u32 inicial debe ser cero en EX01v7+.');
+    if (command === 0x15) {
+      add('Modo', ({ 0: 'Reposo', 1: 'Manual', 2: 'Seguir línea', 4: 'Ir' } as Record<number, string>)[body[4]] ?? `Desconocido (${body[4]})`);
+      if (![0, 1, 2, 4].includes(body[4])) issues.push('Modo fuera de 0, 1, 2 o 4.');
+      if (body.length === 6) { add('Iniciar movimiento', body[5]); if (body[5] !== 1 || body[4] !== 2) issues.push('start solo vale 1 con Seguir línea.'); }
+    }
     if ((command === 0x12 || command === 0x61) && body.length === 2) {
       const value = u16(body, 0);
       add(command === 0x12 ? 'Presencia Web' : 'Intervalo ultrasónico', `${value} ms`);

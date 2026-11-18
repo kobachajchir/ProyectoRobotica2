@@ -4,7 +4,7 @@ import { Chevron } from '../../components/ui/Chevron';
 import { StatusNotice } from '../../components/ui/StatusNotice';
 import { UiIcon } from '../../components/ui/UiIcon';
 import { useConnection } from '../connection/ConnectionContext';
-import { useArmedMode, useSelectRobotMode } from '../connection/armedMode';
+import { useSelectRobotMode } from '../connection/robotModeSelect';
 import type { ModalOrigin } from '../../components/ui/FloatingModal';
 import { LineFollowerOverlay } from '../lineFollower/LineFollowerOverlay';
 import { LineFollowerLiveView } from './LineFollowerLiveView';
@@ -60,7 +60,6 @@ export function LineFollowerPanel({ showView = true }: { showView?: boolean } = 
     triggerEmergencyStop,
   } = useConnection();
   const selectMode = useSelectRobotMode();
-  const armed = useArmedMode();
 
   const [lineSpeedMmS, setLineSpeedMmS] = useState<number>(80);
   const [lineKp, setLineKp] = useState<number>(100);
@@ -73,8 +72,8 @@ export function LineFollowerPanel({ showView = true }: { showView?: boolean } = 
   const online = wsState === 'ready' && megaLinkState === 'ready';
   const isLineMode = robotState?.mode === 'line-follow';
   const stopped = robotState?.stopped ?? true;
-  /** Seguidor activo: Línea preparado desde la Web o el auto ya siguiendo la línea. */
-  const active = armed === 'line' || isLineMode;
+  /** Siguiendo la línea: modo real Seguir línea con salidas en marcha. */
+  const running = isLineMode && !stopped;
   const canStartLine =
     online &&
     capabilities.line_follow.implemented &&
@@ -82,6 +81,9 @@ export function LineFollowerPanel({ showView = true }: { showView?: boolean } = 
     capabilities.wheel_odometry.calibrated &&
     robotState?.motorsEnabled === true &&
     stopRecord.status !== 'sending';
+  // AFR2-20261118-02: «Iniciar movimiento» solo se habilita con la cinta bajo algún sensor; el resto de la función sigue disponible.
+  const lineSeen = online && sensors.line.valid && (sensors.line.bits ?? 0) !== 0;
+  const canPressStart = canStartLine && lineSeen;
 
   useEffect(() => {
     if (!online) return;
@@ -138,33 +140,22 @@ export function LineFollowerPanel({ showView = true }: { showView?: boolean } = 
     }
   };
 
-  /** Activa el seguidor: modo Línea preparado, sin movimiento. */
+  /** Cambia el auto al modo Seguir línea (sin movimiento). */
   const activateLineFollower = async () => {
     if (!online || busy) return;
     setBusy(true);
     try { await selectMode('line-follow'); } finally { setBusy(false); }
   };
-  /** Desactiva el seguidor y deja el auto en Reposo. */
+  /** Vuelve a Reposo. */
   const deactivateLineFollower = async () => {
     if (!online || busy) return;
     setBusy(true);
     try { await selectMode('idle'); } finally { setBusy(false); }
   };
   const startMovement = async () => {
-    if (!online || busy || !canStartLine) return;
+    if (!online || busy || !canPressStart) return;
     setBusy(true);
-    try {
-      await executeCommandWithToast(
-        'robot.mode',
-        { mode: 'line-follow' },
-        {
-          loadingTitle: 'Iniciando movimiento…',
-          successTitle: 'Seguidor de línea en marcha',
-        }
-      );
-    } finally {
-      setBusy(false);
-    }
+    try { await selectMode('line-follow', true); } finally { setBusy(false); }
   };
   const stopMovement = async () => {
     if (!online) return;
@@ -199,10 +190,10 @@ export function LineFollowerPanel({ showView = true }: { showView?: boolean } = 
         description="Control proporcional sobre los 5 sensores IR1…IR5 con recuperación de pérdida breve (250 ms) y parada en cruce transversal (150 ms)."
         aside={
           <>
-            <span className="afr2-status-pill" data-state={isLineMode ? 'ready' : 'idle'}>
-              {isLineMode ? 'Siguiendo línea' : active ? 'Activo · detenido' : 'En espera'}
+            <span className="afr2-status-pill" data-state={running ? 'ready' : 'idle'}>
+              {running ? 'Siguiendo línea' : isLineMode ? 'Modo activo · detenido' : 'Otro modo'}
             </span>
-            {isLineMode && (
+            {running && (
               <Button variant="emergency" size="sm" disabled={!online} icon={<UiIcon name="stop" size={16} />} onClick={() => void stopMovement()}>
                 Detener
               </Button>
@@ -210,15 +201,28 @@ export function LineFollowerPanel({ showView = true }: { showView?: boolean } = 
           </>
         }
       >
-        {!canStartLine && !isLineMode && (
+        {online && !isLineMode && (
+          <StatusNotice tone="info" title="Para usar el seguidor, el auto debe estar en modo «Seguir línea»">
+            Ahora está en otro modo. Cambiarlo no mueve el auto; el movimiento empieza con «Iniciar movimiento».
+          </StatusNotice>
+        )}
+        {isLineMode && stopped && !canStartLine && (
           <StatusNotice tone="info" title="Requisitos para iniciar el seguidor de línea">
-            {!online
-              ? 'Conectá el WebSocket al ESP y verificá el enlace con el ATmega.'
-              : !robotState?.motorsEnabled
-                ? 'Activá el seguidor (habilita los motores) o usá Controles rápidos.'
-                : !capabilities.wheel_odometry.calibrated
-                  ? 'Se requiere odometría Hall calibrada y pose válida.'
-                  : capabilities.line_follow.reason || 'Calibrá los 5 sensores IR sobre el fondo y la línea.'}
+            {!robotState?.motorsEnabled
+              ? 'Los motores no están habilitados.'
+              : !capabilities.wheel_odometry.calibrated
+                ? 'Se requiere odometría Hall calibrada y pose válida.'
+                : capabilities.line_follow.reason || 'Calibrá los 5 sensores IR sobre el fondo y la línea.'}
+          </StatusNotice>
+        )}
+        {isLineMode && stopped && canStartLine && !lineSeen && (
+          <StatusNotice tone="info" title="Sin línea a la vista">
+            Poné la cinta bajo algún sensor: «Iniciar movimiento» se habilita al verla. Si la perdés en marcha, el auto se detiene.
+          </StatusNotice>
+        )}
+        {!online && (
+          <StatusNotice tone="info" title="Sin conexión con el auto">
+            Conectá el WebSocket al ESP y verificá el enlace con el ATmega.
           </StatusNotice>
         )}
 
@@ -254,22 +258,22 @@ export function LineFollowerPanel({ showView = true }: { showView?: boolean } = 
         </dl>
 
         <div className="afr2-action-row">
-          {!active && (
+          {!isLineMode && (
             <Button variant="primary" disabled={!online || busy} icon={<UiIcon name="play" size={16} />} onClick={() => void activateLineFollower()}>
-              Iniciar seguidor de línea
+              Cambiar a «Seguir línea»
             </Button>
           )}
-          {active && !isLineMode && (
+          {isLineMode && stopped && (
             <>
-              <Button variant="primary" disabled={!online || busy || !canStartLine} icon={<UiIcon name="play" size={16} />} onClick={() => void startMovement()}>
+              <Button variant="primary" disabled={!online || busy || !canPressStart} title={canStartLine && !lineSeen ? 'Poné la cinta bajo algún sensor para iniciar' : undefined} icon={<UiIcon name="play" size={16} />} onClick={() => void startMovement()}>
                 Iniciar movimiento
               </Button>
               <Button variant="secondary" disabled={!online || busy} onClick={() => void deactivateLineFollower()}>
-                Desactivar seguidor
+                Volver a Reposo
               </Button>
             </>
           )}
-          {isLineMode && (
+          {running && (
             <Button variant="emergency" disabled={!online} icon={<UiIcon name="stop" size={16} />} onClick={() => void stopMovement()}>
               Detener movimiento
             </Button>

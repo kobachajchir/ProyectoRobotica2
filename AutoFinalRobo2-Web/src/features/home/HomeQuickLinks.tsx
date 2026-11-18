@@ -10,7 +10,7 @@ import shotLine from './shots/quick-line.svg';
  * con velo y marco independientes del contenido. shots/ conserva ilustraciones;
  * la fotografía original sigue pendiente de ubicación. */
 const QUICK_LINKS: readonly { to: string; title: string; description: string; icon: UiIconName; shot: string }[] = [
-  { to: '/programas?tarea=goto', title: 'Ir', description: 'Recorrido GOTO a un punto.', icon: 'crosshair', shot: shotGoto },
+  { to: '/programas?tarea=goto', title: 'Ir', description: 'Recorrido Ir a un punto.', icon: 'crosshair', shot: shotGoto },
   { to: '/conducir', title: 'Controlar', description: 'Conducción táctil en cualquier dirección.', icon: 'touch', shot: shotControl },
   { to: '/seguidor-linea', title: 'Seguidor de línea', description: 'El auto sobre la cinta, en vivo.', icon: 'sensors', shot: shotLine },
 ];

@@ -219,13 +219,14 @@
       "idempotent": false,
       "payload_schema": {
         "req": {
-          "mode": "idle|manual|line-follow"
+          "mode": "idle|manual|line-follow|goto",
+          "start": "boolean (opcional; solo con line-follow: inicia el movimiento)"
         },
         "res": {
-          "mode": "idle|manual|line-follow"
+          "confirmed": "boolean"
         }
       },
-      "notes": "Direct idle/manual/line-follow; device checks state and calibration. Connecting or observing mode never starts motion.",
+      "notes": "AFR2-20261117-11: modo persistente (Reposo, Manual, Seguir linea, Ir). Cambiar de modo nunca inicia movimiento; start=true solo con line-follow. Manual habilita botones/panel tactil/secuencias; Seguir linea el seguidor; Ir los recorridos. Conectar u observar el modo nunca inicia movimiento.",
       "atmega_ex01": {
         "profile": 2,
         "extension": "EX01",

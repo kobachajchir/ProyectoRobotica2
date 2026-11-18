@@ -88,7 +88,7 @@ Inicio 010001
 │  │  │  │  ├─ Ganancia [editar 0..1000, paso 10]
 │  │  │  │  ├─ Iniciar / Detener [misma fila dinámica]
 │  │  │  │  └─ Volver
-│  │  │  ├─ GOTO relativo 03000d
+│  │  │  ├─ Ir 03000d
 │  │  │  │  ├─ Odometría 030010 → Volver
 │  │  │  │  ├─ Objetivo X / Y mm [editar -5000..5000, paso 10]
 │  │  │  │  ├─ Límite mm/s [editar 10..1000, paso 10]

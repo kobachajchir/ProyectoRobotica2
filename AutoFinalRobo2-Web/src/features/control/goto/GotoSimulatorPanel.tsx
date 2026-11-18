@@ -6,7 +6,7 @@ import { Chevron } from '../../../components/ui/Chevron';
 import { StatusNotice } from '../../../components/ui/StatusNotice';
 import { UiIcon } from '../../../components/ui/UiIcon';
 import { useConnection } from '../../connection/ConnectionContext';
-import { useSelectRobotMode } from '../../connection/armedMode';
+import { useSelectRobotMode } from '../../connection/robotModeSelect';
 import { useRobotModeState } from '../../connection/useRobotMode';
 import { ControlMap } from '../ControlMap';
 import type { MapPoint, MapWaypoint } from '../controlMapTypes';
@@ -314,6 +314,7 @@ export function GotoSimulatorPanel({ commands, onCommandsChange, speedMmS, onSpe
   const robotTrail = robotTracking ? runner.state.trail.map((point, index) => ({ schema: 'afr2-pose-1' as const, frameId: 'route', sequence: index, xMm: point.xMm, yMm: point.yMm, thetaMrad: point.thetaMrad, ageMs: 0, segmentStart: index === 0 })) : [];
   const sendBlocked = !robot ? 'Envío al auto no disponible en esta vista.'
     : !robot.available ? robot.reason || 'Falta odometría calibrada o enlace con el auto.'
+    : robotMode !== 'goto' ? 'Cambiá el auto al modo «Ir» para enviar el recorrido.'
     : !commands.length ? 'Agregá al menos un movimiento.'
     : plan.error ? 'Corregí el recorrido antes de enviarlo.'
     : playing ? 'Pausá la simulación para enviar.'

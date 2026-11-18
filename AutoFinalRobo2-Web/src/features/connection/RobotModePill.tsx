@@ -8,20 +8,20 @@ import { StatusNotice } from '../../components/ui/StatusNotice';
 import { UiIcon, type UiIconName } from '../../components/ui/UiIcon';
 import { useConnection } from './ConnectionContext';
 import { useRobotModeState } from './useRobotMode';
-import { useSelectRobotMode, type UiMode } from './armedMode';
+import { useSelectRobotMode, toUiMode, type UiMode } from './robotModeSelect';
 
 type ModeOption = UiMode;
 const ICONS: Record<string, UiIconName> = { idle: 'pause', manual: 'move', 'manual-pwm': 'move', 'line-follow': 'sensors', 'wheel-test': 'wheel', goto: 'crosshair', sequence: 'programs', fault: 'warning', unknown: 'help', none: 'help' };
-const OPTIONS: { value: ModeOption; label: string }[] = [{ value: 'idle', label: 'Reposo' }, { value: 'manual', label: 'Manual' }, { value: 'line-follow', label: 'Línea' }, { value: 'goto', label: 'Ir' }];
+const OPTIONS: { value: ModeOption; label: string }[] = [{ value: 'idle', label: 'Reposo' }, { value: 'manual', label: 'Manual' }, { value: 'line-follow', label: 'Seguir línea' }, { value: 'goto', label: 'Ir' }];
 
 interface Props { open: boolean; origin: ModalOrigin | null; onOpen: (origin: ModalOrigin) => void; onClose: () => void }
 export function RobotModePill({ open, origin, onOpen, onClose }: Props) {
   const { mode, label } = useRobotModeState();
-  const { wsState, megaLinkState, stopRecord, capabilities } = useConnection();
+  const { wsState, megaLinkState, stopRecord } = useConnection();
   const selectMode = useSelectRobotMode();
   const [sending, setSending] = useState(false);
   const tone = mode === 'fault' ? 'error' : mode === 'idle' ? 'idle' : mode === 'none' || mode === 'unknown' ? 'unknown' : 'active';
-  const current: ModeOption | null = mode === 'idle' ? 'idle' : mode === 'manual' || mode === 'manual-pwm' ? 'manual' : mode === 'line-follow' ? 'line-follow' : mode === 'goto' ? 'goto' : null;
+  const current: ModeOption | null = mode === 'none' ? null : toUiMode(mode);
   const blocked = wsState !== 'ready' ? 'Falta conexión WebSocket con el ESP.'
     : megaLinkState !== 'ready' ? 'Falta enlace del ESP con el ATmega.'
     : stopRecord.status === 'sending' ? 'Esperando la confirmación de STOP.'
@@ -46,9 +46,9 @@ export function RobotModePill({ open, origin, onOpen, onClose }: Props) {
         <SegmentedControl ariaLabel="Modo operativo del robot" activation="manual" reselect fill="always"
           value={current ?? 'idle'} onChange={value => void choose(value)}
           items={OPTIONS.map(item => ({ ...item,
-            // AFR2-20261111-04: Manual no depende de la capacidad PWM: elegirlo es lo que habilita motores y salta los permisos.
-            disabled: !!blocked || sending || (item.value === 'line-follow' && !capabilities.line_follow.implemented) }))} />
-        <p className="afr2-help">Reposo detiene las salidas. Manual habilita la conducción desde Conducir. Línea prepara el seguidor con los sensores IR e Ir prepara los recorridos; ninguno mueve el auto hasta que lo inicies desde su pantalla.{current === null && mode !== 'none' ? ` El robot está en ${label}; elegir un modo lo reemplaza.` : ''}</p>
+            // AFR2-20261117-11: todos los modos se pueden elegir con el enlace listo; los requisitos (calibración, pose) se exigen al iniciar el movimiento.
+            disabled: !!blocked || sending }))} />
+        <p className="afr2-help">Reposo permite ver sensores y calibrar, sin mover el auto. Manual habilita botones, control táctil y secuencias. Seguir línea habilita el seguidor e Ir los recorridos; ninguno mueve el auto hasta que lo inicies desde su pantalla. El modo también se puede elegir en el auto (OLED).{current === null && mode !== 'none' ? ` El robot está en ${label}; elegir un modo lo reemplaza.` : ''}</p>
       </div>
     </FloatingModal>
   </>;

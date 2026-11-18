@@ -12,7 +12,7 @@
 #define AFR2_EXT_WEB_PULSE 0x12u
 #define AFR2_EXT_DRIVE 0x13u
 #define AFR2_EXT_WHEEL 0x14u
-#define AFR2_EXT_MODE 0x15u
+#define AFR2_EXT_MODE 0x15u /* AFR2-20261117-11: req 5/6 B [u32=0][modo 0|1|2|4][start]; EX01 v13 sin cambio */
 #define AFR2_EXT_GOTO 0x16u
 #define AFR2_EXT_CANCEL 0x17u
 #define AFR2_EXT_POSE 0x18u

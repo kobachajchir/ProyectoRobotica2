@@ -524,7 +524,7 @@ static uint8_t available(void *ctx,uint8_t action,int32_t arg) {
     if(action==AFR2_A_MOVE || action==AFR2_A_WHEEL_START || action==AFR2_A_LINE_START || action==AFR2_A_GOTO_START) {
         if(!p->config.motor_ready)return AFR2_UNAVAILABLE;
         if(action!=AFR2_A_WHEEL_START && action!=AFR2_A_MOVE && !p->pose_valid)return AFR2_UNAVAILABLE;
-        if(action==AFR2_A_LINE_START && !p->sensors.line_valid_raw)return AFR2_UNAVAILABLE;
+        if(action==AFR2_A_LINE_START && (!p->sensors.line_valid_raw || !p->sensors.line_bits))return AFR2_UNAVAILABLE;
     }
     if(action==AFR2_A_EXAM_START){
         if(!p->config.motor_ready || p->fault || !p->pose_valid)return AFR2_UNAVAILABLE;
@@ -536,7 +536,7 @@ static uint8_t available(void *ctx,uint8_t action,int32_t arg) {
     if((action==AFR2_A_WHEEL_TOGGLE && (p->stopped || p->mode!=AFR2_WHEEL_TEST)) || ((action==AFR2_A_GOTO_TOGGLE || action==AFR2_A_ODOM_TOGGLE) && (p->stopped || p->mode!=AFR2_GOTO)) || (action==AFR2_A_LINE_TOGGLE && (p->stopped || p->mode!=AFR2_LINE))){
         if(!p->config.motor_ready || p->fault)return AFR2_UNAVAILABLE;
         if((action==AFR2_A_GOTO_TOGGLE || action==AFR2_A_ODOM_TOGGLE) && !p->pose_valid)return AFR2_UNAVAILABLE;
-        if(action==AFR2_A_LINE_TOGGLE && !p->sensors.line_valid_raw)return AFR2_UNAVAILABLE;
+        if(action==AFR2_A_LINE_TOGGLE && (!p->sensors.line_valid_raw || !p->sensors.line_bits))return AFR2_UNAVAILABLE; /* AFR2-20261118-02: iniciar exige ver la linea */
     }
     if(action==AFR2_A_HALL_BEGIN && !p->sensors.hall_available)return AFR2_UNAVAILABLE;
     if(action==AFR2_A_HALL_END && !p->hall_measuring)return AFR2_UNAVAILABLE;
@@ -598,6 +598,7 @@ static const char *reason(void *ctx,uint8_t action) {
         if(!p->config.geometry_ready)return PSTR("Config. geometria");
         if(!p->config.motor_ready)return PSTR("Habilitar motores");
         if((action==AFR2_A_LINE_START || action==AFR2_A_LINE_TOGGLE) && !p->sensors.line_valid_raw)return PSTR("Calibrar linea");
+        if((action==AFR2_A_LINE_START || action==AFR2_A_LINE_TOGGLE) && !p->sensors.line_bits)return PSTR("Sin linea a la vista");
     }
     return PSTR("Ver requisitos");
 }

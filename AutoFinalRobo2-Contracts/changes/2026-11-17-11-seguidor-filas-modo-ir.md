@@ -1,38 +1,31 @@
-# AFR2-20261117-11 - Seguidor de línea en filas plegables, modo «Ir» y overlays con desenfoque
+# AFR2-20261117-11 - Modos reales (Reposo/Manual/Seguir línea/Ir), seguidor en filas y overlays con desenfoque
 
 Autoría: Koba Chajchir / AFR2.
 Versión: 1.38.0 (subversión).
 
 Estados:
-- web = fuente editada, sin compilar ni probar;
-- atmega = solo versión (sin cambio de código);
-- esp = solo versión (sin cambio de código).
-
-Sin cambio de contrato UART: «Ir» y «Línea» reutilizan `robot.mode` (`idle|manual|line-follow`).
+- atmega = fuente editada, sin compilar ni probar en hardware;
+- esp = fuente editada, sin compilar ni probar;
+- web = fuente editada, sin compilar ni probar.
 
 ## Pedido
 
-1. «Seguidor de línea» y «Ajuste y calibración de línea» deben ir uno debajo del otro, con chevrones que los muestren u oculten.
-2. Con el seguidor activo aparece «Iniciar movimiento». Al iniciar, aparece Detener arriba y el botón de abajo pasa a ser Detener.
-3. El ancho de la cinta va en «Ajuste y calibración de línea».
-4. La pill «Auto detenido · lectura en vivo» va centrada, con un overlay con fade detrás.
-5. Nuevo modo «Ir»: se elige desde el banner de GOTO («Cambiar a Ir») y desde la pill de modo; el seguidor pasa a modo Línea.
-6. Overlays de los modales con desenfoque.
-7. Donde decía GOTO, ahora dice «Ir».
+1. «Seguidor de línea» y «Ajuste y calibración de línea» uno debajo del otro, con chevrones. «Iniciar movimiento» aparece con Seguir línea activo; al iniciar, Detener arriba y el botón de abajo pasa a Detener. Ancho de cinta en Ajuste y calibración. Pill «Auto detenido» centrada con overlay con fade. Overlays de modales con desenfoque. GOTO se muestra como «Ir».
+2. Modos reales y persistentes: **Reposo** (ver sensores, sin movimiento), **Manual** (botones, panel táctil, secuencias), **Seguir línea** (Web y OLED) e **Ir** (antes GOTO). Se fijan desde el auto (OLED) y se reportan, o desde la Web y se aplican al auto.
 
-## Cambios (Web)
+## Contrato (UART)
 
-- `LineFollowerPanel.tsx`: dos tarjetas plegables (`CollapsibleCard`) en columna. Flujo: «Iniciar seguidor de línea» (activa/prepara Línea) → «Iniciar movimiento» (+ «Desactivar seguidor») → en marcha: «Detener» arriba y «Detener movimiento» abajo.
-- `lineTape.tsx` (nuevo): ancho de cinta compartido (`afr2.sensors.lineTapeMm`) entre el campo de Ajuste y calibración y la vista en vivo, que se actualiza al instante.
-- `LineFollowerLiveView.tsx` y `line-follower.css`: pill centrada con degradado oscuro que se desvanece hacia abajo; sin campo de cinta en la vista.
-- `armedMode.ts` (nuevo) y `useRobotMode.ts`: el firmware solo entra en GOTO o en seguimiento al iniciar el movimiento, así que «Ir» y «Línea» envían Manual (habilita motores, sin consigna) y la Web recuerda el modo elegido. Se suelta al perder el enlace, ante Fallo/Secuencia/Prueba de rueda o si el auto hace la otra tarea. Nunca inicia movimiento.
-- `RobotModePill.tsx`: cuarta opción «Ir»; «Línea» ahora prepara el seguidor en vez de iniciarlo.
-- `GotoSimulatorPanel.tsx`: banner «Para usar Ir, el auto debe estar en modo Ir» con «Cambiar a Ir».
-- `workspace.css`: el `::backdrop` del modal también desenfoca (el scrim ya lo hacía).
-- GOTO → «Ir» en pestañas, pill, simulador y pruebas mínimas. Los identificadores y el comando `robot.goto.start` no cambian.
+`AFR2_EXT_MODE` (0x15): petición de 5 o 6 bytes `[reservado u32=0][modo u8][inicio u8 opcional]`, modos 0 Reposo, 1 Manual, 2 Seguir línea, 4 Ir. `inicio=1` solo es válido con modo 2 y arranca el seguimiento en el mismo mensaje. `robot.mode` acepta `idle|manual|line-follow|goto` y `start`. Sin cambio de EX01 (v13). `wire_catalog.json`, `commands.json` y Protocol Studio (catálogo, guiado, códec) actualizados.
+
+## Cambios
+
+- ATmega: `Afr2Product.selected_mode` persistente (sobrevive a STOP y fallos); `Afr2Product_SetMode`; conducción PWM/cerrado solo en Manual; `SEQ_START` solo en Manual; seguidor de línea requiere Seguir línea; rutas y GOTO requieren Ir (los giros en sitio x=y=0 se permiten en Manual); acciones rápidas de línea/Ir con aviso «Cambiar a…». OLED: menú «Modo de robot» con Reposo/Manual/Seguir linea/Ir; dashboard con nombres REPOSO/MANUAL/SEGUIR LINEA/IR y marquesina; textos GOTO→Ir.
+- ESP: `broker_product.cpp` acepta `goto` y `start` en `robot.mode` y publica el estado al responder.
+- Web: `robotModeSelect.ts` (selector real de modo), `useRobotMode.ts`, `RobotModePill`; `armedMode.ts` eliminado. Paneles Conducir, Secuencias, Pruebas mínimas, Ir y Seguidor muestran un banner con «Cambiar a «X»». Seguidor en dos tarjetas plegables, ancho de cinta compartido (`lineTape.tsx`), pill centrada con fade. `workspace.css`: `::backdrop` con desenfoque literal. GOTO→Ir en textos de usuario, simulación OLED y ayuda. Hashes de `firmwareRenderer.sources.json` vigentes.
 
 ## Pendiente
 
-- Compilar y probar en el auto: Manual como preparación de Ir/Línea, y el desenfoque en el navegador del usuario.
-- Si se quiere un modo Ir/Línea persistente en el firmware (y en el OLED), hace falta un cambio de contrato (`robot.mode`) y de ATmega/ESP.
-- La versión 1.37.0 estaba en curso con AFR2-20261117-10 (sincronización); esta ficha sube sobre ella.
+- Compilar ATmega/ESP/Web y probar en el auto (no se ejecutó nada).
+- Ejecutar `tools/sync-oled-library.mjs` para regenerar `generated/firmwareLibrary.ts` (nombres de ítems/títulos nuevos).
+- Probar en hardware: persistencia del modo tras STOP, cambio OLED↔Web, bloqueos fuera de modo y desenfoque del modal en el navegador.
+- La versión 1.37.0 (AFR2-20261117-10) sigue sin confirmar; esta ficha sube sobre ella.

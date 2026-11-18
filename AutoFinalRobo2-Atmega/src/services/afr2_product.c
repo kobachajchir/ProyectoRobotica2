@@ -87,7 +87,7 @@ uint8_t Afr2Product_HaltMotion(void *ctx) {
 }
 uint8_t Afr2Product_SetMode(Afr2Product *p,uint8_t mode) {
     if(mode!=AFR2_IDLE && mode!=AFR2_MANUAL && mode!=AFR2_LINE && mode!=AFR2_GOTO)return AFR2_BAD;
-    if(mode==AFR2_IDLE){p->selected_mode=AFR2_IDLE;Afr2Product_Stop(p);return p->mode==AFR2_IDLE?AFR2_OK:AFR2_FAILED;}
+    if(mode==AFR2_IDLE){p->selected_mode=AFR2_IDLE;Afr2Product_Stop(p);return AFR2_OK;} /* con fallo activo mode queda FAULT, pero Reposo ya quedo elegido */
     if(!p->stopped || Afr2Head_State()->running || p->hall_measuring || (p->sequence.state>=1 && p->sequence.state<=3))Afr2Product_Stop(p);
     if(mode==AFR2_MANUAL)p->fault=0;
     else if(p->fault)return AFR2_DENIED;
@@ -190,6 +190,7 @@ uint8_t Afr2Product_StartLine(Afr2Product *p) {
     if(Afr2Head_State()->running)return AFR2_BUSY;
     if(p->fault || p->hall_measuring)return AFR2_DENIED;
     if(!p->config.motor_ready || !p->sensors.line_valid_raw || !calibrated(p))return AFR2_UNAVAILABLE;
+    if(!p->sensors.line_bits)return AFR2_UNAVAILABLE;   /* AFR2-20261118-01: no arranca sin ver la cinta */
     if(p->goto_state==1)p->goto_state=3;
     Afr2Head_SetIr(1);p->sensors.line_valid=1;   /* AFR2-20261108-13: following a line turns its sensors on */
     p->last_line_error=0;p->last_line_ms=p->now;p->line_cross_ms=0;
@@ -373,8 +374,9 @@ void Afr2Product_Task(Afr2Product *p,uint32_t now) {
         }else p->line_cross_ms=0;
         int16_t wz=0;
         if(!p->sensors.line_bits){
-            if(p->last_line_error && (uint32_t)(now-p->last_line_ms)<=250u)wz=p->last_line_error;
-            else {Afr2Product_Stop(p);p->notice=2;return;}
+            /* AFR2-20261118-01: sin cinta bajo ningun sensor el auto se detiene de inmediato y queda quieto;
+             * para avanzar de nuevo hay que volver a iniciar viendo la linea (StartLine lo exige). */
+            Afr2Product_Stop(p);p->notice=2;return;
         }else{
             /* AFR2-20261107-43: IR1 (bit0, A4) esta a la izquierda (confirmado por el usuario). Linea a la
              * izquierda => error positivo => wz positivo = giro antihorario (hacia la linea). */

@@ -5,6 +5,7 @@ import { PageHeader } from '../../components/ui/PageHeader';
 import { StatusNotice } from '../../components/ui/StatusNotice';
 import { UiIcon } from '../../components/ui/UiIcon';
 import { useConnection } from './ConnectionContext';
+import { ROBOT_MODE_LABELS } from './useRobotMode';
 
 export interface BusyEndpointSnapshot {
   busy: boolean;
@@ -93,7 +94,8 @@ export function BusyPage() {
   const maxWifi = remoteBusy?.maxWifiClients ?? 4;
   const wsClients = remoteBusy?.wsClients ?? wifiStatus.wsClients ?? (isBusy ? 1 : 0);
   const maxWeb = remoteBusy?.maxWebClients ?? 1;
-  const modeLabel = remoteBusy?.robotMode ?? robotState?.mode ?? '—';
+  const rawMode = remoteBusy?.robotMode ?? robotState?.mode ?? '—';
+  const modeLabel = (ROBOT_MODE_LABELS as Record<string, string>)[rawMode] ?? rawMode;
   const stoppedLabel =
     remoteBusy !== null
       ? remoteBusy.robotStopped

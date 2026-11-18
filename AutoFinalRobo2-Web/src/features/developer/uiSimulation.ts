@@ -54,7 +54,7 @@ export function simulationItems(u: UiSimulation): FirmwareMenuItem[] {
   if (u.node === S.AFR2_N_SYNC_ASK) return ['Cerrar', 'Desactivar funcion'].map(item);
   if (u.node === S.AFR2_N_HALL_PICK) return ['FL', 'FR', 'RL', 'RR'].map(item);
   if (u.node === S.AFR2_N_WIFI_MODE_SELECT) return ['STA', 'AP', 'AP-STA'].map(item);
-  if (u.node === S.AFR2_N_CAPS) return ['UI y OLED', 'UART y ESP', 'Sensores', 'PWM y STOP', 'GOTO y pose', 'Secuencias y EEPROM'].map(item);
+  if (u.node === S.AFR2_N_CAPS) return ['UI y OLED', 'UART y ESP', 'Sensores', 'PWM y STOP', 'Ir y pose', 'Secuencias y EEPROM'].map(item);
   if (u.node === S.AFR2_N_NETWORK) return ['Modo e IP', 'Mascara y puerta de enlace'].map(item);
   return Array.from({ length: firmwareNodeCount(u.node, snapshot.configDirty, snapshot) }, (_, i) => {
     const row = firmwareMenuItem(u.node, i, snapshot);
@@ -261,7 +261,7 @@ function invoke(u:UiSimulation,item:FirmwareMenuItem,value:number):boolean{
     case 75:u.servoEnabled=!u.servoEnabled;if(!u.servoEnabled && u.radar){u.radar=false;u.values[107]=u.values[111]??0;}break;
     case 76:u.values[36]=Number(!u.values[36]);if(!u.values[36])stop(u);break;
     case 78:u.resumeRadar=u.radar;u.radar=false;u.servoEnabled=true;break;
-    case 80:if(value===0)stop(u);else if(!u.stopped){notify(u,'Servicio ocupado',true);return false;}else u.mode=1;break;
+    case 80:if(value!==0&&!u.stopped){notify(u,'Servicio ocupado',true);return false;}stop(u);u.mode=[0,1,2,0,4,0,0,0][value]??0;break; // AFR2-20261117-11: modo persistente
     case 83:u.values[83]=value;break;
     case 84:u.diagState=1;schedule(u,'esp');break;
     case 57:{const saved={...u.saved},clock=u.clockMs,cpr=[...u.hallCpr],calibrated=u.savedLineCalibrated;Object.assign(u,createUiSimulation(u.scenario),{values:saved,saved:{...saved},clockMs:clock,hallCpr:cpr,lineCalibrated:calibrated,savedLineCalibrated:calibrated});break;}
@@ -428,7 +428,7 @@ export function simulationSnapshot(u: UiSimulation): FirmwareSnapshot {
   const pulse = u.servoEnabled ? 1000 + Math.round(angle * 1000 / 180) : 0;
   const pwm = Array.from({ length: 4 }, (_, i) => !u.stopped && i === v[S.AFR2_A_WHEEL] ? v[S.AFR2_A_TEST_PWM] : 0);
   const lines: Record<number, string[]> = {
-    [S.AFR2_N_HOME]: [["Reposo","MANUAL","SEGUIR LINEA","PRUEBA DE RUEDA","GOTO","FALLO","SECUENCIA","PWM MANUAL"][u.mode] ?? "Modo: --", "", ""],
+    [S.AFR2_N_HOME]: [["Reposo","MANUAL","SEGUIR LINEA","PRUEBA DE RUEDA","IR","FALLO","SECUENCIA","PWM MANUAL"][u.mode] ?? "Modo: --", "", ""],
     [S.AFR2_N_ROBOT_VIEW]: [`Modo:${u.mode} Ctrl:0`, `Salidas OFF:${Number(u.stopped)}`, 'Estado de salidas'],
     [S.AFR2_N_LINK_VIEW]: ['UART:1 Ext:1', 'Origen:0 Web:0', 'XOR mal:0'],
     [S.AFR2_N_ALERT_VIEW]: [u.mode===MODE.fault?'F1 Lazo demorado':'Sin fallos activos',u.stopped?'Salidas: OFF':'Salidas: activas',u.mode===MODE.fault?'Revisar log USB':'Listo para operar'],
@@ -441,12 +441,12 @@ export function simulationSnapshot(u: UiSimulation): FirmwareSnapshot {
     [S.AFR2_N_WHEEL_VIEW]: [`FL:${pwm[0]} FR:${pwm[1]}`, `RL:${pwm[2]} RR:${pwm[3]}`, `OFF:${Number(u.stopped)}`],
     [S.AFR2_N_LINE_REQ]: [`Linea valida:${Number(u.lineCalibrated)}`, `Hall:${Number(hall)} Geom:${v[S.AFR2_A_GEOM_READY]}`, `Motor habilit:${v[S.AFR2_A_MOTOR_READY]}`],
     [S.AFR2_N_GOTO_REVIEW]: [`X:${v[S.AFR2_A_GOTO_X]} mm`, `Y:${v[S.AFR2_A_GOTO_Y]} mm`, `V max:${v[S.AFR2_A_SPEED]} mm/s`],
-    [S.AFR2_N_GOTO_RESULT]: [`Estado GOTO:${u.mode === MODE.goto ? 1 : 0}`, `Pose valida:${Number(pose)}`, `Salidas OFF:${Number(u.stopped)}`],
+    [S.AFR2_N_GOTO_RESULT]: [`Estado Ir:${u.mode === MODE.goto ? 1 : 0}`, `Pose valida:${Number(pose)}`, `Salidas OFF:${Number(u.stopped)}`],
     [S.AFR2_N_POSE]: pose ? ['X:0 Y:0', 'Yaw:0 mrad', 'Estimacion ruedas'] : ['Sin odometria', 'Conectar Hall', 'Calibrar geometria'],
     [S.AFR2_N_WIFI_VIEW]: [`Modo:${v[S.AFR2_A_WIFI_MODE]} STA:${Number(u.connected)}`, u.connected ? u.draftSsid : '', u.connected ? '192.0.2.2' : '192.0.2.1'],
     [S.AFR2_N_WIFI_REVIEW]: [u.draftSsid, `Modo:${v[S.AFR2_A_WIFI_MODE]} Listo:${Number(u.wifiDraftReady)}`, 'Giro: opciones'],
     [S.AFR2_N_VERSIONS]: ['Mega demo UI', 'ESP:demo', 'Web:demo'],
-    [S.AFR2_N_CAPS]: ['UI/TWI/UART/STOP', `Linea:${Number(u.lineCalibrated)} Hall:${Number(hall)}`, `GOTO req:${Number(pose)}`],
+    [S.AFR2_N_CAPS]: ['UI/TWI/UART/STOP', `Linea:${Number(u.lineCalibrated)} Hall:${Number(hall)}`, `Ir req:${Number(pose)}`],
     [S.AFR2_N_PREFS_VIEW]: [`EEPROM valida:${Number(u.prefsLoaded)}`, `Guardado estado:${u.prefsLoaded ? 2 : 0}`, 'CRC/version 14'],
   };
   const items = simulationItems(u).slice(u.firstVisible, u.firstVisible + 3);
@@ -462,7 +462,7 @@ export function simulationSnapshot(u: UiSimulation): FirmwareSnapshot {
     ['UART: puente ESP','Wi-Fi/HTTP/WS',`Enlace EX01:${Number(ready)}`],
     ['Sensores: IR/HC',`Linea:${Number(u.lineCalibrated)} Eco:${Number(ready)}`,`Hall disponible:${Number(hall)}`],
     ['PWM: sin odometria','STOP corta salidas',`Motor:${v[36]} Fallo:0`],
-    ['GOTO requiere pose','CPR y CAD nominal',`Pose valida:${Number(pose)}`],
+    ['Ir requiere pose','CPR y CAD nominal',`Pose valida:${Number(pose)}`],
     ['Secuencias: pasos',`Sec:0 EEPROM:${Number(u.prefsLoaded)}`,'Guardar explicito'],
   ][u.selection] ?? [];
   return {

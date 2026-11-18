@@ -37,13 +37,16 @@ Reglas:
 
 | Versión | Tipo | Cambio |
 |---|---|---|
+| 1.39.8 | subversión mínima | AFR2-20261118-03: correcciones de la auditoría de modos (manual-pwm/sequence cuentan como Manual en la Web; Reposo con fallo devuelve OK). ATmega y Web en fuente; ESP solo versión. |
+| 1.39.7 | subversión mínima | AFR2-20261118-02: «Iniciar movimiento» del seguidor se deshabilita solo sin línea a la vista (Web y OLED). ATmega y Web en fuente; ESP solo versión. |
+| 1.39.6 | subversión mínima | AFR2-20261118-01: el seguidor frena al perder la línea y exige verla para arrancar. ATmega en fuente; ESP y Web solo versión. |
 | 1.39.5 | subversión mínima | AFR2-20261117-17: selector de zoom de los simuladores en la vista completa del seguidor (60 % por defecto). Web en fuente; ATmega y ESP solo versión. |
 | 1.39.4 | subversión mínima | AFR2-20261117-16: vista completa del seguidor con la cámara más alejada (×0,6) y piso de 4 m. Web en fuente; ATmega y ESP solo versión. |
 | 1.39.3 | subversión mínima | AFR2-20261117-15: Programas → Seguidor de línea con la vista primero, tarjetas plegadas y botón «Vista completa» como Control táctil. Web en fuente; ATmega y ESP solo versión. |
 | 1.39.2 | subversión mínima | AFR2-20261117-14: copia Web del dashboard y del selector de modo del OLED (desbloquea npm run dev). Web en fuente; ATmega y ESP solo versión. |
 | 1.39.1 | subversión mínima | AFR2-20261117-13: matemática de los simuladores en un panel flotante arrastrable (Mostrar/Ocultar matemáticas). Web en fuente; ATmega y ESP solo versión. |
 | 1.39.0 | subversión | AFR2-20261117-12: visor de seguimiento a pantalla completa (interfaz del control táctil) con Iniciar/Pausar/Detener y riel de Información, Parámetros y Calibrar. Web en fuente; ATmega y ESP solo versión. |
-| 1.38.0 | subversión | AFR2-20261117-11: Web con Seguidor y Ajuste en filas plegables, «Iniciar movimiento», modo «Ir», GOTO como «Ir» y modales con desenfoque. ATmega y ESP solo versión. |
+| 1.38.0 | subversión | AFR2-20261117-11: modos reales Reposo/Manual/Seguir línea/Ir (ATmega, ESP, OLED, Web), Seguidor en filas plegables, GOTO como «Ir» y modales con desenfoque. |
 | 1.37.0 | subversión | AFR2-20261117-10: Card de sincronización en Controles rápidos OLED (tarjeta 8/9) y modal Web, activable solo con Internet real (si no, «Sin Internet»), sondeo ESP/Web, `0x30 op18` y `0x53` con `AFR2_EXT_F_SYNC_CONTROL` (EX01 v13). ATmega, ESP y Web en fuente. |
 | 1.36.0 | subversión | AFR2-20261117-09: el ATmega informa versiones (ATmega, ESP, Web) en la autodetección del Loader 2.5.0; línea base en [COMPATIBILIDAD_VERSIONES.md](COMPATIBILIDAD_VERSIONES.md). ATmega en fuente; ESP y Web solo versión. |
 | 1.35.3 | subversión mínima | AFR2-20261117-08: «Reconectando a» con la red STA configurada en vez del nombre del AP (ESP). ESP en fuente; ATmega y Web solo versión. |
