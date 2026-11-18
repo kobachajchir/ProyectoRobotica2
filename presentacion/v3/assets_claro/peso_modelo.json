@@ -1,0 +1,64 @@
+{
+ "fecha_medicion": "2026-11-18",
+ "formula": "reduccion_% = (1 - despues / antes) * 100",
+ "antes": {
+  "exportacion_fusion_a_blender": {
+   "carpeta": "AutoFinalRobo2-CAD/exports/2026-10-25-final/parts",
+   "archivos": 24,
+   "formatos": ".usdz (partes) + .obj/.mtl (placas)",
+   "bytes": 15258365,
+   "nota": "Exportación del 25/10 que corresponde al modelo final; la del 24/10 (22 archivos, 9.319.792 B) es anterior."
+  },
+  "coleccion_detallada_blend": {
+   "archivo": "AutoFinalRobo2-CAD/mecanica/auto-completo/AutoFinalRobo2-Final-20261025.blend",
+   "coleccion": "AFR2_Final_Detallado_20261025",
+   "objetos": 27,
+   "mallas_unicas": 21,
+   "triangulos_unicos": 490524,
+   "triangulos_instanciados": 545482,
+   "materiales": 151
+  },
+  "glb_detallado_sin_draco": {
+   "bytes": 17571416,
+   "nota": "Exportado el 18/11/2026 a una carpeta temporal fuera del repo (no se guardó), mismas opciones de glTF sin Draco, para comparar formato contra formato."
+  }
+ },
+ "despues": {
+  "glb_final_25_10": {
+   "archivo": "AutoFinalRobo2-CAD/exports/2026-10-25-final/AutoFinalRobo2-final.glb",
+   "bytes": 871756,
+   "sha256": "c1bb1d87b40a4224a56e8e6473692929b36b0497799dd0971d6561b4939a4475",
+   "triangulos_unicos": 105618,
+   "materiales": 106,
+   "objetos": 27,
+   "draco": {
+    "nivel": 10,
+    "posicion_bits": 11,
+    "normal_bits": 8,
+    "texcoord_bits": 12
+   },
+   "fuente": "AutoFinalRobo2-CAD/docs/modelo-final-20261025.json y blender_final_20261025.py:129; triángulos y materiales re-contados al importar"
+  },
+  "glb_web_actual": {
+   "archivo": "AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+   "bytes": 880232,
+   "revision": "AFR2-20261031-06 (catalog.json)",
+   "triangulos_unicos": 105616,
+   "materiales": 106,
+   "objetos": 28,
+   "nota": "Distinto del 871.756 B del 25/10: el 31/10 se agregó la salida del servo (AFR2_SG90_Salida). El pedido citaba 871.756 B; ese valor corresponde al GLB del 25/10."
+  },
+  "gz_en_esp": {
+   "archivo": "AutoFinalRobo2-ESP/data/dist/models/AutoFinalRobo2.glb.gz",
+   "bytes": 737394,
+   "nota": "Comprime el GLB web actual (880.232 B). El pedido citaba 730.799 B, que no coincide con el archivo presente."
+  }
+ },
+ "reduccion": {
+  "bytes_exportacion_fusion_a_glb_final_pct": 94.29,
+  "bytes_glb_sin_draco_a_glb_final_pct": 95.04,
+  "bytes_exportacion_fusion_a_gz_esp_pct": 95.17,
+  "triangulos_detallada_a_final_pct": 78.47,
+  "como_se_logra": "Decimate por componente (blender_final_20261025.py: p. ej. SensorLinea_5IR 0,12; Mega2560 0,45; WiFi shield 0,35; ruedas 0,55) + materiales compartidos + compresión Draco (cuantización con pérdida). El gzip del ESP es sin pérdida sobre el GLB."
+ }
+}
