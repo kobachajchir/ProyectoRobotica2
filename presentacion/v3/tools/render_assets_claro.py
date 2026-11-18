@@ -18,8 +18,9 @@ GLB = ROOT + 'AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb'
 BLEND = ROOT + 'AutoFinalRobo2-CAD/mecanica/auto-completo/AutoFinalRobo2-Final-20261025.blend'
 SAMPLES = int(os.environ.get('AFR2_SAMPLES', '128'))
 VIEW = os.environ.get('AFR2_VIEW', 'Standard')     # AgX lavaba los colores del CAD: Standard en todos
+VER = os.environ.get('AFR2_VER', 'v001')           # si se rehace un archivo, usar AFR2_VER=v002 sin pisar v001
 BG_LIGHT = (0xF4, 0xF6, 0xFB)                       # fondo de escenas con fondo
-FLOOR = (0xE9, 0xED, 0xF4)                          # piso claro
+FLOOR = (0xDD, 0xE3, 0xEE)                          # piso claro distinguible sobre blanco
 MANIFEST = []
 
 
@@ -58,8 +59,8 @@ def load(source):
     sc.render.image_settings.color_mode = 'RGBA'
     w = bpy.data.worlds.new('W'); sc.world = w; w.use_nodes = True
     bg = w.node_tree.nodes['Background']
-    bg.inputs[0].default_value = (0.95, 0.96, 0.98, 1); bg.inputs[1].default_value = 0.12   # relleno ambiente claro
-    sc.view_settings.exposure = -0.4   # pedido del usuario: la primera tanda quedó sobreexpuesta
+    bg.inputs[0].default_value = (0.95, 0.96, 0.98, 1); bg.inputs[1].default_value = 0.22   # relleno ambiente claro uniforme
+    sc.view_settings.exposure = -0.55  # evita quemar piezas blancas (ruedas, celdas 18650, blindaje ESP-12, soporte UI)
     cam_d = bpy.data.cameras.new('C'); cam = bpy.data.objects.new('C', cam_d)
     sc.collection.objects.link(cam); sc.camera = cam
     return sc, cam, cam_d
@@ -110,16 +111,17 @@ def island_box(obj, dims_mm, tol=0.6):
     return best
 
 
-def lights(sc, ctr, scale):
-    def area(name, off, energy, size, color):
-        d = bpy.data.lights.new(name, 'AREA'); d.energy = energy; d.size = size; d.color = color
-        o = bpy.data.objects.new('SCN_' + name, d); sc.collection.objects.link(o)
-        o.location = ctr + Vector(off) * scale
+def lights(sc, ctr, scale, d=Vector((0, -1, 1)), right=Vector((1, 0, 0)), upv=Vector((0, 0, 1))):
+    dn = d.normalized(); rn = right.normalized(); un = upv.normalized()
+    def area(name, cr, cu, cd, energy, size, color):
+        ld = bpy.data.lights.new(name, 'AREA'); ld.energy = energy; ld.size = size; ld.color = color
+        o = bpy.data.objects.new('SCN_' + name, ld); sc.collection.objects.link(o)
+        o.location = ctr + (rn * cr + un * cu + dn * cd) * scale
         o.rotation_euler = (ctr - o.location).to_track_quat('-Z', 'Y').to_euler()
     k = scale * scale   # energía proporcional al cuadrado de la distancia: misma exposición en todas las tomas
-    area('Key', (0.25, 0.55, 0.85), 110 * k, 1.1 * scale, (1.0, 0.98, 0.95))   # grande arriba-adelante
-    area('Fill', (-0.8, 0.1, 0.35), 28 * k, 1.4 * scale, (0.85, 0.9, 1.0))     # frío suave
-    area('Rim', (0.1, -0.85, 0.55), 55 * k, 0.8 * scale, (1.0, 1.0, 1.0))      # por detrás
+    area('Key',  0.55, 0.65,  0.75, 42 * k, 1.2 * scale, (1.0, 0.98, 0.95))   # arriba-derecha-frente respecto de cámara
+    area('Fill', -0.75, 0.25, 0.65, 22 * k, 1.5 * scale, (0.88, 0.92, 1.0))   # relleno frío suave izquierda
+    area('Rim',  -0.25, 0.75, -0.65, 25 * k, 0.9 * scale, (1.0, 1.0, 1.0))    # contraluz suave
 
 
 def catcher(sc, z, size):
@@ -143,6 +145,7 @@ def floor_mat(name, c8, rough=0.85):
 def plane(name, loc, scale, mat):
     bpy.ops.mesh.primitive_plane_add(size=1, location=loc)
     p = bpy.context.active_object; p.name = name; p.scale = scale; p.data.materials.append(mat)
+    bpy.context.view_layer.update()
     return p
 
 
@@ -153,28 +156,29 @@ def frame(sc, cam, cam_d, objs, direction, lens=60, res=(2400, 2400), ortho=Fals
     sc.render.resolution_x, sc.render.resolution_y = res; sc.render.resolution_percentage = 100
     cam_d.sensor_fit = 'HORIZONTAL'; cam_d.sensor_width = 36
     aspect = res[0] / res[1]
-    up = Vector((0, 0, 1)) if abs(d.z) < 0.95 else Vector((0, 1, 0))
+    up = Vector((0, 0, 1)) if abs(d.z) < 0.999 else Vector((0, 1, 0))
     right = d.cross(up).normalized(); upv = right.cross(d).normalized()
     pts = [Vector((x, y, z)) for x in (mn.x, mx.x) for y in (mn.y, mx.y) for z in (mn.z, mx.z)]
     ew = max(p.dot(right) for p in pts) - min(p.dot(right) for p in pts)
     eh = max(p.dot(upv) for p in pts) - min(p.dot(upv) for p in pts)
     if ortho:
-        cam_d.type = 'ORTHO'; cam_d.ortho_scale = max(ew, eh * aspect) * margin; dist = rad * 6
+        cam_d.type = 'ORTHO'; cam_d.ortho_scale = max(ew, eh * aspect) * margin; dist = rad * 4
     else:
         cam_d.type = 'PERSP'; cam_d.lens = lens
         fov_h = 2 * math.atan(18 / lens); fov_v = 2 * math.atan(math.tan(fov_h / 2) / aspect)
         dist = max((ew / 2) / math.tan(fov_h / 2), (eh / 2) / math.tan(fov_v / 2)) * margin + rad
     cam_d.clip_start = 0.0005; cam_d.clip_end = 100
     cam.location = ctr + d * dist
-    cam.rotation_euler = (ctr - cam.location).to_track_quat('-Z', 'Y' if abs(d.z) < 0.95 else 'Z').to_euler()
-    if abs(d.z) >= 0.95:   # planta: arriba de la imagen = +Y (frente del auto)
+    if abs(d.z) >= 0.999:   # planta pura (0, 0, ±1): arriba de la imagen = +Y (frente del auto)
         cam.rotation_euler = (0, 0, 0) if d.z > 0 else (math.pi, 0, 0)
-    lights(sc, ctr, max(dist, rad * 2.5))
+    else:
+        cam.rotation_euler = (ctr - cam.location).to_track_quat('-Z', 'Y').to_euler()
+    lights(sc, ctr, max(dist, rad * 2.5), d=d, right=right, upv=upv)
     return ctr, rad, dist
 
 
 def crop_and_finish(path, background=None, margin=0.04):
-    """Recorta al contenido (alfa > 0.02, incluye la sombra) con margen del 4 %; opcional: compone sobre color."""
+    """Recorta al contenido (alfa > 0.22) con margen del 4 %; opcional: compone sobre color."""
     img = bpy.data.images.load(path); w, h = img.size
     px = np.array(img.pixels[:], dtype=np.float32).reshape(h, w, 4)
     a = px[:, :, 3]; ys, xs = np.where(a > 0.22)   # pieza + sombra de contacto; descarta la penumbra lejana
@@ -196,12 +200,16 @@ def crop_and_finish(path, background=None, margin=0.04):
 
 def render(sc, cam, cam_d, aid, source, objs, note, background=None, crop=True):
     background = None   # pedido del usuario: todos los PNG sin fondo (transparentes)
-    path = os.path.join(OUT, aid + '_v001.png')
+    ver = VER
+    if ver == 'v001' and ONLY and os.path.exists(os.path.join(OUT, aid + '_v001.png')):
+        ver = 'v002'    # si se rehace un id puntual y ya existe v001, no pisarlo
+    fname = f'{aid}_{ver}.png'
+    path = os.path.join(OUT, fname)
     sc.render.filepath = path
     bpy.ops.render.render(write_still=True)
     size = crop_and_finish(path, background) if (crop or background) else (sc.render.resolution_x, sc.render.resolution_y)
-    MANIFEST.append({
-        'archivo': 'renders/' + aid + '_v001.png',
+    entry = {
+        'archivo': 'renders/' + fname,
         'origen': {'fuente': GLB if source == 'glb' else BLEND + ' (colección AFR2_Final_Detallado_20261025)',
                    'objetos': [o.name for o in objs]},
         'camara': {'tipo': cam_d.type, 'lente_mm': round(cam_d.lens, 1) if cam_d.type == 'PERSP' else None,
@@ -211,7 +219,11 @@ def render(sc, cam, cam_d, aid, source, objs, note, background=None, crop=True):
         'resolucion_render': [sc.render.resolution_x, sc.render.resolution_y], 'resolucion_final': list(size),
         'fondo': ('#%02X%02X%02X' % background) if background else 'transparente', 'render': {
             'motor': 'Cycles', 'muestras': SAMPLES, 'denoise': True, 'view_transform': VIEW,
-            'look': sc.view_settings.look}, 'nota': note, 'estado': 'hecho'})
+            'look': sc.view_settings.look, 'exposicion': round(sc.view_settings.exposure, 2)},
+        'nota': note, 'estado': 'hecho'}
+    if ver != 'v001':
+        entry['reemplaza'] = f'renders/{aid}_v001.png'
+    MANIFEST.append(entry)
     print('RENDERED', path, size)
 
 
@@ -354,21 +366,24 @@ def _(sc, cam, cam_d):
     objs = meshes(); show_only(objs); amn, amx = bbox(objs)
     us = pick('AFR2_HC_SR04'); umn, umx = bbox(us); c = (umn + umx) / 2
     y_obs = amx.y + 0.14
-    bpy.ops.mesh.primitive_cube_add(size=1, location=(c.x, y_obs, 0.1))
-    ob = bpy.context.active_object; ob.name = 'SCN_Obstaculo'; ob.scale = (0.25, 0.01, 0.25)
-    ob.data.materials.append(floor_mat('SCN_ObsM', (0xC9, 0xCF, 0xD9), 0.6))
-    frame(sc, cam, cam_d, objs + [ob], (1, 0, 0.05), res=(2560, 1440), ortho=True, margin=1.05)
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(c.x, y_obs, (amn.z + amx.z) / 2))
+    ob = bpy.context.active_object; ob.name = 'SCN_Obstaculo'; ob.scale = (0.16, 0.012, 0.14)
+    ob.data.materials.append(floor_mat('SCN_ObsM', (0x94, 0xA3, 0xB8), 0.65))
+    bpy.context.view_layer.update()
+    frame(sc, cam, cam_d, objs + [ob], (1, 0, 0.05), res=(2560, 1440), ortho=True, margin=1.08)
     render(sc, cam, cam_d, 'F_us_tof', 'glb', us, 'Lateral con obstáculo de escena gris claro (no es parte del robot); sin piso ni fondo', background=BG_LIGHT)
 
 
 @job('F_linea_baja', 'glb')
 def _(sc, cam, cam_d):
     objs = meshes(); show_only(objs); amn, amx = bbox(objs)
+    for o in objs:
+        o.visible_shadow = False   # sin sombra sobre el tramo de pista
     ls = pick('SensorLinea_5IR'); lmn, lmx = bbox(ls); cx = (lmn.x + lmx.x) / 2
-    plane('SCN_Piso', (cx, 0, amn.z - 0.0002), (0.6, 0.6, 1), floor_mat('SCN_PisoM', FLOOR))   # tramo de pista, resto transparente
-    plane('SCN_Cinta', (cx, 0, amn.z + 0.0003), (0.019, 0.6, 1), floor_mat('SCN_CintaM', (8, 8, 8), 0.95))
-    frame(sc, cam, cam_d, objs, (0.9, 1.0, 0.12), lens=40, res=(2560, 1440), margin=0.92)
-    render(sc, cam, cam_d, 'F_linea_baja', 'glb', ls, 'Vista baja sobre un tramo de pista #E9EDF4 de 600 mm con banda negra de 19 mm bajo el sensor; fuera del tramo, transparente', background=BG_LIGHT)
+    plane('SCN_Piso', (cx, 0, amn.z - 0.0002), (0.14, 0.6, 1), floor_mat('SCN_PisoM', FLOOR))   # tramo de pista 140×600 mm sin sombras, resto transparente
+    plane('SCN_Cinta', (cx, 0, amn.z + 0.0003), (0.019, 0.6, 1), floor_mat('SCN_CintaM', (18, 22, 31), 0.95))
+    frame(sc, cam, cam_d, objs, (0.9, 1.0, 0.12), lens=40, res=(2560, 1440), margin=1.05)
+    render(sc, cam, cam_d, 'F_linea_baja', 'glb', ls, 'Vista baja sobre un tramo de pista #DDE3EE de 600 mm con banda negra de 19 mm bajo el sensor; sin sombra, resto transparente', background=BG_LIGHT)
 
 
 # ---------------------------------------------------------------- ejecución

@@ -1,0 +1,2549 @@
+{
+ "schema": "afr2-assets-claro-1",
+ "fecha": "2026-11-18",
+ "script_renders": "presentacion/v3/tools/render_assets_claro.py",
+ "reglas": "Sin imágenes generadas por IA; maestros sin guardar; todos los renders PNG transparentes recortados (pedido del usuario: sin fondo, sin sombra de contacto).",
+ "assets": [
+  {
+   "archivo": "renders/F04_bateria_superior_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_Celda_18650:1.001",
+     "AFR2_Celda_18650:2.001",
+     "AFR2_Portabaterias_SinCableExterior:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.0,
+     -0.1363,
+     0.3188
+    ],
+    "direccion": [
+     0.0,
+     0.0,
+     -1.0
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    2109,
+    162
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "2 celdas 18650 + portabaterías, planta con leve perspectiva",
+   "estado": "hecho",
+   "bytes": 308555,
+   "sha256": "bb540b6d00849c86c9f133a42625fe28f08d011ca136837e24786ef6207d5c65",
+   "resolucion": [
+    2109,
+    162
+   ]
+  },
+  {
+   "archivo": "renders/F04_oled_encoder_superior_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_AFR2_UI_B2_Fondo_OLED15_Auto5:1"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.058,
+     -0.2652,
+     0.2538
+    ],
+    "direccion": [
+     0.0,
+     0.7433,
+     -0.669
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    828,
+    1581
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Panel UI (OLED 0,96 + encoder + PCB + soporte) desde arriba y atrás: el OLED mira hacia -Y",
+   "estado": "hecho",
+   "bytes": 918347,
+   "sha256": "3e09a62afb41c551bf88f2f6674ca42ff0ae0f514aee3756556c6e8546f34a9a",
+   "resolucion": [
+    828,
+    1581
+   ]
+  },
+  {
+   "archivo": "renders/F04_sensor_linea_inferior_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_SensorLinea_5IR:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.0,
+     0.1272,
+     -0.2344
+    ],
+    "direccion": [
+     0.0,
+     -0.0,
+     1.0
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    2002,
+    762
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Vista inferior: cinco pares emisor/receptor; sin shadow catcher para no tapar la vista",
+   "estado": "hecho",
+   "bytes": 1289386,
+   "sha256": "4537c067b537405b3249983eb918d4181207eb2711f801e2c1987f66b1ac6f81",
+   "resolucion": [
+    2002,
+    762
+   ]
+  },
+  {
+   "archivo": "renders/F04_hcsr04_frente_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_HC_SR04:1.001",
+     "AFR2_Soporte_HCSR04_Referencia:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     -0.0051,
+     0.2468,
+     0.1319
+    ],
+    "direccion": [
+     0.0,
+     -0.9929,
+     -0.1191
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1878,
+    1326
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Frente (+Y), transductores a cámara; sin servo",
+   "estado": "hecho",
+   "bytes": 2338786,
+   "sha256": "101c5300ba3df261749a3dfe08d8e583051f3efac2adf48184d51734cbffe507",
+   "resolucion": [
+    1878,
+    1326
+   ]
+  },
+  {
+   "archivo": "renders/F04_driver_superior_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_OSOYOOMotorDriver_ModelY_V2:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     -0.048,
+     -0.0584,
+     0.2866
+    ],
+    "direccion": [
+     0.0,
+     0.0,
+     -1.0
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1326,
+    1295
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "OSOYOO Model Y V2 desde arriba",
+   "estado": "hecho",
+   "bytes": 1221399,
+   "sha256": "5fd02e00a7e48e9ceaf478b53e7086bdd2471beb815f483a36140ebf75f74321",
+   "resolucion": [
+    1326,
+    1295
+   ]
+  },
+  {
+   "archivo": "renders/F04_motor_gm25_iso_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_GM25_370:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.194,
+     -0.0765,
+     0.1221
+    ],
+    "direccion": [
+     -0.6509,
+     0.6509,
+     -0.3906
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1708,
+    1084
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "GM25-370 con encoder Hall, isométrica 3/4",
+   "estado": "hecho",
+   "bytes": 757040,
+   "sha256": "1a68e7759c27bd2d5ba900fdb6ab57b8c67d4b91bdaeaeb3728b2ca7ad00f862",
+   "resolucion": [
+    1708,
+    1084
+   ]
+  },
+  {
+   "archivo": "renders/F04_servo_sg90_iso_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_SG90:1.001",
+     "AFR2_SG90_Salida"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.0883,
+     0.1658,
+     0.1327
+    ],
+    "direccion": [
+     -0.6509,
+     -0.6509,
+     -0.3906
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1390,
+    1751
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "SG90 con su salida, isométrica 3/4",
+   "estado": "hecho",
+   "bytes": 1625235,
+   "sha256": "13b813ec9bc856eaf3045db4fddbcf2e4c6483ba6507901a63e42f57d813f557",
+   "resolucion": [
+    1390,
+    1751
+   ]
+  },
+  {
+   "archivo": "renders/F05_stack_mega_driver_wifi_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_Mega2560_CAD:1.001",
+     "AFR2_OSOYOOMotorDriver_ModelY_V2:1.001",
+     "AFR2_OSOYOOWifiShield:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 70.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.2169,
+     -0.2925,
+     0.336
+    ],
+    "direccion": [
+     -0.5111,
+     0.6389,
+     -0.575
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1800,
+    1024
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Mega + Driver + WiFi en su posición de montaje del GLB",
+   "estado": "hecho",
+   "bytes": 1330313,
+   "sha256": "1aad6d1bd2e23e03bc78d013c46b26419ffd182b7713a33554574029bce46e42",
+   "resolucion": [
+    1800,
+    1024
+   ]
+  },
+  {
+   "archivo": "renders/F05_mega2560_iso_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-CAD/mecanica/auto-completo/AutoFinalRobo2-Final-20261025.blend (colección AFR2_Final_Detallado_20261025)",
+    "objetos": [
+     "FINAL_RAW_Mega2560_CAD:1"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.2227,
+     -0.2458,
+     0.2967
+    ],
+    "direccion": [
+     -0.5465,
+     0.6072,
+     -0.5768
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1845,
+    1150
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Malla detallada de Fusion; chip ATmega2560 visible",
+   "estado": "hecho",
+   "bytes": 1306749,
+   "sha256": "3165f949a98fb4feffcd13131e6d1d561f0287a25bb9a2c15e276cc796391a5e",
+   "resolucion": [
+    1845,
+    1150
+   ]
+  },
+  {
+   "archivo": "renders/F05_mega2560_superior_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-CAD/mecanica/auto-completo/AutoFinalRobo2-Final-20261025.blend (colección AFR2_Final_Detallado_20261025)",
+    "objetos": [
+     "FINAL_RAW_Mega2560_CAD:1"
+    ]
+   },
+   "camara": {
+    "tipo": "ORTHO",
+    "lente_mm": null,
+    "ortho_scale_m": 0.117,
+    "posicion_m": [
+     0.0276,
+     -0.029,
+     0.4556
+    ],
+    "direccion": [
+     0.0,
+     0.0,
+     -1.0
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    2398,
+    1180
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Planta ortográfica, malla detallada",
+   "estado": "hecho",
+   "bytes": 2479643,
+   "sha256": "11c8c41e3fdd3f50003d738b61b9cf6e4d95ca8f8143cc9d9d4a2625c67b7e8a",
+   "resolucion": [
+    2398,
+    1180
+   ]
+  },
+  {
+   "archivo": "renders/F05_wifi_shield_iso_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-CAD/mecanica/auto-completo/AutoFinalRobo2-Final-20261025.blend (colección AFR2_Final_Detallado_20261025)",
+    "objetos": [
+     "FINAL_RAW_OSOYOOWifiShield:1"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.1808,
+     -0.1783,
+     0.2466
+    ],
+    "direccion": [
+     -0.5465,
+     0.6072,
+     -0.5768
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1830,
+    1263
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Malla detallada; módulo ESP-12 visible",
+   "estado": "hecho",
+   "bytes": 1693377,
+   "sha256": "4ff4b71c42161eaa404d4ca2415f5e94bce5dcb16fc0b47bf56abe3a25035448",
+   "resolucion": [
+    1830,
+    1263
+   ]
+  },
+  {
+   "archivo": "renders/F05_wifi_shield_superior_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-CAD/mecanica/auto-completo/AutoFinalRobo2-Final-20261025.blend (colección AFR2_Final_Detallado_20261025)",
+    "objetos": [
+     "FINAL_RAW_OSOYOOWifiShield:1"
+    ]
+   },
+   "camara": {
+    "tipo": "ORTHO",
+    "lente_mm": null,
+    "ortho_scale_m": 0.0639,
+    "posicion_m": [
+     0.0467,
+     -0.0292,
+     0.3511
+    ],
+    "direccion": [
+     0.0,
+     0.0,
+     -1.0
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    2398,
+    2196
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Planta ortográfica, malla detallada",
+   "estado": "hecho",
+   "bytes": 4280345,
+   "sha256": "ff9d7cc6a72fae76d387bd5edb3c9ae195259faa338c718b47e4a1503a730a25",
+   "resolucion": [
+    2398,
+    2196
+   ]
+  },
+  {
+   "archivo": "renders/F05_mega2560_chip_detalle_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-CAD/mecanica/auto-completo/AutoFinalRobo2-Final-20261025.blend (colección AFR2_Final_Detallado_20261025)",
+    "objetos": [
+     "FINAL_RAW_Mega2560_CAD:1"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 135.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.1118,
+     -0.1764,
+     0.2823
+    ],
+    "direccion": [
+     -0.3387,
+     0.5645,
+     -0.7527
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    2400,
+    2400
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Primer plano del ATmega2560 (TQFP-100, cuerpo 14×14 mm) · isla (13.7, 13.7) mm en [0.0244, -0.0308, 0.0881] m",
+   "estado": "hecho",
+   "bytes": 4070318,
+   "sha256": "03cb5f1ffbf3351c20994f9dcbb5bc5fba0a7bfec1eec851c076e6d41d66d7ac",
+   "resolucion": [
+    2400,
+    2400
+   ]
+  },
+  {
+   "archivo": "renders/F05_esp12_detalle_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-CAD/mecanica/auto-completo/AutoFinalRobo2-Final-20261025.blend (colección AFR2_Final_Detallado_20261025)",
+    "objetos": [
+     "FINAL_RAW_OSOYOOWifiShield:1"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 135.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.1267,
+     -0.1345,
+     0.2397
+    ],
+    "direccion": [
+     -0.3387,
+     0.5645,
+     -0.7527
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    2400,
+    2400
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Primer plano del módulo ESP-12 (24×16 mm) · isla (24.0, 16.0) mm en [0.0643, -0.0305, 0.1011] m",
+   "estado": "hecho",
+   "bytes": 3924011,
+   "sha256": "a3005f93ddc8a9a21bc9071df441e027eb6fb7f431d5af2fda26303f03ef93e0",
+   "resolucion": [
+    2400,
+    2400
+   ]
+  },
+  {
+   "archivo": "renders/F01_auto_hero_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_AFR2_UI_B2_Fondo_OLED15_Auto5:1",
+     "AFR2_CapaInferior.001",
+     "AFR2_CapaSuperior.001",
+     "AFR2_Casquillos_Ruedas_6a4_Referencia:1.001",
+     "AFR2_Celda_18650:1.001",
+     "AFR2_Celda_18650:2.001",
+     "AFR2_Fijaciones_Placas:1.001",
+     "AFR2_GM25_370:1.001",
+     "AFR2_GM25_370:2.001",
+     "AFR2_GM25_370:3.001",
+     "AFR2_GM25_370:4.001",
+     "AFR2_HC_SR04:1.001",
+     "AFR2_Mega2560_CAD:1.001",
+     "AFR2_OSOYOOMotorDriver_ModelY_V2:1.001",
+     "AFR2_OSOYOOWifiShield:1.001",
+     "AFR2_Portabaterias_SinCableExterior:1.001",
+     "AFR2_Prisioneros_Ruedas:1.001",
+     "AFR2_Rueda80_ManoA:1.001",
+     "AFR2_Rueda80_ManoA:2.001",
+     "AFR2_Rueda80_ManoB:1.001",
+     "AFR2_Rueda80_ManoB:2.001",
+     "AFR2_SensorLinea_5IR:1.001",
+     "AFR2_Separadores_Montaje:1.001",
+     "AFR2_SG90:1.001",
+     "AFR2_SG90_Salida",
+     "AFR2_Soporte_HCSR04_Referencia:1.001",
+     "AFR2_Soportes_Motores_Referencia:1.001",
+     "AFR2_Voltimetro_Referencia:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 70.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.6612,
+     0.8547,
+     0.4672
+    ],
+    "direccion": [
+     -0.5703,
+     -0.7414,
+     -0.3536
+    ]
+   },
+   "resolucion_render": [
+    3840,
+    2160
+   ],
+   "resolucion_final": [
+    2229,
+    1292
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Auto completo 3/4 frontal (portada)",
+   "estado": "hecho",
+   "bytes": 2460506,
+   "sha256": "7d4ad4025333de81667637428c8211a3305cfc5409bd9b1902248faf11072a43",
+   "resolucion": [
+    2229,
+    1292
+   ]
+  },
+  {
+   "archivo": "renders/F_cierre_auto_hero_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_AFR2_UI_B2_Fondo_OLED15_Auto5:1",
+     "AFR2_CapaInferior.001",
+     "AFR2_CapaSuperior.001",
+     "AFR2_Casquillos_Ruedas_6a4_Referencia:1.001",
+     "AFR2_Celda_18650:1.001",
+     "AFR2_Celda_18650:2.001",
+     "AFR2_Fijaciones_Placas:1.001",
+     "AFR2_GM25_370:1.001",
+     "AFR2_GM25_370:2.001",
+     "AFR2_GM25_370:3.001",
+     "AFR2_GM25_370:4.001",
+     "AFR2_HC_SR04:1.001",
+     "AFR2_Mega2560_CAD:1.001",
+     "AFR2_OSOYOOMotorDriver_ModelY_V2:1.001",
+     "AFR2_OSOYOOWifiShield:1.001",
+     "AFR2_Portabaterias_SinCableExterior:1.001",
+     "AFR2_Prisioneros_Ruedas:1.001",
+     "AFR2_Rueda80_ManoA:1.001",
+     "AFR2_Rueda80_ManoA:2.001",
+     "AFR2_Rueda80_ManoB:1.001",
+     "AFR2_Rueda80_ManoB:2.001",
+     "AFR2_SensorLinea_5IR:1.001",
+     "AFR2_Separadores_Montaje:1.001",
+     "AFR2_SG90:1.001",
+     "AFR2_SG90_Salida",
+     "AFR2_Soporte_HCSR04_Referencia:1.001",
+     "AFR2_Soportes_Motores_Referencia:1.001",
+     "AFR2_Voltimetro_Referencia:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 70.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     -0.7822,
+     0.7418,
+     0.4483
+    ],
+    "direccion": [
+     0.6802,
+     -0.6493,
+     -0.3401
+    ]
+   },
+   "resolucion_render": [
+    3840,
+    2160
+   ],
+   "resolucion_final": [
+    2219,
+    1429
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Auto completo 3/4 desde el lado opuesto (cierre)",
+   "estado": "hecho",
+   "bytes": 2597004,
+   "sha256": "171e26d9a78295428e29c7bccf009982e6dcad340b4fa111c2e2d222db4e6b07",
+   "resolucion": [
+    2219,
+    1429
+   ]
+  },
+  {
+   "archivo": "renders/F04_auto_iso_superior_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_AFR2_UI_B2_Fondo_OLED15_Auto5:1",
+     "AFR2_CapaInferior.001",
+     "AFR2_CapaSuperior.001",
+     "AFR2_Casquillos_Ruedas_6a4_Referencia:1.001",
+     "AFR2_Celda_18650:1.001",
+     "AFR2_Celda_18650:2.001",
+     "AFR2_Fijaciones_Placas:1.001",
+     "AFR2_GM25_370:1.001",
+     "AFR2_GM25_370:2.001",
+     "AFR2_GM25_370:3.001",
+     "AFR2_GM25_370:4.001",
+     "AFR2_HC_SR04:1.001",
+     "AFR2_Mega2560_CAD:1.001",
+     "AFR2_OSOYOOMotorDriver_ModelY_V2:1.001",
+     "AFR2_OSOYOOWifiShield:1.001",
+     "AFR2_Portabaterias_SinCableExterior:1.001",
+     "AFR2_Prisioneros_Ruedas:1.001",
+     "AFR2_Rueda80_ManoA:1.001",
+     "AFR2_Rueda80_ManoA:2.001",
+     "AFR2_Rueda80_ManoB:1.001",
+     "AFR2_Rueda80_ManoB:2.001",
+     "AFR2_SensorLinea_5IR:1.001",
+     "AFR2_Separadores_Montaje:1.001",
+     "AFR2_SG90:1.001",
+     "AFR2_SG90_Salida",
+     "AFR2_Soporte_HCSR04_Referencia:1.001",
+     "AFR2_Soportes_Motores_Referencia:1.001",
+     "AFR2_Voltimetro_Referencia:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 60.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.488,
+     0.705,
+     1.0776
+    ],
+    "direccion": [
+     -0.3655,
+     -0.5316,
+     -0.7641
+    ]
+   },
+   "resolucion_render": [
+    3840,
+    2160
+   ],
+   "resolucion_final": [
+    1653,
+    1316
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Auto completo 3/4 superior (arquitectura)",
+   "estado": "hecho",
+   "bytes": 1871047,
+   "sha256": "0f65e03fd97ff6a8dec7113db558ba5c206dd9fe23321f90b422a4315d3b55c4",
+   "resolucion": [
+    1653,
+    1316
+   ]
+  },
+  {
+   "archivo": "renders/F07_placas_iso_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_CapaInferior.001",
+     "AFR2_CapaSuperior.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 70.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.3682,
+     0.4418,
+     0.3606
+    ],
+    "direccion": [
+     -0.5698,
+     -0.6838,
+     -0.4558
+    ]
+   },
+   "resolucion_render": [
+    3840,
+    2160
+   ],
+   "resolucion_final": [
+    3012,
+    1724
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Solo placas, posición de montaje",
+   "estado": "hecho",
+   "bytes": 3314127,
+   "sha256": "882b2e27e1fac9fc3b6c01a5bb2fb334e96a87bf32b0af8fdb175834afb7847c",
+   "resolucion": [
+    3012,
+    1724
+   ]
+  },
+  {
+   "archivo": "renders/F07_placas_iso_separadas_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_CapaInferior.001",
+     "AFR2_CapaSuperior.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 70.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.4842,
+     0.5811,
+     0.4834
+    ],
+    "direccion": [
+     -0.5698,
+     -0.6838,
+     -0.4558
+    ]
+   },
+   "resolucion_render": [
+    3840,
+    2160
+   ],
+   "resolucion_final": [
+    2319,
+    1804
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Placa superior elevada 60 mm SOLO para visualización; no es posición de montaje",
+   "estado": "hecho",
+   "bytes": 2694075,
+   "sha256": "cc597ed2b9c6160a51351544b8b38b978655c722c8065425f7aae29d43b68fdc",
+   "resolucion": [
+    2319,
+    1804
+   ]
+  },
+  {
+   "archivo": "renders/F07_placa_superior_planta_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_CapaSuperior.001"
+    ]
+   },
+   "camara": {
+    "tipo": "ORTHO",
+    "lente_mm": null,
+    "ortho_scale_m": 0.2157,
+    "posicion_m": [
+     0.0002,
+     0.0001,
+     0.8354
+    ],
+    "direccion": [
+     0.0,
+     0.0,
+     -1.0
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1858,
+    2398
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Planta ortográfica, +Y arriba",
+   "estado": "hecho",
+   "bytes": 3959990,
+   "sha256": "f012eb8433631ef138c6cf55229613232e42218be728c002c9d9f2d16a5f9a70",
+   "resolucion": [
+    1858,
+    2398
+   ]
+  },
+  {
+   "archivo": "renders/F07_placa_inferior_planta_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_CapaInferior.001"
+    ]
+   },
+   "camara": {
+    "tipo": "ORTHO",
+    "lente_mm": null,
+    "ortho_scale_m": 0.2159,
+    "posicion_m": [
+     0.0,
+     -0.0,
+     0.8135
+    ],
+    "direccion": [
+     0.0,
+     0.0,
+     -1.0
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1860,
+    2398
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Planta ortográfica, +Y arriba",
+   "estado": "hecho",
+   "bytes": 3884258,
+   "sha256": "0b641404d43b7f79812bf4dfa1f13b0c6eeeee87b3f647fd4a660f5ce2207ff7",
+   "resolucion": [
+    1860,
+    2398
+   ]
+  },
+  {
+   "archivo": "renders/F06_rueda_iso_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_Rueda80_ManoA:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.2002,
+     -0.2122,
+     0.1762
+    ],
+    "direccion": [
+     -0.7049,
+     0.6344,
+     -0.3172
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1151,
+    1149
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Rueda Mecanum mano A; bbox 47×109,2×109,2 mm (firmware usa 80 mm: discrepancia abierta)",
+   "estado": "hecho",
+   "bytes": 786650,
+   "sha256": "5e1d88db2688d7e7ad54249d0fb51c4e986f6fe53ddcb2524b906a50a1c36b24",
+   "resolucion": [
+    1151,
+    1149
+   ]
+  },
+  {
+   "archivo": "renders/F06_rueda_lateral_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_Rueda80_ManoA:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 200.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.6316,
+     0.062,
+     0.0391
+    ],
+    "direccion": [
+     -1.0,
+     0.0,
+     0.0
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1530,
+    1532
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Rueda vista según su eje",
+   "estado": "hecho",
+   "bytes": 1139176,
+   "sha256": "07c11998f00e4ea0f60af873ebf0642f8c3c94acdeaf65638539c6dbb14b8746",
+   "resolucion": [
+    1530,
+    1532
+   ]
+  },
+  {
+   "archivo": "renders/F08_explosionado_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_AFR2_UI_B2_Fondo_OLED15_Auto5:1",
+     "AFR2_CapaInferior.001",
+     "AFR2_CapaSuperior.001",
+     "AFR2_Casquillos_Ruedas_6a4_Referencia:1.001",
+     "AFR2_Celda_18650:1.001",
+     "AFR2_Celda_18650:2.001",
+     "AFR2_Fijaciones_Placas:1.001",
+     "AFR2_GM25_370:1.001",
+     "AFR2_GM25_370:2.001",
+     "AFR2_GM25_370:3.001",
+     "AFR2_GM25_370:4.001",
+     "AFR2_HC_SR04:1.001",
+     "AFR2_Mega2560_CAD:1.001",
+     "AFR2_OSOYOOMotorDriver_ModelY_V2:1.001",
+     "AFR2_OSOYOOWifiShield:1.001",
+     "AFR2_Portabaterias_SinCableExterior:1.001",
+     "AFR2_Prisioneros_Ruedas:1.001",
+     "AFR2_Rueda80_ManoA:1.001",
+     "AFR2_Rueda80_ManoA:2.001",
+     "AFR2_Rueda80_ManoB:1.001",
+     "AFR2_Rueda80_ManoB:2.001",
+     "AFR2_SensorLinea_5IR:1.001",
+     "AFR2_Separadores_Montaje:1.001",
+     "AFR2_SG90:1.001",
+     "AFR2_SG90_Salida",
+     "AFR2_Soporte_HCSR04_Referencia:1.001",
+     "AFR2_Soportes_Motores_Referencia:1.001",
+     "AFR2_Voltimetro_Referencia:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 60.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     1.0237,
+     1.2748,
+     0.7193
+    ],
+    "direccion": [
+     -0.5908,
+     -0.7385,
+     -0.3249
+    ]
+   },
+   "resolucion_render": [
+    3840,
+    2160
+   ],
+   "resolucion_final": [
+    1256,
+    1613
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Explosión vertical solo visual (mismos desplazamientos que la v3)",
+   "estado": "hecho",
+   "bytes": 1457003,
+   "sha256": "0cb83456b246db0af1956a9ab3b94fc83805f2d67f8d764586ba5ac751dc7288",
+   "resolucion": [
+    1256,
+    1613
+   ]
+  },
+  {
+   "archivo": "renders/F09_panel_ui_montaje_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_AFR2_UI_B2_Fondo_OLED15_Auto5:1"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.1842,
+     -0.4544,
+     0.37
+    ],
+    "direccion": [
+     -0.2696,
+     0.7704,
+     -0.5778
+    ]
+   },
+   "resolucion_render": [
+    3840,
+    2160
+   ],
+   "resolucion_final": [
+    3840,
+    2160
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Primer plano del panel OLED/encoder montado (auto completo visible)",
+   "estado": "hecho",
+   "bytes": 7351384,
+   "sha256": "63c868bc74afd04efbd80d648f22571b9f29fe8f506da401ef17079ea604c9f9",
+   "resolucion": [
+    3840,
+    2160
+   ]
+  },
+  {
+   "archivo": "renders/F_lateral_ortho_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_AFR2_UI_B2_Fondo_OLED15_Auto5:1",
+     "AFR2_CapaInferior.001",
+     "AFR2_CapaSuperior.001",
+     "AFR2_Casquillos_Ruedas_6a4_Referencia:1.001",
+     "AFR2_Celda_18650:1.001",
+     "AFR2_Celda_18650:2.001",
+     "AFR2_Fijaciones_Placas:1.001",
+     "AFR2_GM25_370:1.001",
+     "AFR2_GM25_370:2.001",
+     "AFR2_GM25_370:3.001",
+     "AFR2_GM25_370:4.001",
+     "AFR2_HC_SR04:1.001",
+     "AFR2_Mega2560_CAD:1.001",
+     "AFR2_OSOYOOMotorDriver_ModelY_V2:1.001",
+     "AFR2_OSOYOOWifiShield:1.001",
+     "AFR2_Portabaterias_SinCableExterior:1.001",
+     "AFR2_Prisioneros_Ruedas:1.001",
+     "AFR2_Rueda80_ManoA:1.001",
+     "AFR2_Rueda80_ManoA:2.001",
+     "AFR2_Rueda80_ManoB:1.001",
+     "AFR2_Rueda80_ManoB:2.001",
+     "AFR2_SensorLinea_5IR:1.001",
+     "AFR2_Separadores_Montaje:1.001",
+     "AFR2_SG90:1.001",
+     "AFR2_SG90_Salida",
+     "AFR2_Soporte_HCSR04_Referencia:1.001",
+     "AFR2_Soportes_Motores_Referencia:1.001",
+     "AFR2_Voltimetro_Referencia:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "ORTHO",
+    "lente_mm": null,
+    "ortho_scale_m": 0.2794,
+    "posicion_m": [
+     1.1452,
+     -0.0049,
+     0.0572
+    ],
+    "direccion": [
+     -1.0,
+     0.0,
+     0.0
+    ]
+   },
+   "resolucion_render": [
+    3840,
+    2160
+   ],
+   "resolucion_final": [
+    3458,
+    1929
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Lateral ortográfica (+Y a la derecha)",
+   "estado": "hecho",
+   "bytes": 4092198,
+   "sha256": "e9506f619b134848741087b4f0e5a5d9cda2d0ab8df87b257efae04b38b79a93",
+   "resolucion": [
+    3458,
+    1929
+   ]
+  },
+  {
+   "archivo": "renders/F_planta_ortho_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_AFR2_UI_B2_Fondo_OLED15_Auto5:1",
+     "AFR2_CapaInferior.001",
+     "AFR2_CapaSuperior.001",
+     "AFR2_Casquillos_Ruedas_6a4_Referencia:1.001",
+     "AFR2_Celda_18650:1.001",
+     "AFR2_Celda_18650:2.001",
+     "AFR2_Fijaciones_Placas:1.001",
+     "AFR2_GM25_370:1.001",
+     "AFR2_GM25_370:2.001",
+     "AFR2_GM25_370:3.001",
+     "AFR2_GM25_370:4.001",
+     "AFR2_HC_SR04:1.001",
+     "AFR2_Mega2560_CAD:1.001",
+     "AFR2_OSOYOOMotorDriver_ModelY_V2:1.001",
+     "AFR2_OSOYOOWifiShield:1.001",
+     "AFR2_Portabaterias_SinCableExterior:1.001",
+     "AFR2_Prisioneros_Ruedas:1.001",
+     "AFR2_Rueda80_ManoA:1.001",
+     "AFR2_Rueda80_ManoA:2.001",
+     "AFR2_Rueda80_ManoB:1.001",
+     "AFR2_Rueda80_ManoB:2.001",
+     "AFR2_SensorLinea_5IR:1.001",
+     "AFR2_Separadores_Montaje:1.001",
+     "AFR2_SG90:1.001",
+     "AFR2_SG90_Salida",
+     "AFR2_Soporte_HCSR04_Referencia:1.001",
+     "AFR2_Soportes_Motores_Referencia:1.001",
+     "AFR2_Voltimetro_Referencia:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "ORTHO",
+    "lente_mm": null,
+    "ortho_scale_m": 0.4663,
+    "posicion_m": [
+     0.0,
+     -0.0049,
+     1.2024
+    ],
+    "direccion": [
+     0.0,
+     0.0,
+     -1.0
+    ]
+   },
+   "resolucion_render": [
+    3840,
+    2160
+   ],
+   "resolucion_final": [
+    2276,
+    2071
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Planta ortográfica (+Y arriba)",
+   "estado": "hecho",
+   "bytes": 4004853,
+   "sha256": "e0bc5a0fe2f0870fe41ecc92f74524356796f490d9fda3adbadca6beb24be0e3",
+   "resolucion": [
+    2276,
+    2071
+   ]
+  },
+  {
+   "archivo": "renders/F_us_tof_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_HC_SR04:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "ORTHO",
+    "lente_mm": null,
+    "ortho_scale_m": 1.9576,
+    "posicion_m": [
+     5.1845,
+     0.2566,
+     0.3595
+    ],
+    "direccion": [
+     -0.9988,
+     0.0,
+     -0.0499
+    ]
+   },
+   "resolucion_render": [
+    2560,
+    1440
+   ],
+   "resolucion_final": [
+    548,
+    370
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Lateral con obstáculo de escena gris claro (no es parte del robot); sin piso ni fondo",
+   "estado": "hecho",
+   "bytes": 124026,
+   "sha256": "e0e9f76b3993a53996a792dc0352e9d3a299cb2e554632f3bb225ed1d5852c44",
+   "resolucion": [
+    548,
+    370
+   ]
+  },
+  {
+   "archivo": "renders/F_linea_baja_v001.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_SensorLinea_5IR:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 40.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.3675,
+     0.4034,
+     0.1062
+    ],
+    "direccion": [
+     -0.6663,
+     -0.7404,
+     -0.0888
+    ]
+   },
+   "resolucion_render": [
+    2560,
+    1440
+   ],
+   "resolucion_final": [
+    2560,
+    1159
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None"
+   },
+   "nota": "Vista baja sobre un tramo de pista #E9EDF4 de 600 mm con banda negra de 19 mm bajo el sensor; fuera del tramo, transparente",
+   "estado": "hecho",
+   "bytes": 1548203,
+   "sha256": "baf96927de222cbd948024a81260c25b554c06cbd21b7f6586ec934ef3fdc5de",
+   "resolucion": [
+    2560,
+    1159
+   ]
+  },
+  {
+   "archivo": "renders/F04_bateria_superior_v002.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_Celda_18650:1.001",
+     "AFR2_Celda_18650:2.001",
+     "AFR2_Portabaterias_SinCableExterior:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.0,
+     -0.1363,
+     0.3188
+    ],
+    "direccion": [
+     0.0,
+     0.2696,
+     -0.963
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    2068,
+    1110
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None",
+    "exposicion": -0.55
+   },
+   "nota": "2 celdas 18650 + portabaterías, planta con leve perspectiva",
+   "estado": "hecho",
+   "reemplaza": "renders/F04_bateria_superior_v001.png",
+   "bytes": 1491523,
+   "sha256": "65dc591997e4f3e61fd39d7b5edf9457ef7450db19153679b8097630f335e3ef",
+   "resolucion": [
+    2068,
+    1110
+   ]
+  },
+  {
+   "archivo": "renders/F04_oled_encoder_superior_v002.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_AFR2_UI_B2_Fondo_OLED15_Auto5:1"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.058,
+     -0.2652,
+     0.2538
+    ],
+    "direccion": [
+     0.0,
+     0.7433,
+     -0.669
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    828,
+    1581
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None",
+    "exposicion": -0.55
+   },
+   "nota": "Panel UI (OLED 0,96 + encoder + PCB + soporte) desde arriba y atrás: el OLED mira hacia -Y",
+   "estado": "hecho",
+   "reemplaza": "renders/F04_oled_encoder_superior_v001.png",
+   "bytes": 1158373,
+   "sha256": "825dc3407db20180784e0b3c9042e65925f0188c77e2e9869f832b6811a8ecbe",
+   "resolucion": [
+    828,
+    1581
+   ]
+  },
+  {
+   "archivo": "renders/F04_sensor_linea_inferior_v002.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_SensorLinea_5IR:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.0,
+     0.1272,
+     -0.2344
+    ],
+    "direccion": [
+     0.0,
+     -0.1483,
+     0.9889
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1994,
+    779
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None",
+    "exposicion": -0.55
+   },
+   "nota": "Vista inferior: cinco pares emisor/receptor; sin shadow catcher para no tapar la vista",
+   "estado": "hecho",
+   "reemplaza": "renders/F04_sensor_linea_inferior_v001.png",
+   "bytes": 1380376,
+   "sha256": "2d3361cddc212e6f210d97acdc378ff225cb74cc58feb0ee3842d7fcca6a36c4",
+   "resolucion": [
+    1994,
+    779
+   ]
+  },
+  {
+   "archivo": "renders/F04_driver_superior_v002.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_OSOYOOMotorDriver_ModelY_V2:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     -0.048,
+     -0.0584,
+     0.2866
+    ],
+    "direccion": [
+     0.0,
+     0.1483,
+     -0.9889
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1336,
+    1900
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None",
+    "exposicion": -0.55
+   },
+   "nota": "OSOYOO Model Y V2 desde arriba",
+   "estado": "hecho",
+   "reemplaza": "renders/F04_driver_superior_v001.png",
+   "bytes": 2282752,
+   "sha256": "0871c4d716b7d31b6f657223b919cd03f57c3128dd502c44418c34257f9acb61",
+   "resolucion": [
+    1336,
+    1900
+   ]
+  },
+  {
+   "archivo": "renders/F04_motor_gm25_iso_v002.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_GM25_370:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.194,
+     -0.0765,
+     0.1221
+    ],
+    "direccion": [
+     -0.6509,
+     0.6509,
+     -0.3906
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1708,
+    1084
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None",
+    "exposicion": -0.55
+   },
+   "nota": "GM25-370 con encoder Hall, isométrica 3/4",
+   "estado": "hecho",
+   "reemplaza": "renders/F04_motor_gm25_iso_v001.png",
+   "bytes": 1093682,
+   "sha256": "0cf5236bdd81a0e50df66d285077b4fa4aaadf5662e046bd563a247c18d92dd3",
+   "resolucion": [
+    1708,
+    1084
+   ]
+  },
+  {
+   "archivo": "renders/F05_stack_mega_driver_wifi_v002.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_Mega2560_CAD:1.001",
+     "AFR2_OSOYOOMotorDriver_ModelY_V2:1.001",
+     "AFR2_OSOYOOWifiShield:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 70.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.2169,
+     -0.2925,
+     0.336
+    ],
+    "direccion": [
+     -0.5111,
+     0.6389,
+     -0.575
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1800,
+    1024
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None",
+    "exposicion": -0.55
+   },
+   "nota": "Mega + Driver + WiFi en su posición de montaje del GLB",
+   "estado": "hecho",
+   "reemplaza": "renders/F05_stack_mega_driver_wifi_v001.png",
+   "bytes": 1616658,
+   "sha256": "c7036964f13cf5bd2039a3730d6494957e0f090fda0aa0d3caf418f4293418fd",
+   "resolucion": [
+    1800,
+    1024
+   ]
+  },
+  {
+   "archivo": "renders/F05_mega2560_iso_v002.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-CAD/mecanica/auto-completo/AutoFinalRobo2-Final-20261025.blend (colección AFR2_Final_Detallado_20261025)",
+    "objetos": [
+     "FINAL_RAW_Mega2560_CAD:1"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.2227,
+     -0.2458,
+     0.2967
+    ],
+    "direccion": [
+     -0.5465,
+     0.6072,
+     -0.5768
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1845,
+    1150
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None",
+    "exposicion": -0.55
+   },
+   "nota": "Malla detallada de Fusion; chip ATmega2560 visible",
+   "estado": "hecho",
+   "reemplaza": "renders/F05_mega2560_iso_v001.png",
+   "bytes": 1630644,
+   "sha256": "205131a8efa975ab8bc6b0eea107278d3e26d7bd47a8e1831543032997593449",
+   "resolucion": [
+    1845,
+    1150
+   ]
+  },
+  {
+   "archivo": "renders/F05_mega2560_chip_detalle_v002.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-CAD/mecanica/auto-completo/AutoFinalRobo2-Final-20261025.blend (colección AFR2_Final_Detallado_20261025)",
+    "objetos": [
+     "FINAL_RAW_Mega2560_CAD:1"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 135.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.1118,
+     -0.1764,
+     0.2823
+    ],
+    "direccion": [
+     -0.3387,
+     0.5645,
+     -0.7527
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    2400,
+    2400
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None",
+    "exposicion": -0.55
+   },
+   "nota": "Primer plano del ATmega2560 (TQFP-100, cuerpo 14×14 mm) · isla (13.7, 13.7) mm en [0.0244, -0.0308, 0.0881] m",
+   "estado": "hecho",
+   "reemplaza": "renders/F05_mega2560_chip_detalle_v001.png",
+   "bytes": 5364072,
+   "sha256": "f86189024dfc847faef334aeb672074708241278868d1238cb61a19786998f41",
+   "resolucion": [
+    2400,
+    2400
+   ]
+  },
+  {
+   "archivo": "renders/F05_esp12_detalle_v002.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-CAD/mecanica/auto-completo/AutoFinalRobo2-Final-20261025.blend (colección AFR2_Final_Detallado_20261025)",
+    "objetos": [
+     "FINAL_RAW_OSOYOOWifiShield:1"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 135.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.1267,
+     -0.1345,
+     0.2397
+    ],
+    "direccion": [
+     -0.3387,
+     0.5645,
+     -0.7527
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    2400,
+    2400
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None",
+    "exposicion": -0.55
+   },
+   "nota": "Primer plano del módulo ESP-12 (24×16 mm) · isla (24.0, 16.0) mm en [0.0643, -0.0305, 0.1011] m",
+   "estado": "hecho",
+   "reemplaza": "renders/F05_esp12_detalle_v001.png",
+   "bytes": 4689236,
+   "sha256": "0740dc40399a4c703145c91cc1db01135638fafe54d863986e7c9d05dd711b3a",
+   "resolucion": [
+    2400,
+    2400
+   ]
+  },
+  {
+   "archivo": "renders/F06_rueda_iso_v002.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_Rueda80_ManoA:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.2002,
+     -0.2122,
+     0.1762
+    ],
+    "direccion": [
+     -0.7049,
+     0.6344,
+     -0.3172
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1151,
+    1149
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None",
+    "exposicion": -0.55
+   },
+   "nota": "Rueda Mecanum mano A; bbox 47×109,2×109,2 mm (firmware usa 80 mm: discrepancia abierta)",
+   "estado": "hecho",
+   "reemplaza": "renders/F06_rueda_iso_v001.png",
+   "bytes": 1134593,
+   "sha256": "685906a44fa99442cb414429763c6ade5a8211bf2af468a2abfa98e626bf588b",
+   "resolucion": [
+    1151,
+    1149
+   ]
+  },
+  {
+   "archivo": "renders/F06_rueda_lateral_v002.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_Rueda80_ManoA:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 200.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.6316,
+     0.062,
+     0.0391
+    ],
+    "direccion": [
+     -1.0,
+     0.0,
+     0.0
+    ]
+   },
+   "resolucion_render": [
+    2400,
+    2400
+   ],
+   "resolucion_final": [
+    1530,
+    1532
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None",
+    "exposicion": -0.55
+   },
+   "nota": "Rueda vista según su eje",
+   "estado": "hecho",
+   "reemplaza": "renders/F06_rueda_lateral_v001.png",
+   "bytes": 1394779,
+   "sha256": "db9bb293b46b14c591f6b082fbc71ee95ae0b7321a5494eca078220d59e3c91f",
+   "resolucion": [
+    1530,
+    1532
+   ]
+  },
+  {
+   "archivo": "renders/F09_panel_ui_montaje_v002.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_AFR2_UI_B2_Fondo_OLED15_Auto5:1"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 85.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.1842,
+     -0.4544,
+     0.37
+    ],
+    "direccion": [
+     -0.2696,
+     0.7704,
+     -0.5778
+    ]
+   },
+   "resolucion_render": [
+    3840,
+    2160
+   ],
+   "resolucion_final": [
+    3840,
+    2160
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None",
+    "exposicion": -0.55
+   },
+   "nota": "Primer plano del panel OLED/encoder montado (auto completo visible)",
+   "estado": "hecho",
+   "reemplaza": "renders/F09_panel_ui_montaje_v001.png",
+   "bytes": 8276371,
+   "sha256": "bcc2f5fa562ee52f46d93cf4312224ed3446722839516e94f7f0831014506864",
+   "resolucion": [
+    3840,
+    2160
+   ]
+  },
+  {
+   "archivo": "renders/F_us_tof_v002.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_HC_SR04:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "ORTHO",
+    "lente_mm": null,
+    "ortho_scale_m": 0.42,
+    "posicion_m": [
+     0.9744,
+     0.0681,
+     0.106
+    ],
+    "direccion": [
+     -0.9988,
+     0.0,
+     -0.0499
+    ]
+   },
+   "resolucion_render": [
+    2560,
+    1440
+   ],
+   "resolucion_final": [
+    2560,
+    973
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None",
+    "exposicion": -0.55
+   },
+   "nota": "Lateral con obstáculo de escena gris claro (no es parte del robot); sin piso ni fondo",
+   "estado": "hecho",
+   "reemplaza": "renders/F_us_tof_v001.png",
+   "bytes": 1522847,
+   "sha256": "61be1f2bb4b385e827468bb08b746e3c0b7767696c6956375f3c71407c522019",
+   "resolucion": [
+    2560,
+    973
+   ]
+  },
+  {
+   "archivo": "renders/F_linea_baja_v002.png",
+   "origen": {
+    "fuente": "D:/ProyectoRobotica2/AutoFinalRobo2-Web/public/models/AutoFinalRobo2.glb",
+    "objetos": [
+     "AFR2_SensorLinea_5IR:1.001"
+    ]
+   },
+   "camara": {
+    "tipo": "PERSP",
+    "lente_mm": 40.0,
+    "ortho_scale_m": null,
+    "posicion_m": [
+     0.4014,
+     0.4412,
+     0.1108
+    ],
+    "direccion": [
+     -0.6663,
+     -0.7404,
+     -0.0888
+    ]
+   },
+   "resolucion_render": [
+    2560,
+    1440
+   ],
+   "resolucion_final": [
+    2275,
+    1120
+   ],
+   "fondo": "transparente",
+   "render": {
+    "motor": "Cycles",
+    "muestras": 128,
+    "denoise": true,
+    "view_transform": "Standard",
+    "look": "None",
+    "exposicion": -0.55
+   },
+   "nota": "Vista baja sobre un tramo de pista #DDE3EE de 600 mm con banda negra de 19 mm bajo el sensor; sin sombra, resto transparente",
+   "estado": "hecho",
+   "reemplaza": "renders/F_linea_baja_v001.png",
+   "bytes": 1600088,
+   "sha256": "6b1132e7db36924ecd29b4645208fd82935590f2c8ac9ea051c03ca7c65151d4",
+   "resolucion": [
+    2275,
+    1120
+   ]
+  },
+  {
+   "archivo": "planos/F07_plano_placas_v001.pdf",
+   "origen": {
+    "fuente": "Fusion · Admin Project · AFR2_Placas_Chasis_Plano Drawing (creado por DrawingManager, modo automático, ISO, mm, A3)",
+    "derivado_de": "Fusion · Admin Project · AFR2_Placas_Chasis_Plano (v1, documento aparte con copia de los cuerpos CapaSuperior/CapaInferior)"
+   },
+   "fondo": "blanco",
+   "estado": "hecho",
+   "nota": "PDF de 4 hojas A3 horizontales: 1 isométrica + lista de piezas, 2 ambas placas (planta y perfil), 3 CapaSuperior, 4 CapaInferior. Rótulo: Created by Koba Chajchir, 18/11/2026. Solo cotas envolventes: superior 199,73 × 154,64 mm, inferior 199,92 × 154,98 mm; espesor 3,0 mm medido en el modelo, sin cota en la hoja. PRELIMINAR: acotado funcional pendiente. ATENCIÓN: la lista de piezas muestra «Steel», material por defecto de Fusion, NO documentado; no usar como dato. La cota 339,44 de la hoja 2 abarca las dos placas colocadas una al lado de la otra (30 mm de separación) y no es una medida de pieza. La escala no figura en el rótulo automático.",
+   "bytes": 142736,
+   "sha256": "58f2f756bd21cb2a071c8343a38cb3a3f4dac2ee99386f5500c062ef1237bd3a"
+  },
+  {
+   "archivo": "planos/F07_plano_placas_v001.png",
+   "origen": {
+    "fuente": "planos/F07_plano_placas_v001.pdf, hoja 3 (CapaSuperior)"
+   },
+   "fondo": "blanco",
+   "estado": "hecho",
+   "nota": "Rasterizado a 300 ppp con PyMuPDF 1.24.10. Misma advertencia de material y escala que el PDF.",
+   "bytes": 231833,
+   "sha256": "09f6f38ad01ff557ed27c9d86b747e3ac9bbec087149d18f9c84723673c3d226",
+   "resolucion": [
+    4963,
+    3509
+   ]
+  },
+  {
+   "archivo": "planos/F07_plano_placa_inferior_v001.png",
+   "origen": {
+    "fuente": "planos/F07_plano_placas_v001.pdf, hoja 4 (CapaInferior)"
+   },
+   "fondo": "blanco",
+   "estado": "hecho",
+   "nota": "Rasterizado a 300 ppp. Agregado: no estaba en la lista pedida.",
+   "bytes": 240771,
+   "sha256": "3cbb347950a80f4404156a33d723e156a3a6b1e744d0bd93987c25bd78389c36",
+   "resolucion": [
+    4963,
+    3509
+   ]
+  },
+  {
+   "archivo": "planos/F07_plano_placa_superior_planta_v001.png",
+   "origen": {
+    "fuente": "planos/F07_plano_placas_v001.pdf, hoja 3, recorte (385,240)-(800,595) pt"
+   },
+   "fondo": "blanco",
+   "estado": "hecho",
+   "nota": "Solo la vista en planta, con su perfil y cotas envolventes, para poner junto al render F07_placa_superior_planta.",
+   "bytes": 81613,
+   "sha256": "fae85cb51b32efe7abc72ffcc087fd1a0b011698a454869c85d35a4e2b3b45b2",
+   "resolucion": [
+    1730,
+    1480
+   ]
+  },
+  {
+   "archivo": "capturas/F08_fusion_ensamble_v001.png",
+   "origen": {
+    "fuente": "Fusion · Admin Project · AutoFinalRobo2 (v5, abierto sin guardar cambios)"
+   },
+   "camara": {
+    "tipo": "vista Fusion IsoTopRight + ajuste a pantalla (API)"
+   },
+   "fondo": "interfaz de Fusion (tema oscuro)",
+   "estado": "hecho",
+   "nota": "Captura pasiva de pantalla 1920×1080 (System.Drawing). El navegador ya estaba desplegado; se ven componentes vinculados (ícono de cadena) y el timeline. Tema oscuro: el cambio a tema claro requiere Preferencias (interfaz), y el control de la interfaz fue denegado.",
+   "bytes": 362886,
+   "sha256": "c76afcc9a0a99556c9307e3465b5700ea0c6631bda4eecbf85539532177ff224",
+   "resolucion": [
+    1920,
+    1080
+   ]
+  },
+  {
+   "archivo": "capturas/F08_fusion_joints_v001.png",
+   "estado": "pendiente",
+   "motivo": "El ensamble AutoFinalRobo2 v5 tiene 0 joints y 0 as-built joints (verificado por API: rootComponent.allJoints vacío). Las piezas se ubican por transformaciones de ocurrencia (scripts fusion_ensamble.py / fusion_ruedas_20261024.py). No hay joint real que capturar."
+  },
+  {
+   "archivo": "capturas/F08_fusion_exportar_v001.png",
+   "estado": "pendiente",
+   "motivo": "Abrir el diálogo de exportación requiere controlar la interfaz de Fusion; el acceso fue denegado. Formato real verificado en exports/2026-10-25-final/parts: 20 .usdz (part_00…part_18 y panel_root) + 2 .obj/.mtl (body_19 y body_20, las placas). La exportación se hizo por script (fusion_exportar_final.py), no por diálogo."
+  },
+  {
+   "archivo": "capturas/F08_grabcad_modelos_v001.png",
+   "estado": "pendiente",
+   "motivo": "Opcional y sin evidencia de GrabCAD: ningún componente del ensamble final está registrado como descargado de GrabCAD (ver procedencia_componentes)."
+  },
+  {
+   "archivo": "capturas/F09_blender_importado_v001.png",
+   "origen": {
+    "fuente": "AutoFinalRobo2-CAD/mecanica/auto-completo/AutoFinalRobo2-Final-20261025.blend (instancia propia de Blender, sin guardar)",
+    "coleccion": "AFR2_Final_Detallado_20261025"
+   },
+   "fondo": "interfaz de Blender",
+   "estado": "hecho",
+   "nota": "Overlay Statistics: 33 objetos, 490.526 triángulos. Capturada con bpy.ops.screen.screenshot desde una instancia aparte (scripts/blender_capturas.py); la sesión del usuario no se tocó.",
+   "bytes": 485271,
+   "sha256": "c1cb79ce2ff0046e6543b40d575a0ad750903561298d49fa4b9438eb5b792187",
+   "resolucion": [
+    1920,
+    1001
+   ]
+  },
+  {
+   "archivo": "capturas/F09_blender_ligero_v001.png",
+   "origen": {
+    "fuente": "AutoFinalRobo2-CAD/mecanica/auto-completo/AutoFinalRobo2-Final-20261025.blend (instancia propia de Blender, sin guardar)",
+    "coleccion": "AFR2_Final_Web_20261025"
+   },
+   "fondo": "interfaz de Blender",
+   "estado": "hecho",
+   "nota": "Overlay Statistics: 33 objetos, 105.620 triángulos.",
+   "bytes": 511649,
+   "sha256": "91ede6145f19aad9f0100b8cd1f1898720aa6dfbdd6b24b5e953fdcc7da81599",
+   "resolucion": [
+    1920,
+    1001
+   ]
+  },
+  {
+   "archivo": "capturas/F09_blender_decimate_v001.png",
+   "origen": {
+    "fuente": "AutoFinalRobo2-CAD/mecanica/auto-completo/AutoFinalRobo2-Final-20261025.blend (instancia propia de Blender, sin guardar)",
+    "objeto": "FINAL_RAW_SensorLinea_5IR:1"
+   },
+   "fondo": "interfaz de Blender",
+   "estado": "hecho",
+   "nota": "El .blend guarda las mallas ya reducidas (sin modificador). El Decimate se RECONSTRUYÓ en memoria con el ratio real del script (blender_final_20261025.py:90, SensorLinea_5IR 0,12, Collapse + Triangulate) para mostrarlo; no se guardó. Face Count 17.092.",
+   "bytes": 479342,
+   "sha256": "1b0fd894a1f11e91ff070ce23e4b0c3f96d01bd5ee9f64c0f6f02a71c85ec672",
+   "resolucion": [
+    1920,
+    1001
+   ]
+  },
+  {
+   "archivo": "logos/fusion360.png",
+   "origen": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/7/78/Fusion360_Logo.png",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Fusion360_Logo.png"
+   },
+   "fondo": "transparente",
+   "estado": "hecho",
+   "nota": "Descargado con permiso del usuario sin modificar (12.888 B, 1278×630 px). El Brand Hub de Autodesk (brand.autodesk.com) exige cuenta corporativa DAM; localmente solo había Fusion360.ico de hasta 256 px.",
+   "bytes": 12888,
+   "sha256": "d17b1f45bafdd942cfdd8aa5c391a38c85a2f5bc4b52a28aba21f649f3faec3a",
+   "resolucion": [
+    1278,
+    630
+   ]
+  },
+  {
+   "archivo": "logos/Fusion360_Logo.svg",
+   "origen": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/d/db/Fusion360_Logo.svg",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Fusion360_Logo.svg"
+   },
+   "fondo": "transparente",
+   "estado": "hecho",
+   "nota": "Icono vectorial SVG de Fusion 360 descargado sin modificar (6.813 B, 341×341).",
+   "bytes": 6813,
+   "sha256": "47a09e3c4349831a59df1a19bed71fc65c59e36dcd1c9f0bc91be19852424f09"
+  },
+  {
+   "archivo": "logos/Autodesk_Fusion_Logo.svg",
+   "origen": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Autodesk_Fusion_Logo.svg",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Autodesk_Fusion_Logo.svg"
+   },
+   "fondo": "transparente",
+   "estado": "hecho",
+   "nota": "Lockup vectorial SVG de Autodesk Fusion descargado sin modificar (8.644 B, 1570×388).",
+   "bytes": 8644,
+   "sha256": "0349d746da13a89772ccb23264180c901e4386755f5b2e865e5d2e7d48948170"
+  },
+  {
+   "archivo": "logos/blender.png",
+   "origen": {
+    "url": "https://download.blender.org/branding/blender_logo_socket.png",
+    "pagina": "https://www.blender.org/about/logo/"
+   },
+   "fondo": "transparente",
+   "estado": "hecho",
+   "nota": "Logo oficial horizontal de Blender con texto (blender_logo_socket.png, 62.780 B, 1800×550 px), descargado con permiso del usuario sin modificar.",
+   "bytes": 62780,
+   "sha256": "10b1450cd194e73dca8fbfdbf7bfc50a4ddb02eef49b7f4cca806bad1da03239",
+   "resolucion": [
+    1800,
+    550
+   ]
+  },
+  {
+   "archivo": "logos/blender_logo.svg",
+   "origen": {
+    "url": "https://download.blender.org/branding/blender_logo.svg",
+    "pagina": "https://www.blender.org/about/logo/"
+   },
+   "fondo": "transparente",
+   "estado": "hecho",
+   "nota": "Logo vectorial oficial de Blender (blender_logo.svg, 8.341 B), descargado con permiso del usuario sin modificar.",
+   "bytes": 8341,
+   "sha256": "6939bb61212a23c6a6b174dde29e27a3c40d2be54d26d2bf7d82bab858307e56"
+  }
+ ],
+ "procedencia_componentes": [
+  {
+   "componente": "CapaSuperior / CapaInferior",
+   "fuente": "Fusion AutoFinalRobo2 (usuario)",
+   "procedencia": "propio del usuario; licencia no indicada"
+  },
+  {
+   "componente": "GM25-370 ×4",
+   "fuente": "CADS/GM25-370/gm25-370.ipt",
+   "procedencia": "aportado por el usuario; autor y licencia remotos sin registrar"
+  },
+  {
+   "componente": "Ruedas Mecanum (Rueda80_ManoA/B)",
+   "fuente": "Fusion Wheel80mm / MecanumWheel80mm aportado por el usuario",
+   "procedencia": "sin procedencia registrada (autor/licencia pendientes); bbox 109,3 mm"
+  },
+  {
+   "componente": "Mega2560_CAD",
+   "fuente": "CADS/MEGA2560/arduinoMegaDetailed.STEP",
+   "procedencia": "aportado por el usuario; autor y licencia pendientes"
+  },
+  {
+   "componente": "OSOYOOWifiShield + ESP_12_E",
+   "fuente": "Fusion OSOYOOWifiShield armado por el usuario",
+   "procedencia": "propio del usuario con piezas Fusion vinculadas (ESP_12_E, headers, LM1117, jst…) sin procedencia registrada"
+  },
+  {
+   "componente": "OSOYOOMotorDriver_ModelY_V2",
+   "fuente": "generado desde CADS/MotorDriver/DriverDimensions.png y Driver.png",
+   "procedencia": "propio (modelo esencial a partir de imágenes del fabricante)"
+  },
+  {
+   "componente": "Portabaterías 2×18650",
+   "fuente": "CADS/18650BatteryHolder/18650 Battery Holder 2x v1.step",
+   "procedencia": "aportado por el usuario + recorte propio (sin cable)"
+  },
+  {
+   "componente": "Celda 18650 ×2",
+   "fuente": "CADS/18650/18650 Battery.STEP",
+   "procedencia": "aportado por el usuario; autor y licencia pendientes"
+  },
+  {
+   "componente": "SensorLinea_5IR",
+   "fuente": "CADS/5IRTracker/5 Channel IR Tracker.step",
+   "procedencia": "aportado por el usuario; autor y licencia pendientes"
+  },
+  {
+   "componente": "SG90",
+   "fuente": "CADS/SG90/SG90 - Micro Servo 9g - Tower Pro.STEP",
+   "procedencia": "aportado por el usuario; autor y licencia pendientes"
+  },
+  {
+   "componente": "HC_SR04",
+   "fuente": "CADS/HCSR04/HC-SR04 Sensor.stp",
+   "procedencia": "aportado por el usuario; autor y licencia pendientes"
+  },
+  {
+   "componente": "Soportes, separadores, fijaciones, voltímetro, casquillos",
+   "fuente": "scripts fusion_etapa2/3.py y manual M2",
+   "procedencia": "propio (generado en el proyecto)"
+  },
+  {
+   "componente": "Panel UI (PCB + soporte)",
+   "fuente": "KiCad PlacaOLED-Encoder-AutoRobo2 + soporte Fusion",
+   "procedencia": "propio; OLED0.96CAD y KY040 de Fusion con fuente no identificada"
+  }
+ ],
+ "grabcad": "No hay evidencia de GrabCAD para ningún componente del ensamble final (COMPONENTES_3D.csv y REVISION_CANDIDATOS_3D.md). El único enlace a GrabCAD registrado es un candidato JGA25-370 que no se descargó ni se usó. Los candidatos FreeCAD-library (CC-BY-3.0) e Innerscene (CC0) del 23/10 no son los modelos montados: el ensamble usa los CADS aportados por el usuario.",
+ "peso_modelo": "peso_modelo.json"
+}

@@ -24,13 +24,14 @@ contacto (shadow catcher, solo con `AFR2_SHADOW=1`) y las escenas que iban sobre
 
 | Qué | Dónde | Notas |
 | --- | --- | --- |
-| Script de renders | [tools/render_assets_claro.py](../tools/render_assets_claro.py) | Cycles 128 muestras, denoise, view transform **Standard** (AgX lavaba colores), exposición −0,4, luces key/fill/rim con energía ∝ distancia², todo transparente y recortado (alfa > 0,22, margen 4 %). Escribe `renders/manifest_renders.json`. Componentes de placas (Mega, WiFi, chip, ESP-12) salen de la **colección detallada** del .blend (`FINAL_RAW_*`); el resto del GLB. Fix clave: `view_layer.update()` tras abrir el .blend (en `-b` la matrix_world quedaba en identidad). |
-| Renders (en curso) | [renders/](renders/) | 29 trabajos en total; **16 listos** al traspaso (F01, F_cierre, todos F04 de componentes, todos F05). Faltan 13: F04_auto_iso_superior, F07_placas_iso, F07_placas_iso_separadas, F07_placa_superior_planta, F07_placa_inferior_planta, F06_rueda_iso, F06_rueda_lateral, F08_explosionado, F09_panel_ui_montaje, F_lateral_ortho, F_planta_ortho, F_us_tof, F_linea_baja. El proceso `blender.exe -b` sigue corriendo; log en el scratchpad de la sesión anterior (`…/scratchpad/claro_full.log`, puede borrarse). |
+| Script de renders | [tools/render_assets_claro.py](../tools/render_assets_claro.py) | Cycles 128 muestras, denoise, view transform **Standard** (AgX lavaba colores), luces key/fill/rim en base de cámara (`right`, `upv`, `d`) con energía ∝ distancia², exposición −0,55 en `v002`, todo transparente y recortado (alfa > 0,22, margen 4 %). Escribe `renders/manifest_renders.json`. Componentes de placas (Mega, WiFi, chip, ESP-12) salen de la **colección detallada** del .blend (`FINAL_RAW_*`); el resto del GLB. |
+| Renders | [renders/](renders/) | 29 renders `v001` completos + **14 renders `v002`** corregidos tras auditoría sobre damero (sin pisar `v001`): `F04_bateria_superior`, `F04_driver_superior`, `F04_sensor_linea_inferior`, `F04_oled_encoder_superior`, `F04_motor_gm25_iso`, `F05_stack_mega_driver_wifi`, `F05_mega2560_iso`, `F05_mega2560_chip_detalle`, `F05_esp12_detalle`, `F06_rueda_iso`, `F06_rueda_lateral`, `F09_panel_ui_montaje`, `F_us_tof`, `F_linea_baja`. |
 | Plano de placas | [planos/F07_plano_placas_v001.pdf](planos/F07_plano_placas_v001.pdf), [PNG hoja 3](planos/F07_plano_placas_v001.png), [PNG hoja 4](planos/F07_plano_placa_inferior_v001.png), [recorte planta](planos/F07_plano_placa_superior_planta_v001.png) | Fusion: documento aparte **AFR2_Placas_Chasis_Plano** (copia de los cuerpos CapaSuperior/CapaInferior) y **AFR2_Placas_Chasis_Plano Drawing** (DrawingManager automático, ISO, mm, A3, 4 hojas, rótulo Koba Chajchir). Solo cotas envolventes: sup. 199,73 × 154,64; inf. 199,92 × 154,98; espesor 3,0 mm sin cota. **Lista de piezas dice «Steel» = default de Fusion, no documentado.** Cota 339,44 de hoja 2 = dos placas lado a lado, no es de pieza. Sin escala en rótulo. PNG a 300 ppp con PyMuPDF. |
 | Captura ensamble Fusion | [capturas/F08_fusion_ensamble_v001.png](capturas/F08_fusion_ensamble_v001.png) | 1920×1080, navegador desplegado + timeline, tema oscuro. |
 | Capturas Blender | [importado](capturas/F09_blender_importado_v001.png), [ligero](capturas/F09_blender_ligero_v001.png), [decimate](capturas/F09_blender_decimate_v001.png) | Instancia propia de Blender ([scripts/blender_capturas.py](scripts/blender_capturas.py)), no la sesión del usuario. Stats 490.526 vs 105.620 triángulos. El Decimate (SensorLinea 0,12) se **reconstruyó en memoria** con el ratio del script; el .blend no lo guarda. |
+| Logos | [logos/](logos/) | Descargados con permiso del usuario sin modificar: `blender.png` (`blender_logo_socket.png`, 62.780 B), `blender_logo.svg` (8.341 B), `fusion360.png` (12.888 B), `Fusion360_Logo.svg` (6.813 B), `Autodesk_Fusion_Logo.svg` (8.644 B). |
 | Peso del modelo | [peso_modelo.json](peso_modelo.json) | Fusion→Blender 15.258.365 B (exports/2026-10-25-final/parts, 24 archivos) → GLB final 871.756 B: **−94,29 %**; GLB detallado sin Draco 17.571.416 B → −95,04 %; triángulos 490.524 → 105.618: **−78,47 %**. Draco nivel 10, pos 11, normal 8. |
-| Generador de manifest | [scripts/armar_manifest.py](scripts/armar_manifest.py) | Une `renders/manifest_renders.json` + entradas manuales (planos, capturas, logos, pendientes) + procedencia por componente → `MANIFEST.json`. **Todavía no se ejecutó.** |
+| Manifest | [MANIFEST.json](MANIFEST.json) | Generado por [scripts/armar_manifest.py](scripts/armar_manifest.py) (59 entradas: 56 hechas, 3 pendientes documentados). |
 
 ## Datos verificados que corrigen el pedido
 
@@ -40,20 +41,8 @@ contacto (shadow catcher, solo con `AFR2_SHADOW=1`) y las escenas que iban sobre
 - Ensamble Fusion `AutoFinalRobo2` v5: **0 joints** (posiciones por transformaciones).
 - GrabCAD: **sin evidencia** para ningún componente montado (ver `AutoFinalRobo2-CAD/docs/COMPONENTES_3D.csv`, `REVISION_CANDIDATOS_3D.md`).
 
-## Pendiente
+## Pendientes registrados en `MANIFEST.json`
 
-1. Esperar que termine el lote (o relanzar solo lo faltante):
-   `AFR2_SAMPLES=128 "C:/Program Files/Blender Foundation/Blender 4.5/blender.exe" -b --factory-startup --python presentacion/v3/tools/render_assets_claro.py -- "D:/ProyectoRobotica2/presentacion/v3/assets_claro/renders" <ids…>`
-   (si se relanza con ids, `manifest_renders.json` se fusiona, no se pisa).
-2. Revisar visualmente los 29 PNG sobre damero (transparencia, exposición, encuadre). Puntos a mirar: F04_oled_encoder_superior (OLED mira a −Y), F05_esp12_detalle (k=0,75), F_linea_baja (tramo de pista 600 mm), F09_panel_ui_montaje.
-3. Logos: solo hay `.ico` ≤ 256 px (Fusion: `%LOCALAPPDATA%/Autodesk/webdeploy/production/6a0c9611…/Fusion360.ico`). **Pedir permiso al usuario** para descargar los oficiales (Blender: blender.org/about/logo; Fusion: kit de prensa Autodesk), diciendo URL y tamaño; usarlos sin modificar.
-4. Quedan pendientes (ya redactados en `armar_manifest.py`): F08_fusion_joints (no hay joints), F08_fusion_exportar (requiere controlar la interfaz; acceso denegado; formato real 20 .usdz + 2 .obj/.mtl por script), F08_grabcad_modelos (sin evidencia), tema claro de Fusion.
-5. `python -I presentacion/v3/assets_claro/scripts/armar_manifest.py` → `MANIFEST.json`.
-6. Commit único y push (solo `presentacion/v3/assets_claro/**` + `presentacion/v3/tools/render_assets_claro.py`). Si `renders/manifest_renders.json` queda, se incluye (está dentro de assets_claro).
-7. Responder al usuario: lista de archivos con tamaño, contenido de `peso_modelo.json`, pendientes y procedencia.
-
-## Restricciones activas
-
-- El usuario **denegó el control de la interfaz** de Fusion y Blender (computer-use): no hacer clics; solo API de Fusion (MCP), scripts de Blender en instancia propia y capturas pasivas.
-- La sesión de Blender del usuario tiene abierto otro proyecto (`Aldo_Maestro_v003.blend`): no tocarla.
-- Fusion tiene abiertos: AutoFinalRobo2 (sin cambios), AFR2_Placas_Chasis_Plano, el Drawing y un Untitled previo.
+1. `capturas/F08_fusion_joints_v001.png`: el ensamble `AutoFinalRobo2` v5 tiene 0 joints y 0 as-built joints (`rootComponent.allJoints` vacío).
+2. `capturas/F08_fusion_exportar_v001.png`: abrir el diálogo de exportación requiere controlar la interfaz de Fusion (acceso denegado); la exportación real se hizo por script (`20 .usdz + 2 .obj/.mtl`).
+3. `capturas/F08_grabcad_modelos_v001.png`: opcional y sin evidencia de GrabCAD para ningún componente del ensamble.
